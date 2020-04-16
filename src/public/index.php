@@ -11,23 +11,7 @@ setcookie('mercureAuthorization','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjd
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <style>
-
-    body {
-        background-color : #33AA33;
-
-    }
-
-     #pannel_infos{
-        background-color : rgba(0,0,0,0.3);
-     }
-
-    #pannel_infos > div {
-        margin-top : 10px;
-    }
-
-
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="h100">
 
@@ -78,16 +62,7 @@ setcookie('mercureAuthorization','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjd
             </div>
         </div>
 
-    <script type="text/javascript">
-		//Ecoute hub Mercure
-		const url = new URL('http://localhost:3000/.well-known/mercure');
-	    url.searchParams.append('topic', 'https://localhost/belote/back/game/15');
-
-	    const eventSource = new EventSource(url);
-
-    	 // The callback will be called every time an update is published
-    	 eventSource.onmessage = e => console.log(e); // do something with the payload
-	</script>
+    <script type="text/javascript" src="belote.js"></script>
 
 </body>
 

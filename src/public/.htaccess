@@ -1,8 +1,8 @@
 Options -Indexes
 
 # Rewriting
-RewriteEngine On
-RewriteBase /
-RewriteCond %{REQUEST_METHOD} !OPTIONS
-RewriteRule (.*) index.php?req=$1  [QSA,L]
+#RewriteEngine On
+#RewriteBase /
+#RewriteCond %{REQUEST_METHOD} !OPTIONS
+#TODO : RewriteRule (.*) belote/src/index.php?req=$1  [QSA,L]
 
