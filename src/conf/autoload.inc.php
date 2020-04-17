@@ -1,6 +1,7 @@
 <?php
 // Autoload
 require_once PATH.'/entities/exceptions.php';
+// Autoloader de composer
 require_once PATH.'/vendor/autoload.php';
 
 
@@ -12,4 +13,4 @@ set_error_handler("exception_error_handler");
 
 // Initialisation de la configuration d'accès à la BDD
 \Services\Database::setDBConnectorConfig(Conf::$db['host'], Conf::$db['base'], Conf::$db['user'], Conf::$db['password']);
-\Services\Database::getInstance()->setPdoDriver(Conf::$db['driver']);
+\Services\Database::get()->setPdoDriver(Conf::$db['driver']);

@@ -34,12 +34,12 @@ abstract class AbstractDbTable extends \Services\StaticAccessClass {
     protected $sequenceName;
 
     public function __construct() {
-        $this->db = \Services\Database::getInstance();
+        $this->db = \Services\Database::get();
         $this->sequenceName = $this->tableName . '_id_seq';
     }
 
     protected function findOneByColumnAndValue(String $columnName, String $searchedValue, String $columns = '*') {
-        $result = \Services\Database::getInstance()->getData('SELECT ' . $columns . ' FROM ' . $this->tableName . ' WHERE ' . $columnName . '=:value', array(
+        $result = \Services\Database::get()->getData('SELECT ' . $columns . ' FROM ' . $this->tableName . ' WHERE ' . $columnName . '=:value', array(
             ':value' => $searchedValue
         ));
 
@@ -93,7 +93,7 @@ abstract class AbstractDbTable extends \Services\StaticAccessClass {
         if ($distinct) {
             $sqlDistinct = 'DISTINCT ';
         }
-        $results = \Services\Database::getInstance()->getData('SELECT ' . $sqlDistinct . $sqlColumns . ' FROM ' . $this->tableName . $sqlWhereClause, $sqlWhereValues, $filtersTypes);
+        $results = \Services\Database::get()->getData('SELECT ' . $sqlDistinct . $sqlColumns . ' FROM ' . $this->tableName . $sqlWhereClause, $sqlWhereValues, $filtersTypes);
         if (!$results) {
             throw new \Exceptions\RepositoryRowsNotFound();
         }
@@ -122,7 +122,7 @@ abstract class AbstractDbTable extends \Services\StaticAccessClass {
     abstract public function update(\Entities\AbstractEntity $object): void;
 
     public function remove(\Entities\AbstractEntity $object): void {
-        \Services\Database::getInstance()->getData('DELETE FROM ' . $this->tableName . ' WHERE id=:id', array(
+        \Services\Database::get()->getData('DELETE FROM ' . $this->tableName . ' WHERE id=:id', array(
             ':id' => $object->getId()
         ));
     }

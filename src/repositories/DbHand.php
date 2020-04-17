@@ -49,7 +49,7 @@ class DbHand extends AbstractDbTable {
     }
 
     public function findOneByRoundAndPlayer(int $idRound, String $player, String $columns = '*') {
-        $result = \Services\Database::getInstance()->getData('SELECT ' . $columns . ' FROM ' . $this->tableName . '
+        $result = \Services\Database::get()->getData('SELECT ' . $columns . ' FROM ' . $this->tableName . '
                                                                 WHERE id_manche=:id_manche AND joueur=:joueur', array(
             ':id_manche' => $idRound,
             ':joueur' => $player

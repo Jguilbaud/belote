@@ -1,7 +1,7 @@
 <?php
 // General
 define('VERSION', '0.1-alpha1');
-
+define('DEBUG', true);
 define('PATH', '/home/johan/eclipseworkspace/Belote/src');
 // Path
 define('CONTROLLERS_PATH', PATH . '/controllers/');

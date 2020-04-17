@@ -1,0 +1,22 @@
+[
+    'home' : {
+        'http_method' : 'get',
+        'type' : 'page',
+        'routes' : ['/']    
+    },
+    'create' : {
+        'http_method' : 'get',
+        'type' : 'page',
+        'regexp' : ['/partie/creer'],
+        'controller' : 'Game',
+        'method' : 'create'    
+    },
+    'joingame' : {
+        'http_method' : 'get',
+        'type' : 'page',
+        'regexp' : ['/partie/joindre']   
+        'controller' : 'Game',
+        'method' : 'join',
+        'params'  : ['hash' : { 'method' => 'uri', 'uri_position' : 1}]  
+    }
+]

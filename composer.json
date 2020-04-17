@@ -7,15 +7,18 @@
 	],
 	"autoload" : {
 		"psr-4" : {
-			"Entities\\" : "entities",
-			"Services\\" : "services",
-			"Repositories\\" : "repositories",
-			"Controllers\\" : "controllers"
+			"Entities\\" : "src/entities",
+			"Services\\" : "src/services",
+			"Repositories\\" : "src/repositories",
+			"Controllers\\" : "src/controllers"
 		}
 	},
 	"require" : {
 		"php" : ">=7.4",
 		"firebase/php-jwt" : "^5.2",
 		"twig/twig" : "^3.0"
+	},
+	"config" : {
+		"vendor-dir" : "src/vendor"
 	}
 }

@@ -8,7 +8,7 @@ abstract class StaticAccessClass {
      *
      * @return self
      */
-    public static function getInstance($instanceName = '') {
+    public static function get($instanceName = '') {
         if (!isset(static::$instances[get_called_class().'_'.$instanceName])) {
             static::$instances[get_called_class().'_'.$instanceName] = new static();
         }

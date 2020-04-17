@@ -80,14 +80,14 @@ class Game extends StaticAccessClass {
         $oGame = new \Entities\Game();
         $oGame->setHash(Utils::generateHash(10));
         $oGame->setCartes($deck);
-        \Repositories\DbGame::getInstance()->create($oGame);
+        \Repositories\DbGame::get()->create($oGame);
 
         return $oGame->getId();
     }
 
     public function startNewRound(int $idGame): \Entities\Round {
         // On récupère la partie pour avoir notamment le deck
-        $oGame = \Repositories\DbGame::getInstance()->findOneById($idGame);
+        $oGame = \Repositories\DbGame::get()->findOneById($idGame);
 
         // On créé la nouvelle manche
         $oRound = new \Entities\Round();
@@ -99,23 +99,23 @@ class Game extends StaticAccessClass {
             $newRound = 1;
         } else {
             // On récupère le précédent donneur
-            $oPrecedentRound = \Repositories\DbRound::getInstance()->findOneById($oGame->getId_manche_courante());
+            $oPrecedentRound = \Repositories\DbRound::get()->findOneById($oGame->getId_manche_courante());
             $newRound = $oPrecedentRound->getNum_manche() + 1;
             $dealer = $this->getNextPlayerFromOne($oPrecedentRound->getDonneur());
         }
         $oRound->setDonneur($dealer);
         $oRound->setNum_manche($newRound);
-        \Repositories\DbRound::getInstance()->create($oRound);
+        \Repositories\DbRound::get()->create($oRound);
 
         // On met à jour la partie
         $oGame->setId_manche_courante($oRound->getId());
-        \Repositories\DbGame::getInstance()->update($oGame);
+        \Repositories\DbGame::get()->update($oGame);
 
         return $oRound;
     }
 
     public function startNewTurn(int $idRound, String $firstPlayer): \Entities\Turn {
-        $oRound = \Repositories\DbRound::getInstance()->findOneById($idRound);
+        $oRound = \Repositories\DbRound::get()->findOneById($idRound);
 
         $oTurn = new \Entities\Turn();
         $oTurn->setId_manche($idRound);
@@ -126,7 +126,7 @@ class Game extends StaticAccessClass {
             $newTurn = 1;
         } else {
             // On récupère le précédent donneur
-            $oPrecedentTurn = \Repositories\DbTurn::getInstance()->findOneById($oRound->getId_tour_courant());
+            $oPrecedentTurn = \Repositories\DbTurn::get()->findOneById($oRound->getId_tour_courant());
             $newTurn = $oPrecedentTurn->getNum_tour() + 1;
             // On détecte si on essaye pas de créer une manche de trop
             if ($newTurn >= 9) {
@@ -134,11 +134,11 @@ class Game extends StaticAccessClass {
             }
         }
         $oTurn->setNum_tour($newTurn);
-        \Repositories\DbTurn::getInstance()->create($oTurn);
+        \Repositories\DbTurn::get()->create($oTurn);
 
         // On met à jour la partie
         $oRound->setId_tour_courant($oTurn->getId());
-        \Repositories\DbRound::getInstance()->update($oRound);
+        \Repositories\DbRound::get()->update($oRound);
 
         return $oTurn;
     }
@@ -175,8 +175,8 @@ class Game extends StaticAccessClass {
      * @return String Carte proposée comme atout
      */
     public function dealCards(int $idRound) : String {
-        $oRound = \Repositories\DbRound::getInstance()->findOneById($idRound);
-        $oGame = \Repositories\DbGame::getInstance()->findOneById($oRound->getId_partie());
+        $oRound = \Repositories\DbRound::get()->findOneById($idRound);
+        $oGame = \Repositories\DbGame::get()->findOneById($oRound->getId_partie());
 
         $currentDealedPlayer = $oRound->getDonneur();
         // On donne les 3 + 2 cartes à chacun
@@ -190,12 +190,12 @@ class Game extends StaticAccessClass {
             $oHand->setId_manche($idRound);
             $oHand->setJoueur($currentDealedPlayer);
             $oHand->setCartes(array_merge($arrayPart1, $arrayPart2));
-            \Repositories\DbHand::getInstance()->create($oHand);
+            \Repositories\DbHand::get()->create($oHand);
         }
 
         // On enleve du deck les cartes ditribuées
         $oGame->setCartes(array_slice($oGame->getCartes(), 20, 32, true));
-        \Repositories\DbGame::getInstance()->update($oGame);
+        \Repositories\DbGame::get()->update($oGame);
 
         return array_values($oGame->getCartes())[0];
     }
@@ -207,8 +207,8 @@ class Game extends StaticAccessClass {
      * @param String $player
      */
     public function takeTrumpAndDeal(int $idRound, String $color, String $player) {
-        $oRound = \Repositories\DbRound::getInstance()->findOneById($idRound);
-        $oGame = \Repositories\DbGame::getInstance()->findOneById($oRound->getId_partie());
+        $oRound = \Repositories\DbRound::get()->findOneById($idRound);
+        $oGame = \Repositories\DbGame::get()->findOneById($oRound->getId_partie());
         $oRound->setPreneur($player);
         $oRound->setAtout($color[0]);
 
@@ -219,7 +219,7 @@ class Game extends StaticAccessClass {
             $currentDealedPlayer = $this->getNextPlayerFromOne($currentDealedPlayer);
 
             // On récupère la main du joueur
-            $oHand = \Repositories\DbHand::getInstance()->findOneByRoundAndPlayer($oRound->getId(), $currentDealedPlayer);
+            $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oRound->getId(), $currentDealedPlayer);
 
             // Si c'est le preneur
             if ($currentDealedPlayer == $player) {
@@ -233,17 +233,17 @@ class Game extends StaticAccessClass {
             }
             $newCards = array_merge($newCards, array_slice($oGame->getCartes(), $cardsOffset, $nbCards));
             $oHand->setCartes(array_merge($oHand->getCartes(), $newCards));
-            \Repositories\DbHand::getInstance()->update($oHand);
+            \Repositories\DbHand::get()->update($oHand);
 
             $cardsOffset += $nbCards;
         }
 
         // On enleve du deck les cartes ditribuées, c'est à dire toutes :)
         $oGame->setCartes(array());
-        \Repositories\DbGame::getInstance()->update($oGame);
+        \Repositories\DbGame::get()->update($oGame);
 
-        \Repositories\DbRound::getInstance()->update($oRound);
-        \Repositories\DbGame::getInstance()->update($oGame);
+        \Repositories\DbRound::get()->update($oRound);
+        \Repositories\DbGame::get()->update($oGame);
     }
 
 
@@ -252,11 +252,11 @@ class Game extends StaticAccessClass {
             throw new \Exceptions\CutOutOfRange();
         }
 
-        $oGame = \Repositories\DbGame::getInstance()->findOneById($idGame);
+        $oGame = \Repositories\DbGame::get()->findOneById($idGame);
         $arrayPart1 = array_slice($oGame->getCartes(), 0, $cut, true);
         $arrayPart2 = array_slice($oGame->getCartes(), $cut, 32, true);
         $oGame->setCartes(array_merge($arrayPart2, $arrayPart1));
-        \Repositories\DbGame::getInstance()->update($oGame);
+        \Repositories\DbGame::get()->update($oGame);
     }
 
     /**
@@ -271,10 +271,10 @@ class Game extends StaticAccessClass {
     public function playCard(int $idTurn, String $player, String $card): \Entities\Turn {
 
         // On récupère le tour de jeu
-        $oTurn = \Repositories\DbTurn::getInstance()->findOneById($idTurn);
+        $oTurn = \Repositories\DbTurn::get()->findOneById($idTurn);
 
         // On récupère la main du joueur
-        $oHand = \Repositories\DbHand::getInstance()->findOneByRoundAndPlayer($oTurn->getId_manche(), $player);
+        $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oTurn->getId_manche(), $player);
 
         // On vérifie qu'il n'a pas déjà joué une carte
         $method = 'getCarte_' . strtolower($player);
@@ -295,8 +295,8 @@ class Game extends StaticAccessClass {
             unset($handCards[$key]);
             $oHand->setCartes($handCards);
         }
-        \Repositories\DbHand::getInstance()->update($oHand);
-        \Repositories\DbTurn::getInstance()->update($oTurn);
+        \Repositories\DbHand::get()->update($oHand);
+        \Repositories\DbTurn::get()->update($oTurn);
         return $oTurn;
     }
 
@@ -306,7 +306,7 @@ class Game extends StaticAccessClass {
         }
 
         // On récupère la manche
-        $oRound = \Repositories\DbRound::getInstance()->findOneById($oTurn->getId_manche());
+        $oRound = \Repositories\DbRound::get()->findOneById($oTurn->getId_manche());
 
         $currentPlayer = $oTurn->getPremier_joueur();
         $method = 'getCarte_' . strtolower($currentPlayer);
@@ -348,16 +348,16 @@ class Game extends StaticAccessClass {
         }
 
         $oTurn->setVainqueur($bestPlayer);
-        \Repositories\DbTurn::getInstance()->update($oTurn);
+        \Repositories\DbTurn::get()->update($oTurn);
         return $bestPlayer;
     }
 
     public function closeRound(int $idRound) : \Entities\Round{
-        $oRound = \Repositories\DbRound::getInstance()->findOneById($idRound);
-        $oGame = \Repositories\DbGame::getInstance()->findOneById($oRound->getId_partie());
+        $oRound = \Repositories\DbRound::get()->findOneById($idRound);
+        $oGame = \Repositories\DbGame::get()->findOneById($oRound->getId_partie());
 
         // On récupère les tours
-        $turns = \Repositories\DbTurn::getInstance()->findAll(array(), array(
+        $turns = \Repositories\DbTurn::get()->findAll(array(), array(
             'id_manche' => $oRound->getId()
         ));
 
@@ -427,7 +427,7 @@ class Game extends StaticAccessClass {
 
         $oRound->setPoints_NS($roundPointsNS);
         $oRound->setPoints_OE($roundPointsOE);
-        \Repositories\DbRound::getInstance()->update($oRound);
+        \Repositories\DbRound::get()->update($oRound);
 
         $totalPointNS = $oGame->getTotal_Points_NS()+$roundPointsNS;
         $totalPointOE = $oGame->getTotal_Points_OE()+$roundPointsOE;
@@ -441,7 +441,7 @@ class Game extends StaticAccessClass {
         }
 
 
-        \Repositories\DbGame::getInstance()->update($oGame);
+        \Repositories\DbGame::get()->update($oGame);
 
 
         // On vérifie que la partie n'est pas terminée

@@ -10,7 +10,7 @@ namespace Services;
  * 1) De manière classique en instanciant un objet Database
  * <code>$database = new Database("localhost","mabase","monuser","monmotdepasse);</code>
  *
- * 2) De manière statique avec la méthode statique \Services\Database::getInstance()
+ * 2) De manière statique avec la méthode statique \Services\Database::get()
  * Il faut dans ce cas au préalable avoir fait appel à la méthode statique
  * Database::setDBConnectorConfig($host,$base,$user,$password)
  * Ce mode de fonctionnement permet de ne pas avoir à gérer l'objet Database
@@ -27,7 +27,7 @@ namespace Services;
  *
  * Exemples d'appel à setData :
  * 1) <code>$database->setData("INSERT INTO matable (monchamp) VALUES (:mavaleur)", array(":mavaleur" => $valeur));</code>
- * 2) <code>\Services\Database::getInstance()->setData("INSERT INTO matable (monchamp) VALUES (:mavaleur)", array(":mavaleur" => $valeur));</code>
+ * 2) <code>\Services\Database::get()->setData("INSERT INTO matable (monchamp) VALUES (:mavaleur)", array(":mavaleur" => $valeur));</code>
  *
  * @author Johan GUILBAUD
  * @version 1.8-MegaDebrid - 28 Mars 2020
