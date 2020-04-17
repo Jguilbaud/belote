@@ -1,22 +1,65 @@
-[
-    'home' : {
-        'http_method' : 'get',
-        'type' : 'page',
-        'routes' : ['/']    
+{
+    "home": {
+        "http_method": "get",
+        "type": "page",
+        "regexp": "^/$",
+        "controller": "Home",
+        "method": "showHomePage",
+        "params": {}
     },
-    'create' : {
-        'http_method' : 'get',
-        'type' : 'page',
-        'regexp' : ['/partie/creer'],
-        'controller' : 'Game',
-        'method' : 'create'    
+    "createpage": {
+        "http_method": "get",
+        "type": "page",
+        "regexp": "/create",
+        "controller": "Game",
+        "method": "create",
+        "params": {}
     },
-    'joingame' : {
-        'http_method' : 'get',
-        'type' : 'page',
-        'regexp' : ['/partie/joindre']   
-        'controller' : 'Game',
-        'method' : 'join',
-        'params'  : ['hash' : { 'method' => 'uri', 'uri_position' : 1}]  
+    "joingamepage": {
+        "http_method": "get",
+        "type": "page",
+        "regexp": "^/join/([a-z0-9]{10})$",
+        "controller": "Game",
+        "method": "showJoinPage",
+        "params": {
+            "hash": {
+                "method": "uri",
+                "uri_position": 1
+            },
+            "jwt": {
+                "method": "cookie"
+            }
+        }
+    },
+    "joingameapi": {
+        "http_method": "post",
+        "type": "api",
+        "regexp": "^/join/[a-z0-9]{10}$",
+        "controller": "Game",
+        "method": "join",
+        "params": {
+            "data": {
+                "method": "post"
+            },
+            "jwt": {
+                "method": "cookie"
+            }
+        }
+    },
+    "playgame": {
+        "http_method": "get",
+        "type": "page",
+        "regexp": "^/play/[a-z0-9]{10}$",
+        "controller": "Game",
+        "method": "play",
+        "params": {
+            "hash": {
+                "method": "uri",
+                "uri_position": 1
+            },
+            "jwt": {
+                "method": "cookie"
+            }
+        }
     }
-]
+}
