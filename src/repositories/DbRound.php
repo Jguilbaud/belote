@@ -10,9 +10,9 @@ class DbRound extends AbstractDbTable {
      * @var string
      */
     protected $tableName = 'manches';
-    protected $entityModelClassName = \Models\Round::class;
+    protected $entityClassName = \Entities\Round::class;
 
-    public function create(\Models\AbstractModel &$oRound): void {
+    public function create(\Entities\AbstractEntity &$oRound): void {
         $query = 'INSERT INTO ' . $this->tableName . ' (id_partie,num_manche,donneur)
         VALUES (:id_partie,:num_manche,:donneur)';
 
@@ -29,7 +29,7 @@ class DbRound extends AbstractDbTable {
         $oRound->setId($this->db->getLastInsertRowId());
     }
 
-    public function update(\Models\AbstractModel $oRound): void {
+    public function update(\Entities\AbstractEntity $oRound): void {
         $query = 'UPDATE ' . $this->tableName . ' SET
                     id_partie = :id_partie,
                     num_manche = :num_manche,

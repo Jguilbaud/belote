@@ -10,9 +10,9 @@ class DbGame extends AbstractDbTable {
      * @var string
      */
     protected $tableName = 'parties';
-    protected $entityModelClassName = \Models\Game::class;
+    protected $entityClassName = \Entities\Game::class;
 
-    public function create(\Models\AbstractModel &$oGame): void {
+    public function create(\Entities\AbstractEntity &$oGame): void {
         $query = 'INSERT INTO ' . $this->tableName . ' (`hash`, `date`, `nom_nord`, `nom_sud`, `nom_ouest`, `nom_est`, `cartes`)
         VALUES (:hash, :date, :nom_nord, :nom_sud, :nom_ouest, :nom_est,:cartes)';
 
@@ -32,7 +32,7 @@ class DbGame extends AbstractDbTable {
         $oGame->setId($this->db->getLastInsertRowId());
     }
 
-    public function update(\Models\AbstractModel $oGame): void {
+    public function update(\Entities\AbstractEntity $oGame): void {
         $query = 'UPDATE ' . $this->tableName . ' SET
                     nom_nord = :nom_nord,
                     nom_sud = :nom_sud,

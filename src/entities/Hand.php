@@ -1,8 +1,8 @@
 <?php
 
-namespace Models;
+namespace Entities;
 
-class Hand extends AbstractModel {
+class Hand extends AbstractEntity {
     protected int $id = 0;
     protected int $id_manche;
     protected String $joueur = '';

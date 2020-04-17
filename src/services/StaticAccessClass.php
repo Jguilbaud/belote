@@ -1,4 +1,6 @@
 <?php
+namespace Services;
+
 abstract class StaticAccessClass {
     protected static $instances = array();
 

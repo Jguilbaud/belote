@@ -2,8 +2,6 @@
 
 namespace Services;
 
-use StaticAccessClass;
-
 /**
  * Classe d'accès à une Base de données (eg.
  * MySQL) via \PDO en UTF8

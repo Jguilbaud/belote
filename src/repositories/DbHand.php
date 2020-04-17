@@ -10,9 +10,9 @@ class DbHand extends AbstractDbTable {
      * @var string
      */
     protected $tableName = 'mains';
-    protected $entityModelClassName = \Models\Hand::class;
+    protected $entityClassName = \Entities\Hand::class;
 
-    public function create(\Models\AbstractModel &$oHand): void {
+    public function create(\Entities\AbstractEntity &$oHand): void {
         $query = 'INSERT INTO ' . $this->tableName . ' (id_manche,joueur,cartes)
         VALUES (:id_manche,:joueur,:cartes)';
 
@@ -28,7 +28,7 @@ class DbHand extends AbstractDbTable {
         $oHand->setId($this->db->getLastInsertRowId());
     }
 
-    public function update(\Models\AbstractModel $oHand): void {
+    public function update(\Entities\AbstractEntity $oHand): void {
         $query = 'UPDATE ' . $this->tableName . ' SET
                     id_manche = :id_manche,
                     joueur = :joueur,

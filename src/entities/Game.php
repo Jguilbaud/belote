@@ -1,8 +1,8 @@
 <?php
 
-namespace Models;
+namespace Entities;
 
-class Game extends AbstractModel {
+class Game extends AbstractEntity {
     protected int $id = 0;
     protected String $hash = '';
     protected int $date = 0;

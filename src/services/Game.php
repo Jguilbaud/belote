@@ -2,7 +2,7 @@
 
 namespace Services;
 
-class Game extends \StaticAccessClass {
+class Game extends StaticAccessClass {
 
     /**
      * Pique : Spade
@@ -77,7 +77,7 @@ class Game extends \StaticAccessClass {
         $deck = $this->deckCards;
         shuffle($deck);
         // On créé la partie en base
-        $oGame = new \Models\Game();
+        $oGame = new \Entities\Game();
         $oGame->setHash(Utils::generateHash(10));
         $oGame->setCartes($deck);
         \Repositories\DbGame::getInstance()->create($oGame);
@@ -85,12 +85,12 @@ class Game extends \StaticAccessClass {
         return $oGame->getId();
     }
 
-    public function startNewRound(int $idGame): \Models\Round {
+    public function startNewRound(int $idGame): \Entities\Round {
         // On récupère la partie pour avoir notamment le deck
         $oGame = \Repositories\DbGame::getInstance()->findOneById($idGame);
 
         // On créé la nouvelle manche
-        $oRound = new \Models\Round();
+        $oRound = new \Entities\Round();
         $oRound->setId_Partie($oGame->getId());
 
         // Cas première manche
@@ -114,10 +114,10 @@ class Game extends \StaticAccessClass {
         return $oRound;
     }
 
-    public function startNewTurn(int $idRound, String $firstPlayer): \Models\Turn {
+    public function startNewTurn(int $idRound, String $firstPlayer): \Entities\Turn {
         $oRound = \Repositories\DbRound::getInstance()->findOneById($idRound);
 
-        $oTurn = new \Models\Turn();
+        $oTurn = new \Entities\Turn();
         $oTurn->setId_manche($idRound);
         $oTurn->setPremier_joueur($firstPlayer);
 
@@ -186,7 +186,7 @@ class Game extends \StaticAccessClass {
             $arrayPart1 = array_slice($oGame->getCartes(), $i * 3, 3, true);
             $arrayPart2 = array_slice($oGame->getCartes(), $i * 2 + 12, 2, true);
 
-            $oHand = new \Models\Hand();
+            $oHand = new \Entities\Hand();
             $oHand->setId_manche($idRound);
             $oHand->setJoueur($currentDealedPlayer);
             $oHand->setCartes(array_merge($arrayPart1, $arrayPart2));
@@ -268,7 +268,7 @@ class Game extends \StaticAccessClass {
      * @throws \Exceptions\IllegalCard
      * @return
      */
-    public function playCard(int $idTurn, String $player, String $card): \Models\Turn {
+    public function playCard(int $idTurn, String $player, String $card): \Entities\Turn {
 
         // On récupère le tour de jeu
         $oTurn = \Repositories\DbTurn::getInstance()->findOneById($idTurn);
@@ -300,7 +300,7 @@ class Game extends \StaticAccessClass {
         return $oTurn;
     }
 
-    public function calculateTurnWinner(\Models\Turn &$oTurn) {
+    public function calculateTurnWinner(\Entities\Turn &$oTurn) {
         if ($oTurn->getCarte_n() == '' || $oTurn->getCarte_e() == '' || $oTurn->getCarte_s() == '' || $oTurn->getCarte_o() == '') {
             throw new \Exceptions\TurnIsIncomplete();
         }
@@ -352,7 +352,7 @@ class Game extends \StaticAccessClass {
         return $bestPlayer;
     }
 
-    public function closeRound(int $idRound) : \Models\Round{
+    public function closeRound(int $idRound) : \Entities\Round{
         $oRound = \Repositories\DbRound::getInstance()->findOneById($idRound);
         $oGame = \Repositories\DbGame::getInstance()->findOneById($oRound->getId_partie());
 

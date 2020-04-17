@@ -1,8 +1,8 @@
 <?php
 
-namespace Models;
+namespace Entities;
 
-class Turn extends AbstractModel {
+class Turn extends AbstractEntity {
     protected int $id = 0;
     protected int $id_manche = 0;
     protected int $num_tour = 0;

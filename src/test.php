@@ -3,6 +3,9 @@ require_once 'conf/constants.inc.php';
 require_once 'conf/conf.inc.php';
 require_once 'conf/autoload.inc.php';
 
+
+$oJWT = new \Firebase\JWT\JWT();
+
 // $oTurn = \Repositories\DbTurn::getInstance()->findOneById(1);
 // try {
 //     $winner = \Services\Game::getInstance()->calculateTurnWinner($oTurn);

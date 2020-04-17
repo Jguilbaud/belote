@@ -1,6 +1,21 @@
 {
-    "require": {
-        "firebase/php-jwt": "^5.2",
-        "twig/twig": "^3.0"
-    }
+	"name" : "jguilbaud/belote",
+	"authors" : [{
+			"name" : "Johan GUILBAUD",
+			"email" : "guilbaud.johan@gmail.com"
+		}
+	],
+	"autoload" : {
+		"psr-4" : {
+			"Entities\\" : "entities",
+			"Services\\" : "services",
+			"Repositories\\" : "repositories",
+			"Controllers\\" : "controllers"
+		}
+	},
+	"require" : {
+		"php" : ">=7.4",
+		"firebase/php-jwt" : "^5.2",
+		"twig/twig" : "^3.0"
+	}
 }

@@ -10,9 +10,9 @@ class DbTurn extends AbstractDbTable {
      * @var string
      */
     protected $tableName = 'tours';
-    protected $entityModelClassName = \Models\Turn::class;
+    protected $entityClassName = \Entities\Turn::class;
 
-    public function create(\Models\AbstractModel &$oTurn): void {
+    public function create(\Entities\AbstractEntity &$oTurn): void {
         $query = 'INSERT INTO ' . $this->tableName . ' (id_manche,num_tour,premier_joueur)
         VALUES (:id_manche,:num_tour,:premier_joueur)';
 
@@ -28,7 +28,7 @@ class DbTurn extends AbstractDbTable {
         $oTurn->setId($this->db->getLastInsertRowId());
     }
 
-    public function update(\Models\AbstractModel $oTurn): void {
+    public function update(\Entities\AbstractEntity $oTurn): void {
         $query = 'UPDATE ' . $this->tableName . ' SET
                     id_manche = :id_manche,
                     num_tour = :num_tour,

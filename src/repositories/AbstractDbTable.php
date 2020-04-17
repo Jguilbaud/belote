@@ -8,11 +8,8 @@ namespace Repositories;
  * @author johan
  *
  */
-abstract class AbstractDbTable extends \StaticAccessClass {
-
+abstract class AbstractDbTable extends \Services\StaticAccessClass {
     protected \Services\Database $db;
-
-
     protected $oModel = null;
 
     /**
@@ -28,8 +25,7 @@ abstract class AbstractDbTable extends \StaticAccessClass {
      * @var string
      */
     protected $sqlFields = '*';
-    protected $entityModelClassName = 'AbstractModel';
-
+    protected $entityClassName = 'AbstractEntity';
 
     /**
      *
@@ -61,8 +57,8 @@ abstract class AbstractDbTable extends \StaticAccessClass {
         return $sqlRowsResults;
     }
 
-    protected function transformRowToObject(array $sqlRowResult): \Models\AbstractModel {
-        $oObject = new $this->entityModelClassName();
+    protected function transformRowToObject(array $sqlRowResult): \Entities\AbstractEntity {
+        $oObject = new $this->entityClassName();
         $oObject->populateObjectFromDb($sqlRowResult);
         return $oObject;
     }
@@ -121,11 +117,11 @@ abstract class AbstractDbTable extends \StaticAccessClass {
         return $this->tableName;
     }
 
-    abstract public function create(\Models\AbstractModel &$object): void;
+    abstract public function create(\Entities\AbstractEntity &$object): void;
 
-    abstract public function update(\Models\AbstractModel $object): void;
+    abstract public function update(\Entities\AbstractEntity $object): void;
 
-    public function remove(\Models\AbstractModel $object): void {
+    public function remove(\Entities\AbstractEntity $object): void {
         \Services\Database::getInstance()->getData('DELETE FROM ' . $this->tableName . ' WHERE id=:id', array(
             ':id' => $object->getId()
         ));

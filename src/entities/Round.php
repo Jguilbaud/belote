@@ -1,8 +1,8 @@
 <?php
 
-namespace Models;
+namespace Entities;
 
-class Round extends AbstractModel {
+class Round extends AbstractEntity {
     protected int $id = 0;
     protected int $id_partie = 0;
     protected int $num_manche = 0;
