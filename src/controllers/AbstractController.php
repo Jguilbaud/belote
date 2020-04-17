@@ -2,7 +2,16 @@
 namespace Controllers;
 
 abstract class AbstractController {
-    public function __contruct(){
+
+    /**
+     *
+     * @var \Twig\Environment
+     */
+    protected ?\Twig\Environment $tplEngine = null;
+    protected String $tplName = 'index.html';
+    protected array $tplVars = array();
+
+    public function __construct(){
         //init twig
         $loader = new \Twig\Loader\FilesystemLoader(VIEWS_PATH);
 
@@ -10,6 +19,10 @@ abstract class AbstractController {
            // 'cache' => TMP_PATH . 'cache',
             'debug' => DEBUG
         ));
+    }
+
+    protected function renderPage() {
+        echo $this->tplEngine->render($this->tplName, $this->tplVars);
     }
 
 }
