@@ -4,3 +4,4 @@
 /.settings/*
 .buildpath
 /src/vendor/
+composer.phar
