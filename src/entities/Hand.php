@@ -4,15 +4,15 @@ namespace Entities;
 
 class Hand extends AbstractEntity {
     protected int $id = 0;
-    protected int $id_manche;
-    protected String $joueur = '';
-    protected array $cartes = array();
+    protected int $id_round;
+    protected String $player = '';
+    protected array $cards = array();
 
 
     public function populateObjectFromDb(array $dbRow, array $excludedParticularFields = array()) :void {
-        $excludedParticularFields[] = 'cartes';
+        $excludedParticularFields[] = 'cards';
         parent::populateObjectFromDb($dbRow,$excludedParticularFields);
-        $this->cartes = json_decode($dbRow['cartes'],true);
+        $this->cards = json_decode($dbRow['cards'],true);
     }
 
     /**
@@ -35,47 +35,47 @@ class Hand extends AbstractEntity {
      *
      * @return mixed
      */
-    public function getId_manche() {
-        return $this->id_manche;
+    public function getId_round() {
+        return $this->id_round;
     }
 
     /**
      *
      * @param mixed $id_manche
      */
-    public function setId_manche($id_manche) {
-        $this->id_manche = $id_manche;
+    public function setId_round($id_manche) {
+        $this->id_round = $id_manche;
     }
 
     /**
      *
      * @return string
      */
-    public function getJoueur() {
-        return $this->joueur;
+    public function getPlayer() {
+        return $this->player;
     }
 
     /**
      *
      * @param string $joueur
      */
-    public function setJoueur($joueur) {
-        $this->joueur = $joueur;
+    public function setPlayer($joueur) {
+        $this->player = $joueur;
     }
 
     /**
      *
      * @return multitype:
      */
-    public function getCartes() {
-        return $this->cartes;
+    public function getCards() {
+        return $this->cards;
     }
 
     /**
      *
      * @param multitype: $cartes
      */
-    public function setCartes($cartes) {
-        $this->cartes = $cartes;
+    public function setCards($cartes) {
+        $this->cards = $cartes;
     }
 }

@@ -9,17 +9,17 @@ class DbTurn extends AbstractDbTable {
      *
      * @var string
      */
-    protected $tableName = 'tours';
+    protected $tableName = 'turns';
     protected $entityClassName = \Entities\Turn::class;
 
     public function create(\Entities\AbstractEntity &$oTurn): void {
-        $query = 'INSERT INTO ' . $this->tableName . ' (id_manche,num_tour,premier_joueur)
-        VALUES (:id_manche,:num_tour,:premier_joueur)';
+        $query = 'INSERT INTO ' . $this->tableName . ' (id_round,num_turn,first_player)
+        VALUES (:id_round,:num_turn,:first_player)';
 
         $values = array(
-            ':id_manche' => $oTurn->getId_manche(),
-            ':num_tour' => $oTurn->getNum_tour(),
-            ':premier_joueur' => $oTurn->getPremier_joueur()
+            ':id_round' => $oTurn->getId_round(),
+            ':num_turn' => $oTurn->getNum_turn(),
+            ':first_player' => $oTurn->getFirst_player()
         );
 
         $this->db->setData($query, $values);
@@ -30,26 +30,26 @@ class DbTurn extends AbstractDbTable {
 
     public function update(\Entities\AbstractEntity $oTurn): void {
         $query = 'UPDATE ' . $this->tableName . ' SET
-                    id_manche = :id_manche,
-                    num_tour = :num_tour,
-                    premier_joueur = :premier_joueur,
-                    carte_n = :carte_n,
-                    carte_e = :carte_e,
-                    carte_s = :carte_s,
-                    carte_o = :carte_o,
-                    vainqueur = :vainqueur
+                    id_round = :id_round,
+                    num_turn = :num_turn,
+                    first_player = :first_player,
+                    card_n = :card_n,
+                    card_e = :card_e,
+                    card_s = :card_s,
+                    card_w = :card_w,
+                    winner = :winner
                 WHERE id=:id';
 
         $values = array(
             ':id' => $oTurn->getId(),
-            ':id_manche' => $oTurn->getId_manche(),
-            ':num_tour' => $oTurn->getNum_tour(),
-            ':premier_joueur' => $oTurn->getPremier_joueur(),
-            ':vainqueur' => $oTurn->getVainqueur(),
-            ':carte_n' => $oTurn->getCarte_n(),
-            ':carte_e' => $oTurn->getCarte_e(),
-            ':carte_s' => $oTurn->getCarte_s(),
-            ':carte_o' => $oTurn->getCarte_o()
+            ':id_round' => $oTurn->getId_round(),
+            ':num_turn' => $oTurn->getNum_turn(),
+            ':first_player' => $oTurn->getFirst_player(),
+            ':winner' => $oTurn->getWinner(),
+            ':card_n' => $oTurn->getCard_n(),
+            ':card_e' => $oTurn->getCard_e(),
+            ':card_s' => $oTurn->getCard_s(),
+            ':card_w' => $oTurn->getCard_w()
         );
 
         $this->db->setData($query, $values);

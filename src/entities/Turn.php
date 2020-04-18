@@ -4,26 +4,26 @@ namespace Entities;
 
 class Turn extends AbstractEntity {
     protected int $id = 0;
-    protected int $id_manche = 0;
-    protected int $num_tour = 0;
-    protected String $premier_joueur = '';
-    protected String $carte_n = '';
-    protected String $carte_e = '';
-    protected String $carte_s = '';
-    protected String $carte_o = '';
-    protected String $vainqueur = '';
+    protected int $id_round = 0;
+    protected int $num_turn = 0;
+    protected String $first_player = '';
+    protected String $card_n = '';
+    protected String $card_e = '';
+    protected String $card_s = '';
+    protected String $card_w = '';
+    protected String $winner = '';
     /**
      * @return string
      */
-    public function getPremier_joueur() {
-        return $this->premier_joueur;
+    public function getFirst_player() {
+        return $this->first_player;
     }
 
     /**
      * @param string $premier_joueur
      */
-    public function setPremier_joueur($premier_joueur) {
-        $this->premier_joueur = $premier_joueur;
+    public function setFirst_player($premier_joueur) {
+        $this->first_player = $premier_joueur;
     }
 
     /**
@@ -43,99 +43,99 @@ class Turn extends AbstractEntity {
     /**
      * @return number
      */
-    public function getId_manche() {
-        return $this->id_manche;
+    public function getId_round() {
+        return $this->id_round;
     }
 
     /**
      * @param number $id_manche
      */
-    public function setId_manche($id_manche) {
-        $this->id_manche = $id_manche;
+    public function setId_round($id_manche) {
+        $this->id_round = $id_manche;
     }
 
     /**
      * @return number
      */
-    public function getNum_tour() {
-        return $this->num_tour;
+    public function getNum_turn() {
+        return $this->num_turn;
     }
 
     /**
      * @param number $num_tour
      */
-    public function setNum_tour($num_tour) {
-        $this->num_tour = $num_tour;
+    public function setNum_turn($num_tour) {
+        $this->num_turn = $num_tour;
     }
 
     /**
      * @return string
      */
-    public function getCarte_n() {
-        return $this->carte_n;
+    public function getCard_n() {
+        return $this->card_n;
     }
 
     /**
-     * @param string $carte_n
+     * @param string $card_n
      */
-    public function setCarte_n($carte_n) {
-        $this->carte_n = $carte_n;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCarte_e() {
-        return $this->carte_e;
-    }
-
-    /**
-     * @param string $carte_e
-     */
-    public function setCarte_e($carte_e) {
-        $this->carte_e = $carte_e;
+    public function setCard_n($card_n) {
+        $this->card_n = $card_n;
     }
 
     /**
      * @return string
      */
-    public function getCarte_s() {
-        return $this->carte_s;
+    public function getCard_e() {
+        return $this->card_e;
     }
 
     /**
-     * @param string $carte_s
+     * @param string $card_e
      */
-    public function setCarte_s($carte_s) {
-        $this->carte_s = $carte_s;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCarte_o() {
-        return $this->carte_o;
-    }
-
-    /**
-     * @param string $carte_o
-     */
-    public function setCarte_o($carte_o) {
-        $this->carte_o = $carte_o;
+    public function setCard_e($card_e) {
+        $this->card_e = $card_e;
     }
 
     /**
      * @return string
      */
-    public function getVainqueur() {
-        return $this->vainqueur;
+    public function getCard_s() {
+        return $this->card_s;
+    }
+
+    /**
+     * @param string $card_s
+     */
+    public function setCard_s($card_s) {
+        $this->card_s = $card_s;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCard_w() {
+        return $this->card_w;
+    }
+
+    /**
+     * @param string $card_w
+     */
+    public function setCard_w($card_w) {
+        $this->card_w = $card_w;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWinner() {
+        return $this->winner;
     }
 
     /**
      * @param string $vainqueur
      */
-    public function setVainqueur($vainqueur) {
-        $this->vainqueur = $vainqueur;
+    public function setWinner($vainqueur) {
+        $this->winner = $vainqueur;
     }
 
 }

@@ -6,19 +6,19 @@ class Game extends AbstractEntity {
     protected int $id = 0;
     protected String $hash = '';
     protected int $date = 0;
-    protected String $nom_nord = 'Nord';
-    protected String $nom_sud = 'Sud';
-    protected String $nom_ouest = 'Ouest';
-    protected String $nom_est = 'Est';
+    protected String $name_north = 'Nord';
+    protected String $name_south = 'Sud';
+    protected String $name_west = 'Ouest';
+    protected String $name_east = 'Est';
     protected int $total_points_ns = 0;
-    protected int $total_points_oe = 0;
-    protected array $cartes = array();
-    protected int $id_manche_courante = 0;
+    protected int $total_points_we = 0;
+    protected array $cards = array();
+    protected int $id_current_round = 0;
 
     public function populateObjectFromDb(array $dbRow, array $excludedParticularFields = array()) :void {
-        $excludedParticularFields[] = 'cartes';
+        $excludedParticularFields[] = 'cards';
         parent::populateObjectFromDb($dbRow,$excludedParticularFields);
-        $this->cartes = json_decode($dbRow['cartes'],true);
+        $this->cards = json_decode($dbRow['cards'],true);
     }
 
 
@@ -74,64 +74,64 @@ class Game extends AbstractEntity {
      *
      * @return string
      */
-    public function getNom_nord() {
-        return $this->nom_nord;
+    public function getName_north() {
+        return $this->name_north;
     }
 
     /**
      *
      * @param string $nom_nord
      */
-    public function setNom_nord($nom_nord) {
-        $this->nom_nord = $nom_nord;
+    public function setName_north($nom_nord) {
+        $this->name_north = $nom_nord;
     }
 
     /**
      *
      * @return string
      */
-    public function getNom_sud() {
-        return $this->nom_sud;
+    public function getName_south() {
+        return $this->name_south;
     }
 
     /**
      *
      * @param string $nom_sud
      */
-    public function setNom_sud($nom_sud) {
-        $this->nom_sud = $nom_sud;
+    public function setName_south($nom_sud) {
+        $this->name_south = $nom_sud;
     }
 
     /**
      *
      * @return string
      */
-    public function getNom_ouest() {
-        return $this->nom_ouest;
+    public function getName_west() {
+        return $this->name_west;
     }
 
     /**
      *
      * @param string $nom_ouest
      */
-    public function setNom_ouest($nom_ouest) {
-        $this->nom_ouest = $nom_ouest;
+    public function setName_west($nom_ouest) {
+        $this->name_west = $nom_ouest;
     }
 
     /**
      *
      * @return string
      */
-    public function getNom_est() {
-        return $this->nom_est;
+    public function getName_east() {
+        return $this->name_east;
     }
 
     /**
      *
      * @param string $nom_est
      */
-    public function setNom_est($nom_est) {
-        $this->nom_est = $nom_est;
+    public function setName_east($nom_est) {
+        $this->name_east = $nom_est;
     }
 
     /**
@@ -154,8 +154,8 @@ class Game extends AbstractEntity {
      *
      * @return int
      */
-    public function getTotal_points_oe() {
-        return $this->total_points_oe;
+    public function getTotal_points_we() {
+        return $this->total_points_we;
     }
 
     /**
@@ -163,23 +163,23 @@ class Game extends AbstractEntity {
      * @param int $total_points_oe
      */
     public function setTotal_points_oe($total_points_oe) {
-        $this->total_points_oe = $total_points_oe;
+        $this->total_points_we = $total_points_oe;
     }
 
     /**
      *
      * @return multitype:
      */
-    public function getCartes() {
-        return $this->cartes;
+    public function getCards() {
+        return $this->cards;
     }
 
     /**
      *
      * @param multitype: $cartes
      */
-    public function setCartes($cartes) {
-        $this->cartes = $cartes;
+    public function setCards($cartes) {
+        $this->cards = $cartes;
     }
 
 
@@ -187,14 +187,14 @@ class Game extends AbstractEntity {
     /**
      * @return number
      */
-    public function getId_manche_courante() {
-        return $this->id_manche_courante;
+    public function getId_current_round() {
+        return $this->id_current_round;
     }
 
     /**
      * @param number $id_manche
      */
-    public function setId_manche_courante($id_manche) {
-        $this->id_manche_courante = $id_manche;
+    public function setId_round_courante($id_manche) {
+        $this->id_current_round = $id_manche;
     }
 }

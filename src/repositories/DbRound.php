@@ -9,18 +9,18 @@ class DbRound extends AbstractDbTable {
      *
      * @var string
      */
-    protected $tableName = 'manches';
+    protected $tableName = 'rounds';
     protected $entityClassName = \Entities\Round::class;
 
     public function create(\Entities\AbstractEntity &$oRound): void {
-        $query = 'INSERT INTO ' . $this->tableName . ' (id_partie,num_manche,donneur)
-        VALUES (:id_partie,:num_manche,:donneur)';
+        $query = 'INSERT INTO ' . $this->tableName . ' (id_game,num_round,dealer)
+        VALUES (:id_game,:num_round,:dealer)';
 
 
         $values = array(
-            ':id_partie' => $oRound->getId_partie(),
-            ':num_manche' => $oRound->getNum_manche(),
-            ':donneur' => $oRound->getDonneur()
+            ':id_game' => $oRound->getId_game(),
+            ':num_round' => $oRound->getNum_round(),
+            ':dealer' => $oRound->getDealer()
         );
 
         $this->db->setData($query, $values);
@@ -31,26 +31,26 @@ class DbRound extends AbstractDbTable {
 
     public function update(\Entities\AbstractEntity $oRound): void {
         $query = 'UPDATE ' . $this->tableName . ' SET
-                    id_partie = :id_partie,
-                    num_manche = :num_manche,
+                    id_game = :id_game,
+                    num_round = :num_round,
                     points_ns = :points_ns,
-                    points_oe = :points_oe,
-                    atout = :atout,
-                    donneur = :donneur,
-                    preneur = :preneur,
-                    id_tour_courant = :id_tour_courant
+                    points_we = :points_we,
+                    trump_color = :trump_color,
+                    dealer = :dealer,
+                    taker = :taker,
+                    id_current_turn = :id_current_turn
                 WHERE id=:id';
 
         $values = array(
             ':id' =>  $oRound->getId(),
-            ':id_partie' => $oRound->getId_partie(),
-            ':num_manche' => $oRound->getNum_manche(),
+            ':id_game' => $oRound->getId_game(),
+            ':num_round' => $oRound->getNum_round(),
             ':points_ns' => $oRound->getPoints_ns(),
-            ':points_oe' => $oRound->getPoints_oe(),
-            ':atout' => $oRound->getAtout(),
-            ':donneur' => $oRound->getDonneur(),
-            ':preneur' => $oRound->getPreneur(),
-            ':id_tour_courant' => $oRound->getId_tour_courant()
+            ':points_we' => $oRound->getPoints_we(),
+            ':trump_color' => $oRound->getTrump(),
+            ':dealer' => $oRound->getDealer(),
+            ':taker' => $oRound->getTaker(),
+            ':id_current_turn' => $oRound->getId_current_turn()
         );
 
         $this->db->setData($query, $values);

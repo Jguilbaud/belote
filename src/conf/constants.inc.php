@@ -76,5 +76,5 @@ define('PLAYERS',array(
     'N',
     'E',
     'S',
-    'O'
+    'W'
 ));

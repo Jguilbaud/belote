@@ -9,17 +9,17 @@ class DbHand extends AbstractDbTable {
      *
      * @var string
      */
-    protected $tableName = 'mains';
+    protected $tableName = 'hands';
     protected $entityClassName = \Entities\Hand::class;
 
     public function create(\Entities\AbstractEntity &$oHand): void {
-        $query = 'INSERT INTO ' . $this->tableName . ' (id_manche,joueur,cartes)
-        VALUES (:id_manche,:joueur,:cartes)';
+        $query = 'INSERT INTO ' . $this->tableName . ' (id_round,player,cards)
+        VALUES (:id_round,:player,:cards)';
 
         $values = array(
-            ':id_manche' => $oHand->getId_manche(),
-            ':joueur' => $oHand->getJoueur(),
-            ':cartes' => json_encode(array_values($oHand->getCartes()))
+            ':id_round' => $oHand->getId_round(),
+            ':player' => $oHand->getPlayer(),
+            ':cards' => json_encode(array_values($oHand->getCards()))
         );
 
         $this->db->setData($query, $values);
@@ -30,16 +30,16 @@ class DbHand extends AbstractDbTable {
 
     public function update(\Entities\AbstractEntity $oHand): void {
         $query = 'UPDATE ' . $this->tableName . ' SET
-                    id_manche = :id_manche,
-                    joueur = :joueur,
-                    cartes = :cartes
+                    id_round = :id_round,
+                    player = :player,
+                    cards = :cards
                 WHERE id=:id';
 
         $values = array(
             ':id' =>  $oHand->getId(),
-            ':id_manche' => $oHand->getId_manche(),
-            ':joueur' => $oHand->getJoueur(),
-            ':cartes' => json_encode(array_values($oHand->getCartes()))
+            ':id_round' => $oHand->getId_round(),
+            ':player' => $oHand->getPlayer(),
+            ':cards' => json_encode(array_values($oHand->getCards()))
         );
 
         $this->db->setData($query, $values);
@@ -50,9 +50,9 @@ class DbHand extends AbstractDbTable {
 
     public function findOneByRoundAndPlayer(int $idRound, String $player, String $columns = '*') {
         $result = \Services\Database::get()->getData('SELECT ' . $columns . ' FROM ' . $this->tableName . '
-                                                                WHERE id_manche=:id_manche AND joueur=:joueur', array(
-            ':id_manche' => $idRound,
-            ':joueur' => $player
+                                                                WHERE id_round=:id_round AND player=:player', array(
+            ':id_round' => $idRound,
+            ':player' => $player
         ));
 
         if (!$result) {

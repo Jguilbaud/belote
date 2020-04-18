@@ -20,11 +20,11 @@ try {
     while ( true ) {
         $oRound = \Services\Game::get()->startNewRound($idGame);
         echo ' ###################' . "\n";
-        echo ' ## Démarrage manche N°' . $oRound->getNum_manche() . "\n";
+        echo ' ## Démarrage manche N°' . $oRound->getNum_round() . "\n";
         echo ' ###################' . "\n";
-        echo '-- donneur : ' . $oRound->getDonneur() . "\n";
+        echo '-- donneur : ' . $oRound->getDealer() . "\n";
         echo '  ###################' . "\n";
-        echo '  ## Coupe deck par ' . \Services\Game::get()->getPrecedentPlayerFromOne($oRound->getNum_manche()) . "\n";
+        echo '  ## Coupe deck par ' . \Services\Game::get()->getPrecedentPlayerFromOne($oRound->getNum_round()) . "\n";
         echo '  ###################' . "\n";
         $cut = 0;
         while ( $cut <= 0 || $cut >= 32 ) {
@@ -49,13 +49,8 @@ try {
         echo '  ###################' . "\n";
 
         $player = '';
-        while ( !in_array($player, array(
-            'N',
-            'S',
-            'E',
-            'O'
-        )) ) {
-            echo '  => Qui prend l\'atout ? (N, E, S ou O) ' . "\n";
+        while ( !in_array($player, \PLAYERS) ) {
+            echo '  => Qui prend l\'atout ? (N, E, S ou W) ' . "\n";
             echo '? ';
             $player = trim(fgets(STDIN));
         }
@@ -73,20 +68,20 @@ try {
         }
         \Services\Game::get()->takeTrumpAndDeal($oRound->getId(), $color, $player);
 
-        $currentPlayer = \Services\Game::get()->getNextPlayerFromOne($oRound->getDonneur());
+        $currentPlayer = \Services\Game::get()->getNextPlayerFromOne($oRound->getDealer());
 
         try {
             while ( true ) {
                 $oTurn = \Services\Game::get()->startNewTurn($oRound->getId(), $currentPlayer);
                 echo '  ###################' . "\n";
-                echo '  ## Démarrage tour N°' . $oTurn->getNum_tour() . "\n";
+                echo '  ## Démarrage tour N°' . $oTurn->getNum_turn() . "\n";
                 echo '  ###################' . "\n";
 
                 // Pour chaque joueur
                 for($i = 0; $i < 4; $i++) {
                     echo '- C\'est à ' . $currentPlayer . ' de jouer.' . "\n";
                     $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oRound->getId(), $currentPlayer);
-                    echo ' Main  du joueur  : ' . print_r($oHand->getCartes(), true) . "\n";
+                    echo ' Main  du joueur  : ' . print_r($oHand->getCards(), true) . "\n";
                     echo '- Choisir une carte : (exemple hD)' . "\n";
                     $card = trim(fgets(STDIN));
                     try {
@@ -119,7 +114,7 @@ try {
             $oGame = \Repositories\DbGame::get()->findOneById($idGame);
 
             echo ' - Points NS : ' . $oRound->getPoints_ns() . '(Total : ' . $oGame->getTotal_points_ns() . ')' . "\n";
-            echo ' - Points OE : ' . $oRound->getPoints_oe() . '(Total : ' . $oGame->getTotal_points_oe() . ')' . "\n";
+            echo ' - Points OE : ' . $oRound->getPoints_we() . '(Total : ' . $oGame->getTotal_points_we() . ')' . "\n";
         }
     }
 } catch ( \Exceptions\GameIsFinished $e ) {
@@ -128,7 +123,7 @@ try {
     echo '###################' . "\n";
     $oGame = \Repositories\DbGame::get()->findOneById($idGame);
     echo ' - Points NS : ' . $oGame->getTotal_points_NS() . "\n";
-    echo ' - Points OE : ' . $oGame->getTotal_points_OE() . "\n";
+    echo ' - Points OE : ' . $oGame->getTotal_points_we() . "\n";
 }
 exit();
 
@@ -138,14 +133,14 @@ exit();
 // ###########################
 /*
  * $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oRound->getId(), 'N');
- * echo ' Main finale du joueur Nord : ' . print_r($oHand->getCartes(), true) . "\n";
+ * echo ' Main finale du joueur Nord : ' . print_r($oHand->getCards(), true) . "\n";
  *
  * $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oRound->getId(), 'E');
- * echo ' Main finale du joueur Est : ' . print_r($oHand->getCartes(), true) . "\n";
+ * echo ' Main finale du joueur Est : ' . print_r($oHand->getCards(), true) . "\n";
  *
  * $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oRound->getId(), 'S');
- * echo ' Main finale du joueur Sud : ' . print_r($oHand->getCartes(), true) . "\n";
+ * echo ' Main finale du joueur Sud : ' . print_r($oHand->getCards(), true) . "\n";
  *
  * $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oRound->getId(), 'O');
- * echo ' Main finale du joueur Ouest : ' . print_r($oHand->getCartes(), true) . "\n";
+ * echo ' Main finale du joueur Ouest : ' . print_r($oHand->getCards(), true) . "\n";
  */

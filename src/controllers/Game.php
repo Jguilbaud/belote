@@ -14,7 +14,7 @@ class Game extends AbstractController {
 
         $this->tplName = 'gamejoin.tpl.html';
         $this->tplVars['hashGame'] = $hashGame;
-        $this->tplVars['playerNameNorth'] = $oGame->getNom_nord();
+        $this->tplVars['playerNameNorth'] = $oGame->getName_north();
 
         parent::renderPage();
 
@@ -23,7 +23,7 @@ class Game extends AbstractController {
     public function create(String $playerName) {
         // on créé une nouvelle partie
         $oGame = new \Entities\Game();
-        $oGame->setNom_nord($playerName);
+        $oGame->setName_north($playerName);
         \Services\Game::get()->create($oGame);
 
         // On positionne les cookies
