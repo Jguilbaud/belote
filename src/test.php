@@ -3,14 +3,10 @@ require_once 'conf/constants.inc.php';
 require_once 'conf/conf.inc.php';
 require_once 'conf/autoload.inc.php';
 
-// $oTurn = \Repositories\DbTurn::get()->findOneById(1);
-// try {
-//     $winner = \Services\Game::get()->calculateTurnWinner($oTurn);
-//     echo '# Le tour est terminé' . "\n";
-//     echo '- Le vainqueur est : ' . $winner . "\n";
-// } catch ( \Exceptions\TurnIsIncomplete $e ) {
-//     echo 'Le tour n\'est pas fini' . "\n";
-// }
+// $decoded = \Firebase\JWT\JWT::decode('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjdXJlIjp7InN1YnNjcmliZSI6WyIqIl0sInB1Ymxpc2giOlsiKiJdfX0.aFuPpA3XL8PhSoZ1S4EhwvgB2iTSVGrYGyE1fT2pd6g',
+//         MERCURE_JWT_KEY,
+//         array(MERCURE_JWT_ALGORITHM));
+// print_r($decoded);
 
 // exit;
 

@@ -1,8 +1,8 @@
 <?php
+
 namespace Controllers;
 
 abstract class AbstractController {
-
     /**
      *
      * @var \Twig\Environment
@@ -11,12 +11,13 @@ abstract class AbstractController {
     protected String $tplName = 'index.html';
     protected array $tplVars = array();
 
-    public function __construct(){
-        //init twig
+    public function __construct() {
+
+        // init twig
         $loader = new \Twig\Loader\FilesystemLoader(VIEWS_PATH);
 
         $this->tplEngine = new \Twig\Environment($loader, array(
-           // 'cache' => TMP_PATH . 'cache',
+            // 'cache' => TMP_PATH . 'cache',
             'debug' => DEBUG
         ));
     }

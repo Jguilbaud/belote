@@ -1,0 +1,21 @@
+{{ include('_header.tpl.html') }}
+<h1>Belote </h1>
+<h2>Rejoindre la partie #{{hashGame}}</h2>
+
+<label for="pseudo">Votre nom ou pseudo :</label>
+<input type="text" id="pseudo" name="pseudo" />
+<input type="hidden" id="hashGame" value="{{hashGame}}" />
+<h3>Equipe Nord-Sud</h3>
+<p>
+Nord : <span>{{playerNameNorth}} <input type="submit" class="btnJoinGame" value="Rejoindre à cette place" name="joinAsNorth" id="joinAsNorth" disabled="disabled" /> </span><br />
+Sud : <span>{{playerNameSud}} <input type="submit" class="btnJoinGame" value="Rejoindre à cette place" name="joinAsSouth" id="joinAsSouth" /></span><br />
+</p>
+
+<h3>Equipe Ouest-Est</h3>
+<p>
+Ouest : <span>{{playerNameWest}} <input type="submit" class="btnJoinGame" value="Rejoindre à cette place" name="joinAsWest" id="joinAsWest" /></span><br />
+Est : <span>{{playerNameEast}} <input type="submit" class="btnJoinGame" value="Rejoindre à cette place" name="joinAsEast" id="joinAsEast" /></span><br />
+</p>
+
+<span style="display:none;" id="tplFormPlayername">{{tplFormPlayername}}</span>
+{{ include('_footer.tpl.html') }}

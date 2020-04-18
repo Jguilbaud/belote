@@ -12,72 +12,15 @@ class Game extends StaticAccessClass {
      *
      * @var array
      */
-    private $deckCards = array(
-        'sA',
-        's10',
-        'sR',
-        'sD',
-        'sV',
-        's9',
-        's8',
-        's7',
-        'hA',
-        'h10',
-        'hR',
-        'hD',
-        'hV',
-        'h9',
-        'h8',
-        'h7',
-        'cA',
-        'c10',
-        'cR',
-        'cD',
-        'cV',
-        'c9',
-        'c8',
-        'c7',
-        'dA',
-        'd10',
-        'dR',
-        'dD',
-        'dV',
-        'd9',
-        'd8',
-        'd7'
-    );
-    private $cardsValue = array(
-        'A' => 11,
-        '10' => 10,
-        'R' => 4,
-        'D' => 3,
-        'V' => 2,
-        '9' => 0,
-        '8' => 0,
-        '7' => 0
-    );
-    private $cardsTrumpValue = array(
-        'A' => 11,
-        '10' => 10,
-        'R' => 4,
-        'D' => 3,
-        'V' => 20,
-        '9' => 14,
-        '8' => 0,
-        '7' => 0
-    );
-    private array $players = array(
-        'N',
-        'E',
-        'S',
-        'O'
-    );
 
-    public function create(): int {
-        $deck = $this->deckCards;
+
+    public function create(?\Entities\Game &$oGame = null): int {
+        $deck = DECK_CARDS_LIST;
         shuffle($deck);
         // On créé la partie en base
-        $oGame = new \Entities\Game();
+        if($oGame == null){
+            $oGame = new \Entities\Game();
+        }
         $oGame->setHash(Utils::generateHash(10));
         $oGame->setCartes($deck);
         \Repositories\DbGame::get()->create($oGame);
@@ -95,7 +38,7 @@ class Game extends StaticAccessClass {
 
         // Cas première manche
         if ($oGame->getId_manche_courante() == 0) {
-            $dealer = $this->players[rand(0, 3)];
+            $dealer = \PLAYERS[rand(0, 3)];
             $newRound = 1;
         } else {
             // On récupère le précédent donneur
@@ -314,9 +257,9 @@ class Game extends StaticAccessClass {
         $bestCardColor = $oTurn->$method()[0];
         $bestCardChar = substr($oTurn->$method(), 1);
         if ($bestCardColor == strtolower($oRound->getAtout())) {
-            $bestCardValue = $this->cardsTrumpValue[$bestCardChar];
+            $bestCardValue = \CARDS_TRUMP_VALUES[$bestCardChar];
         } else {
-            $bestCardValue = $this->cardsValue[substr($oTurn->$method(), 1)];
+            $bestCardValue = \CARDS_VALUES[substr($oTurn->$method(), 1)];
         }
 
         $bestPlayer = $currentPlayer;
@@ -331,15 +274,15 @@ class Game extends StaticAccessClass {
             $currentValue = substr($oTurn->$method(), 1);
             // Si c'est la couleur demandée et que ce n'est pas de l'atout
             if ($currentColor == $askedColor && $bestCardColor != strtolower($oRound->getAtout())) {
-                if ($this->cardsValue[$currentValue] > $bestCardValue) {
-                    $bestCardValue = $this->cardsValue[$currentValue];
+                if (\CARDS_VALUES[$currentValue] > $bestCardValue) {
+                    $bestCardValue = \CARDS_VALUES[$currentValue];
                     $bestPlayer = $currentPlayer;
                 }
             } elseif ($currentColor == strtolower($oRound->getAtout())) { // Sinon on joue de l'atout
                 // Si la meilleure carte pour le moment n'est pas de l'atout,c'est la premiere coupe du pli
                 // ou si de l'atout a déjà été joué, on regarde s'il est plus fort
-                if ($bestCardColor != strtolower($oRound->getAtout()) || $this->cardsTrumpValue[$currentValue] > $bestCardValue) {
-                    $bestCardValue = $this->cardsTrumpValue[$currentValue];
+                if ($bestCardColor != strtolower($oRound->getAtout()) || \CARDS_TRUMP_VALUES[$currentValue] > $bestCardValue) {
+                    $bestCardValue = \CARDS_TRUMP_VALUES[$currentValue];
                     $bestPlayer = $currentPlayer;
                     $bestCardColor = $currentColor;
                 }
@@ -385,9 +328,9 @@ class Game extends StaticAccessClass {
                 // On calcule les points
                 // - Si c'est la couleur d'atout
                 if ($cardColor == $oRound->getAtout()) {
-                    $turnPoints += $this->cardsTrumpValue[$cardChar];
+                    $turnPoints += \CARDS_TRUMP_VALUES[$cardChar];
                 } else {
-                    $turnPoints += $this->cardsValue[$cardChar];
+                    $turnPoints += \CARDS_VALUES[$cardChar];
                 }
                 // On passe au joueur suivant en fin de boucle
                 $currentPlayer = $this->getNextPlayerFromOne($currentPlayer);

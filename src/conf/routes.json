@@ -1,65 +1,88 @@
 {
-    "home": {
-        "http_method": "get",
-        "type": "page",
-        "regexp": "^/$",
-        "controller": "Home",
-        "method": "showHomePage",
-        "params": {}
-    },
-    "createpage": {
-        "http_method": "get",
-        "type": "page",
-        "regexp": "/create",
-        "controller": "Game",
-        "method": "create",
-        "params": {}
-    },
-    "joingamepage": {
-        "http_method": "get",
-        "type": "page",
-        "regexp": "^/join/([a-z0-9]{10})$",
-        "controller": "Game",
-        "method": "showJoinPage",
-        "params": {
-            "hash": {
+	"home": {
+		"http_method": "get",
+		"type": "page",
+		"regexp": "^/$",
+		"controller": "Home",
+		"method": "showHomePage",
+		"params": {
+			
+		}
+	},
+	"createpage": {
+		"http_method": "get",
+		"type": "page",
+		"regexp": "/create",
+		"controller": "Game",
+		"method": "create",
+		"params": {
+			
+		}
+	},
+	"creategame": {
+		"http_method": "post",
+		"type": "page",
+		"regexp": "/create",
+		"controller": "Game",
+		"method": "create",
+		"params": {
+			"pseudo": {
+				"method": "post"
+			}
+		}
+	},
+	"joingamepage": {
+		"http_method": "get",
+		"type": "page",
+		"regexp": "^/join/([a-z0-9]{10})$",
+		"controller": "Game",
+		"method": "showJoinPage",
+		"params": {
+			"hash": {
+				"method": "uri",
+				"uri_position": 1
+			},
+			"jwt": {
+				"method": "cookie"
+			}
+		}
+	},
+	"joingameapi": {
+		"http_method": "post",
+		"type": "api",
+		"regexp": "^/join/([a-z0-9]{10})$",
+		"controller": "Game",
+		"method": "join",
+		"params": {
+		     "hash": {
                 "method": "uri",
                 "uri_position": 1
             },
-            "jwt": {
-                "method": "cookie"
-            }
-        }
-    },
-    "joingameapi": {
-        "http_method": "post",
-        "type": "api",
-        "regexp": "^/join/[a-z0-9]{10}$",
-        "controller": "Game",
-        "method": "join",
-        "params": {
-            "data": {
+			"pseudo": {
+				"method": "post"
+			},
+            "playerPosition": {
                 "method": "post"
             },
-            "jwt": {
-                "method": "cookie"
-            }
-        }
-    },
-    "playgame": {
-        "http_method": "get",
-        "type": "page",
-        "regexp": "^/play/[a-z0-9]{10}$",
-        "controller": "Game",
-        "method": "play",
-        "params": {
-            "hash": {
-                "method": "uri",
-                "uri_position": 1
-            },
-            "jwt": {
-                "method": "cookie"
-            }
-        }
-    }
+			"jwt": {
+				"method": "cookie"
+			}
+		}
+	},
+	"playgame": {
+		"http_method": "get",
+		"type": "page",
+		"regexp": "^/play/([a-z0-9]{10}$)",
+		"controller": "Game",
+		"method": "play",
+		"params": {
+			"hash": {
+				"method": "uri",
+				"uri_position": 1
+			},
+			"jwt": {
+				"method": "cookie"
+			}
+		}
+	}
 }

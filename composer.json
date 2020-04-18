@@ -16,7 +16,8 @@
 	"require" : {
 		"php" : ">=7.4",
 		"firebase/php-jwt" : "^5.2",
-		"twig/twig" : "^3.0"
+		"twig/twig" : "^3.0",
+		"symfony/mercure": "^0.3.0"
 	},
 	"config" : {
 		"vendor-dir" : "src/vendor"

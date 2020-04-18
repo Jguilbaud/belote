@@ -45,7 +45,7 @@ class DbGame extends AbstractDbTable {
                 WHERE id=:id';
 
         $values = array(
-            ':id' =>  $oGame->getId(),
+            ':id' => $oGame->getId(),
             ':nom_nord' => $oGame->getNom_nord(),
             ':nom_sud' => $oGame->getNom_sud(),
             ':nom_ouest' => $oGame->getNom_ouest(),
@@ -57,5 +57,9 @@ class DbGame extends AbstractDbTable {
         );
 
         $this->db->setData($query, $values);
+    }
+
+    public function findOneByHash(String $hash) {
+        return $this->findOneByColumnAndValue('hash', $hash);
     }
 }

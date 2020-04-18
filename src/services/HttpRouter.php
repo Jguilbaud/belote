@@ -52,7 +52,6 @@ class HttpRouter {
 
     private function prepareParameters($routeParametersConf, $uriMatches = array()) {
         $params = array();
-
         foreach ( $routeParametersConf as $paramName => $paramConf ) {
 
             switch ($paramConf->method) {
@@ -89,5 +88,11 @@ class HttpRouter {
     }
 
     private function doApi($controllerName, $methodName, $params) {
+        // On prépare l'appel dynamique
+        $controllerName = 'Controllers\\' . $controllerName;
+
+        // On réalise l'appel dynamique
+        $controller = new $controllerName();
+        echo json_encode($controller->$methodName(...$params));
     }
 }
