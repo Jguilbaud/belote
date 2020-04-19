@@ -11,7 +11,7 @@ class JwtCookie extends StaticAccessClass {
 
     private function setBeloteGameJwtCookie(String $hashGame, \stdClass $oPayload) {
         $jwt = \Firebase\JWT\JWT::encode($oPayload, \MERCURE_JWT_KEY, \MERCURE_JWT_ALGORITHM);
-        setcookie(\BELOTE_GAME_COOKIE_BASENAME . $hashGame, $jwt, time() + (3600 * 24));
+        setcookie(\BELOTE_GAME_COOKIE_BASENAME . $hashGame, $jwt, time() + (3600 * 24),'/');
     }
 
     public function decodeJwtCookie(String $jwt): \stdClass {

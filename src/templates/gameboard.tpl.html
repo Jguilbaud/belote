@@ -1,48 +1,89 @@
 {{ include('_header.tpl.html') }}
-        <div class="row h-100">
-            <div class="col-md-8 h-100">
-                <div class="row">
-                    <div class="col-md-3"></div>
-                    <div class="col-md-6">Coéquipier en face moi</div>
-                    <div class="col-md-3"></div>
+<div class="container  mx-auto">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="row">
+                Atout : <span id="trump_color"></span> A <span id="currentPlayerToPlay"> - </span> de jouer
+            </div>
+            <div class="row">
+                Atout : <span id="trump_color"></span>
+                <div class="col-md-2 subboard" id="subboard_1">
+                    <p class="playerName">Joueur 1</p>
+                    <div class="playerCard">carte 1</div>
                 </div>
-                <div class="row">
-                    <div class="col-md-2">Adversaire gauche</div>
-                    <div class="col-md-8">table</div>
-                    <div class="col-md-2">Adversaire droite</div>
+                <div class="col-md-2 subboard" id="subboard_2">
+                    <p class="playerName">Joueur 2</p>
+                    <div class="playerCard">carte 2</div>
                 </div>
-                <div class="row">
-                 Moi
+                <div class="col-md-2 subboard" id="subboard_3">
+                    <p class="playerName">Joueur 3</p>
+                    <div class="playerCard">carte 3</div>
+                </div>
+                <div class="col-md-2 subboard" id="subboard_4">
+                    <p class="playerName">Joueur 4</p>
+                    <div class="playerCard">carte 4</div>
                 </div>
             </div>
-            <div class="col-md-4 h-100" id="pannel_infos">
-                <div>
-                    <h1>Belote par Johan</h1>
-                    <p>v0.1-alpha1</p>
-                    <p>
-                        <b>Partie :</b> xxxx<br />
-                        <b>Manche n°:</b> #xxx
-                    </p>
-
+            <div class="row playerSubBoard" id="mycards">Mes cartes</div>
+            <div class="row playerSubBoard" id="cutcard">
+                <label for="customRange2">Couper le deck :</label> <input type="range" class="custom-range" min="1" max="31" id="cutDeckValue" /> <input
+                    type="submit" value="Couper le deck" id="btnCutDeck" />
+            </div>
+            <div class="row playerSubBoard" id="chooseTrump">
+                Choisir l'atout : <br />
+                <div class="col-md-6">
+                    <div class="row">
+                        <img src="/belote/img/heart.png" id="chooseTrump_heart" /> <img src="/belote/img/diamond.png" id="chooseTrump_diamond" /> <img
+                            src="/belote/img/spade.png" id="chooseTrump_spade" /> <img src="/belote/img/club.png" id="chooseTrump_club" /><br />
+                    </div>
+                    <div class="row">
+                        <input type="submit" value="Choisir cet atout" id="btnChooseTrump" /> <input type="submit" value="Passer" id="btnPassTrump" />
+                    </div>
                 </div>
-
-                <div id="points">
-                    <h3>Points</h3>
-                    <table>
-                    <thead><tr><td>#</td><td>Nord-Sud</td><td>Ouest-Est</td></tr></thead>
-                     <tbody>
-                     <tr><td>1</td><td>+23 (23)</td><td>+70 (70)</td></tr>
-                     <tr><td>2</td><td>+85 (108)</td><td>+12 (82)</td></tr>
-                     </tbody>
-                    </table>
-                </div>
-
-
-                <div id="messages">
-                    <h3>Journal d'évènements</h3>
-                    <p></p>
-                </div>
-
             </div>
         </div>
+        <div class="col-md-4 h-100" id="pannel_infos">
+            <div>
+                <h1>Belote par Johan</h1>
+                <p>v0.1-alpha1</p>
+                <p>
+                    <b>Partie :</b> #{{hashGame}}<br /> <b>Manche n°:</b> #<span id="round_id">{{idRound}}</span><br /> <b>Votre nom :</b>
+                    {{currentPlayerName}}<br /> <b>Votre équipe :</b> {{currentPlayerTeam}}<br />
+                </p>
+
+            </div>
+
+            <div id="points">
+                <h3>Points</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <td>#</td>
+                            <td>Nord-Sud</td>
+                            <td>Ouest-Est</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>+23 (23)</td>
+                            <td>+70 (70)</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>+85 (108)</td>
+                            <td>+12 (82)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div id="messages">
+                <h3>Journal d'évènements</h3>
+                <p></p>
+            </div>
+        </div>
+    </div>
+</div>
 {{ include('_footer.tpl.html') }}

@@ -145,6 +145,42 @@ class Game extends AbstractController {
             // Si on a déjà le cookie du jeu
             if ($jwtBeloteCookie != null) {
                 $this->tplName = 'gameboard.tpl.html';
+                $this->tplVars['hashGame'] = $hashGame;
+                $this->tplVars['playerName_n'] = $oGame->getName_north();
+                $this->tplVars['playerName_s'] = $oGame->getName_south();
+                $this->tplVars['playerName_w'] = $oGame->getName_west();
+                $this->tplVars['playerName_e'] = $oGame->getName_east();
+                if($jwtBeloteCookie->playerPosition != ''){
+                    switch($jwtBeloteCookie->playerPosition){
+                        case 'n' :
+                            $this->tplVars['currentPlayerName'] = $oGame->getName_north();
+                            $this->tplVars['currentPlayerTeam'] = 'ns';
+                            break;
+                        case 's' :
+                            $this->tplVars['currentPlayerName'] = $oGame->getName_south();
+                            $this->tplVars['currentPlayerTeam'] = 'ns';
+                            break;
+                        case 'w' :
+                            $this->tplVars['currentPlayerName'] = $oGame->getName_west();
+                            $this->tplVars['currentPlayerTeam'] = 'we';
+                            break;
+                        case 'e' :
+                            $this->tplVars['currentPlayerName'] = $oGame->getName_east();
+                            $this->tplVars['currentPlayerTeam'] = 'we';
+                            break;
+                    }
+
+                }
+
+                $this->tplVars['idRound'] = $oGame->getId_current_round();
+
+
+
+
+
+
+
+
 
                 parent::renderPage();
             }else{

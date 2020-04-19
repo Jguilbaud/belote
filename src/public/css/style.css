@@ -9,3 +9,21 @@ body {
 #pannel_infos>div {
     margin-top: 10px;
 }
+
+
+#cutDeckValue{
+    width : 300px;
+}
+
+#chooseTrump img {
+    display: flex;
+    height : 50px;
+    cursor:pointer;
+}
+
+#chooseTrump img.selected {
+    display: flex;
+    height : 50px;
+    cursor:pointer;
+    border: 1px solid blue;
+}
