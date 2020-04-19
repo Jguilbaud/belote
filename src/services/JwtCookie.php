@@ -14,7 +14,10 @@ class JwtCookie extends StaticAccessClass {
         setcookie(\BELOTE_GAME_COOKIE_BASENAME . $hashGame, $jwt, time() + (3600 * 24));
     }
 
-    public function readJwtCookie(): \stdClass {
+    public function decodeJwtCookie(String $jwt): \stdClass {
+        return \Firebase\JWT\JWT::decode($jwt, \MERCURE_JWT_KEY, [
+            \MERCURE_JWT_ALGORITHM
+        ]);
     }
 
     /**
@@ -22,19 +25,26 @@ class JwtCookie extends StaticAccessClass {
      *
      * @param String $hashGame
      */
-    public function setMercureJoinCookie(String $hashGame, String $playerPosition = 'guest') {
+    public function setOrUpdateMercureJoinCookie(String $hashGame, String $playerPosition = 'guest') {
         $oPayload = new \Entities\MercureJwtPayload();
         $oPayload->addSubscribe('http://localhost/belote/game/' . $hashGame); // TODO mettre domaine dans conf/constante
         $oPayload->addSubscribe('http://localhost/belote/game/' . $hashGame . '/' . $playerPosition); // TODO mettre domaine dans conf/constante
         $this->setMercureJwtCookie($oPayload);
     }
 
-    public function setBeloteJoinCookie(String $hashGame, String $playerPosition = 'guest') {
+    public function setOrUpdateBeloteGameCookie(String $hashGame, String $playerPosition = 'guest') {
         $oPayload = new \stdClass();
         $oPayload->hashGame = $hashGame;
-        $oPayload->playerPosition = $playerPosition;
-
+        $oPayload->playerPosition = strtolower($playerPosition);
         $this->setBeloteGameJwtCookie($hashGame, $oPayload);
+    }
+
+    public function getBeloteGameCookie(String $hashGame): ?\stdClass {
+
+        if(isset($_COOKIE[\BELOTE_GAME_COOKIE_BASENAME. $hashGame])){
+            return \Services\JwtCookie::get()->decodeJwtCookie($_COOKIE[\BELOTE_GAME_COOKIE_BASENAME . $hashGame]);
+        }
+        return null;
     }
 }
 

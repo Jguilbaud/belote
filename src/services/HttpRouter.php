@@ -32,7 +32,7 @@ class HttpRouter {
             if ($method == $routeDef->http_method) {
                 $tMatches = array();
 
-                if (preg_match('#^' . $routeDef->regexp . '$#is', $tReq, $tMatches)) {
+                if (preg_match('#' . $routeDef->regexp . '#is', $tReq, $tMatches)) {
                     $params = $this->prepareParameters($routeDef->params,$tMatches);
 
                     switch ($routeDef->type) {
@@ -60,9 +60,6 @@ class HttpRouter {
                     break;
                 case 'post' :
                     $params[] =$_POST[$paramName] ?? null;
-                    break;
-                case 'cookie' :
-                    $params[] = $_COOKIE[$paramName] ?? null;
                     break;
                 case 'uri' :
                     $params[] = $uriMatches[$paramConf->uri_position] ?? null; // TODO vérifier index entre conf et indexs du matche de preg amtch

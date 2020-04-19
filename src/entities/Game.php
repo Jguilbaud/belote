@@ -6,10 +6,10 @@ class Game extends AbstractEntity {
     protected int $id = 0;
     protected String $hash = '';
     protected int $date = 0;
-    protected String $name_north = 'Nord';
-    protected String $name_south = 'Sud';
-    protected String $name_west = 'Ouest';
-    protected String $name_east = 'Est';
+    protected ?String $name_north = '';
+    protected ?String $name_south = '';
+    protected ?String $name_west = '';
+    protected ?String $name_east = '';
     protected int $total_points_ns = 0;
     protected int $total_points_we = 0;
     protected array $cards = array();

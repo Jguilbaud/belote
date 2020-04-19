@@ -8,24 +8,48 @@
  //eventSource.onmessage = e => console.log(e); // do something with the payload
  
  $(document).ready(function(){
-	 
+	 	// JoinGame - Mercure event
+        const url = new URL('http://localhost:3000/.well-known/mercure');
+        url.searchParams.append('topic', 'http://localhost/belote/game/'+$("#hashGame").val());
+        const eventSource = new EventSource(url);
+        eventSource.onmessage = e => {
+       	 $("#mercure_messages").append(e.data+'<br />');
+       	 	var response = $.parseJSON(e.data);
+       	 	switch(response.action){
+       	 		case 'playerjoin' :
+       	 			$('#name_'+response.data.newPlayerPosition).html(response.data.newPlayerName)
+       	 			$('#joinas_'+response.data.newPlayerPosition).attr('disabled','disabled');
+       	 			break;
+       	 		case 'launchgame' :
+       	 			window.location.href = 'http://localhost/belote/play/'+$("#hashGame").val();       	 			
+       	 			break;
+       	 	}
+       	 
+        };
+				        
 	 // Rejoindre la partie
 	 $(".btnJoinGame").on('click', function(event){
 		 event.preventDefault();
+		 
+		 if($.trim($("#pseudo").val()) == ''){
+			 alert("Erreur, vous devez indiquer votre pseudo !");
+			 return;
+		 }
+		 
 		 // alert($(this).attr('id'));
 		 var position = 'guest';
 		 switch($(this).attr('id')){
-			 case 'joinAsNorth': 
-				 position = 'N';
+			 case 'joinas_n': 
+				 position = 'n';
 				 break;
-			 case 'joinAsEast': 
-				 position = 'E';
+			 case 'joinas_e': 
+				 position = 'e';
 				 break;
-			 case 'joinAsSouth': 
-				 position = 'S';
+			 case 'joinas_s': 
+				 position = 's';
 				 break;
-			 case 'joinAsWest': 
-				 position = 'W';
+			 case 'joinas_w': 
+				 position = 'w';
 				 break;
 		 
 		 }
@@ -35,15 +59,19 @@
 			 			pseudo: $("#pseudo").val(),
 			 			playerPosition: position
 				    }, function(data) {
-				        alert(data);
-				        
-				      //JoinGame - Mercure event
-				        const url = new URL('http://localhost:3000/.well-known/mercure');
-				        url.searchParams.append('topic', 'http://localhost/belote/game/d6a5b30070');
-				        const eventSource = new EventSource(url);
-				        eventSource.onmessage = e => {
-				       	 $("#mercure_messages").append(e.data+'<br />');
-				        };
+				    	data = $.parseJSON(data);
+				    	if(data.response == 'ok'){
+				    		// On désactive les boutons et le champ de saisie
+				    		$("#pseudo").attr('disabled','disabled');
+				    		$(".btnJoinGame").attr('disabled','disabled');
+				    		
+				    		// On met le nom en face du bon emplacement
+				    		$("#name_"+position).html($("#pseudo").val());
+				    		
+				    	}else{
+				    		alert(data.error_msg);
+			    		}
+				    	
 				});
 		 
 		 

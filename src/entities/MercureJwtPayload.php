@@ -2,7 +2,7 @@
 
 namespace Entities;
 
-class MercureJwtPayload implements \JsonSerializable {
+class MercureJwtPayload extends AbstractMercurePayload {
     protected $subscribe = array();
     protected $publish = array();
 

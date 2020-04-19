@@ -153,7 +153,7 @@ class Game extends StaticAccessClass {
         $oRound = \Repositories\DbRound::get()->findOneById($idRound);
         $oGame = \Repositories\DbGame::get()->findOneById($oRound->getId_game());
         $oRound->setTaker($player);
-        $oRound->setTrump($color[0]);
+        $oRound->setTrump_color($color[0]);
 
         $cardsOffset = 1;
         $currentDealedPlayer = $oRound->getDealer();
@@ -256,7 +256,7 @@ class Game extends StaticAccessClass {
         $askedColor = $oTurn->$method()[0];
         $bestCardColor = $oTurn->$method()[0];
         $bestCardChar = substr($oTurn->$method(), 1);
-        if ($bestCardColor == strtolower($oRound->getTrump())) {
+        if ($bestCardColor == strtolower($oRound->getTrump_color())) {
             $bestCardValue = \CARDS_TRUMP_VALUES[$bestCardChar];
         } else {
             $bestCardValue = \CARDS_VALUES[substr($oTurn->$method(), 1)];
@@ -273,15 +273,15 @@ class Game extends StaticAccessClass {
             $currentColor = $oTurn->$method()[0];
             $currentValue = substr($oTurn->$method(), 1);
             // Si c'est la couleur demandée et que ce n'est pas de l'atout
-            if ($currentColor == $askedColor && $bestCardColor != strtolower($oRound->getTrump())) {
+            if ($currentColor == $askedColor && $bestCardColor != strtolower($oRound->getTrump_color())) {
                 if (\CARDS_VALUES[$currentValue] > $bestCardValue) {
                     $bestCardValue = \CARDS_VALUES[$currentValue];
                     $bestPlayer = $currentPlayer;
                 }
-            } elseif ($currentColor == strtolower($oRound->getTrump())) { // Sinon on joue de l'atout
+            } elseif ($currentColor == strtolower($oRound->getTrump_color())) { // Sinon on joue de l'atout
                 // Si la meilleure carte pour le moment n'est pas de l'atout,c'est la premiere coupe du pli
                 // ou si de l'atout a déjà été joué, on regarde s'il est plus fort
-                if ($bestCardColor != strtolower($oRound->getTrump()) || \CARDS_TRUMP_VALUES[$currentValue] > $bestCardValue) {
+                if ($bestCardColor != strtolower($oRound->getTrump_color()) || \CARDS_TRUMP_VALUES[$currentValue] > $bestCardValue) {
                     $bestCardValue = \CARDS_TRUMP_VALUES[$currentValue];
                     $bestPlayer = $currentPlayer;
                     $bestCardColor = $currentColor;
@@ -327,7 +327,7 @@ class Game extends StaticAccessClass {
 
                 // On calcule les points
                 // - Si c'est la couleur d'atout
-                if ($cardColor == $oRound->getTrump()) {
+                if ($cardColor == $oRound->getTrump_color()) {
                     $turnPoints += \CARDS_TRUMP_VALUES[$cardChar];
                 } else {
                     $turnPoints += \CARDS_VALUES[$cardChar];

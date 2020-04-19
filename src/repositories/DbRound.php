@@ -20,7 +20,7 @@ class DbRound extends AbstractDbTable {
         $values = array(
             ':id_game' => $oRound->getId_game(),
             ':num_round' => $oRound->getNum_round(),
-            ':dealer' => $oRound->getDealer()
+            ':dealer' => strtolower($oRound->getDealer())
         );
 
         $this->db->setData($query, $values);
@@ -47,9 +47,9 @@ class DbRound extends AbstractDbTable {
             ':num_round' => $oRound->getNum_round(),
             ':points_ns' => $oRound->getPoints_ns(),
             ':points_we' => $oRound->getPoints_we(),
-            ':trump_color' => $oRound->getTrump(),
-            ':dealer' => $oRound->getDealer(),
-            ':taker' => $oRound->getTaker(),
+            ':trump_color' => $oRound->getTrump_color(),
+            ':dealer' => strtolower($oRound->getDealer()),
+                    ':taker' => strtolower($oRound->getTaker()),
             ':id_current_turn' => $oRound->getId_current_turn()
         );
 

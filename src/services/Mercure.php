@@ -4,11 +4,10 @@ namespace Services;
 
 class Mercure extends StaticAccessClass {
 
-
-    protected function notify(array $targets, array $topics, \stdClass $data) {
+    protected function notify(array $targets, array $topics, \Entities\AbstractMercurePayload $data) {
         $oJwtPublisher = new \Entities\MercureJwtPayload();
         $oJwtPublisher->addPublish('*');
-        $jwtPublisher = \Firebase\JWT\JWT::encode($oJwtPublisher, \MERCURE_JWT_KEY,\MERCURE_JWT_ALGORITHM);
+        $jwtPublisher = \Firebase\JWT\JWT::encode($oJwtPublisher, \MERCURE_JWT_KEY, \MERCURE_JWT_ALGORITHM);
 
         // init mercure publisher
         $mercurePublisher = new \Symfony\Component\Mercure\Publisher(\MERCURE_URL, new \Symfony\Component\Mercure\Jwt\StaticJwtProvider($jwtPublisher));
@@ -17,11 +16,26 @@ class Mercure extends StaticAccessClass {
     }
 
     public function notifyGamePlayerJoin(String $hashGame, String $playerPosition, String $playerName) {
-        $payload = new \stdClass();
-        $payload->hashGame = $hashGame;
-        $payload->newPlayerPosition = $playerPosition;
-        $payload->newPlayerName = $playerName;
+        $payload = new \Entities\MercureEventBelotePayload();
+        $payload->setAction('playerjoin');
+        $payload->addData('hashGame', $hashGame);
+        $payload->addData('newPlayerPosition', $playerPosition);
+        $payload->addData('newPlayerName', $playerName);
 
-        $this->notify(['http://localhost/belote/game/'.$hashGame], ['http://localhost/belote/game/'.$hashGame], $payload);
+        $this->notify([
+            'http://localhost/belote/game/' . $hashGame
+        ], [
+            'http://localhost/belote/game/' . $hashGame
+        ], $payload);
+    }
+
+    public function notifyGameStart(String $hashGame) {
+        $payload = new \Entities\MercureEventBelotePayload();
+        $payload->setAction('launchgame');
+        $this->notify([
+            'http://localhost/belote/game/' . $hashGame
+        ], [
+            'http://localhost/belote/game/' . $hashGame
+        ], $payload);
     }
 }

@@ -38,7 +38,7 @@ class DbHand extends AbstractDbTable {
         $values = array(
             ':id' =>  $oHand->getId(),
             ':id_round' => $oHand->getId_round(),
-            ':player' => $oHand->getPlayer(),
+            ':player' => strtolower($oHand->getPlayer()),
             ':cards' => json_encode(array_values($oHand->getCards()))
         );
 

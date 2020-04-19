@@ -19,7 +19,7 @@ class DbTurn extends AbstractDbTable {
         $values = array(
             ':id_round' => $oTurn->getId_round(),
             ':num_turn' => $oTurn->getNum_turn(),
-            ':first_player' => $oTurn->getFirst_player()
+            ':first_player' => strtolower($oTurn->getFirst_player())
         );
 
         $this->db->setData($query, $values);
@@ -44,8 +44,8 @@ class DbTurn extends AbstractDbTable {
             ':id' => $oTurn->getId(),
             ':id_round' => $oTurn->getId_round(),
             ':num_turn' => $oTurn->getNum_turn(),
-            ':first_player' => $oTurn->getFirst_player(),
-            ':winner' => $oTurn->getWinner(),
+            ':first_player' => strtolower($oTurn->getFirst_player()),
+            ':winner' => strtolower($oTurn->getWinner()),
             ':card_n' => $oTurn->getCard_n(),
             ':card_e' => $oTurn->getCard_e(),
             ':card_s' => $oTurn->getCard_s(),

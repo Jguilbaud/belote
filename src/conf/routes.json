@@ -41,9 +41,6 @@
 			"hash": {
 				"method": "uri",
 				"uri_position": 1
-			},
-			"jwt": {
-				"method": "cookie"
 			}
 		}
 	},
@@ -63,10 +60,7 @@
 			},
             "playerPosition": {
                 "method": "post"
-            },
-			"jwt": {
-				"method": "cookie"
-			}
+            }
 		}
 	},
 	"playgame": {
@@ -74,14 +68,11 @@
 		"type": "page",
 		"regexp": "^/play/([a-z0-9]{10}$)",
 		"controller": "Game",
-		"method": "play",
+		"method": "showPlayPage",
 		"params": {
 			"hash": {
 				"method": "uri",
 				"uri_position": 1
-			},
-			"jwt": {
-				"method": "cookie"
 			}
 		}
 	}

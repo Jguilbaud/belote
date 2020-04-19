@@ -97,7 +97,7 @@ class Round extends AbstractEntity {
      *
      * @return string
      */
-    public function getTrump() {
+    public function getTrump_color() {
         return $this->trump_color;
     }
 
@@ -105,7 +105,7 @@ class Round extends AbstractEntity {
      *
      * @param string $atout
      */
-    public function setTrump(String $atout) {
+    public function setTrump_color(String $atout) {
         $this->trump_color = $atout;
     }
 
