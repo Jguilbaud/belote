@@ -1,16 +1,16 @@
-//Ecoute hub Mercure
-//const url = new URL('http://localhost:3000/.well-known/mercure');
-//url.searchParams.append('topic', 'https://localhost/belote/back/game/15');
+const BASE_URL = 'http://localhost/belote';
+const MERCURE_BASE_URL = 'http://localhost:3000/.well-known/mercure';
+function sendPostToBack(uri,data,callbackSuccess){
+	$.post(BASE_URL+uri,data,callbackSuccess);	   
+}
+function redirectToUri(uri){
+	window.location.href = BASE_URL+'/belote'+uri;
+}
 
-//const eventSource = new EventSource(url);
-
- // The callback will be called every time an update is published
- //eventSource.onmessage = e => console.log(e); // do something with the payload
- 
  $(document).ready(function(){
 	 	// JoinGame - Mercure event
-        const url = new URL('http://localhost:3000/.well-known/mercure');
-        url.searchParams.append('topic', 'http://localhost/belote/game/'+$("#hashGame").val());
+        const url = new URL(MERCURE_BASE_URL);
+        url.searchParams.append('topic', BASE_URL+'/game/'+$("#hashGame").val());
         const eventSource = new EventSource(url, { withCredentials: true });
         eventSource.onmessage = e => {
        	 $("#mercure_messages").append(e.data+'<br />');
@@ -21,7 +21,7 @@
        	 			$('#joinas_'+response.data.newPlayerPosition).attr('disabled','disabled');
        	 			break;
        	 		case 'launchgame' :
-       	 			window.location.href = 'http://localhost/belote/play/'+$("#hashGame").val();       	 			
+       	 			redirectToUri('/play/'+$("#hashGame").val());       	 			
        	 			break;
        	 	}
        	 
@@ -54,7 +54,7 @@
 		 
 		 }
 		 
-		 $.post('/belote/join/'+$("#hashGame").val(),
+		 sendPostToBack('/join/'+$("#hashGame").val(),
 				    {
 			 			pseudo: $("#pseudo").val(),
 			 			playerPosition: position
@@ -75,10 +75,39 @@
 				});
 		 
 		 
-	 }); // fin onclick
+	 }); // fin onclick rejoindre partie
 		 
 
-	 
+	 // Choix atout
+	 $("#chooseTrump img.trump").on('click', function(event){
+		 
+		 $("#chooseTrump img.trump").removeClass("selected");
+		 $(this).addClass("selected");
+		 $("#trump_selected").val($(this).attr("id"));
+		 
+	 });
+	 // valider l'atout choisi
+	 $("#chooseTrump #btnChooseTrump").on('click', function(event){
+		 event.preventDefault();
+		 if($("#trump_selected").val() == ""){
+			 alert("Vous devez choisir un atout");
+			 return;
+		 }
+
+		 	sendPostToBack('/play/'+$("#hashGame").val()+'/choosetrump', {choice: $("#trump_selected").val().replace("chooseTrump_","")},function(){
+		 		$("#chooseTrump").css('display','none');
+		 });
+		 
+	 });
+	 // passer
+	 $("#chooseTrump #btnPassTrump").on('click', function(event){
+		 event.preventDefault();
+		 
+		 sendPostToBack('/play/'+$("#hashGame").val()+'/choosetrump', {choice:"pass"},function(){
+			 $("#chooseTrump").css('display','none');
+		 });
+		 
+	 });
  });
  
 

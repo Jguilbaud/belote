@@ -25,5 +25,6 @@ body {
     display: flex;
     height : 50px;
     cursor:pointer;
-    border: 1px solid blue;
+    border: 1px solid green;    
+    background-color: #55DD55;
 }

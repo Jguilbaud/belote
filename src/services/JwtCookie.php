@@ -27,8 +27,8 @@ class JwtCookie extends StaticAccessClass {
      */
     public function setOrUpdateMercureJoinCookie(String $hashGame, String $playerPosition = 'guest') {
         $oPayload = new \Entities\MercureJwtPayload();
-        $oPayload->addSubscribe('http://localhost/belote/game/' . $hashGame); // TODO mettre domaine dans conf/constante
-        $oPayload->addSubscribe('http://localhost/belote/game/' . $hashGame . '/' . $playerPosition); // TODO mettre domaine dans conf/constante
+        $oPayload->addSubscribe(\BASE_URL.'/game/' . $hashGame); // TODO mettre domaine dans conf/constante
+        $oPayload->addSubscribe(\BASE_URL.'/game/' . $hashGame . '/' . $playerPosition); // TODO mettre domaine dans conf/constante
         $this->setMercureJwtCookie($oPayload);
     }
 

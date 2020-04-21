@@ -23,9 +23,9 @@ class Mercure extends StaticAccessClass {
         $payload->addData('newPlayerName', $playerName);
 
         $this->notify([
-            'http://localhost/belote/game/' . $hashGame
+            \BASE_URL . '/game/' . $hashGame
         ], [
-            'http://localhost/belote/game/' . $hashGame
+            \BASE_URL . '/game/' . $hashGame
         ], $payload);
     }
 
@@ -33,9 +33,9 @@ class Mercure extends StaticAccessClass {
         $payload = new \Entities\MercureEventBelotePayload();
         $payload->setAction('launchgame');
         $this->notify([
-            'http://localhost/belote/game/' . $hashGame
+            \BASE_URL . '/game/' . $hashGame
         ], [
-            'http://localhost/belote/game/' . $hashGame
+            \BASE_URL . '/game/' . $hashGame
         ], $payload);
     }
 }
