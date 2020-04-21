@@ -12,7 +12,7 @@ class Mercure extends StaticAccessClass {
         // init mercure publisher
         $mercurePublisher = new \Symfony\Component\Mercure\Publisher(\MERCURE_URL, new \Symfony\Component\Mercure\Jwt\StaticJwtProvider($jwtPublisher));
         // Serialize the update, and dispatch it to the hub, that will broadcast it to the clients
-        return $mercurePublisher(new \Symfony\Component\Mercure\Update($topics, json_encode($data)/*, $targets*/));
+        return $mercurePublisher(new \Symfony\Component\Mercure\Update($topics, json_encode($data), $targets));
     }
 
     public function notifyGamePlayerJoin(String $hashGame, String $playerPosition, String $playerName) {

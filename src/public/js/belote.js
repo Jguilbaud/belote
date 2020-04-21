@@ -11,7 +11,7 @@
 	 	// JoinGame - Mercure event
         const url = new URL('http://localhost:3000/.well-known/mercure');
         url.searchParams.append('topic', 'http://localhost/belote/game/'+$("#hashGame").val());
-        const eventSource = new EventSource(url);
+        const eventSource = new EventSource(url, { withCredentials: true });
         eventSource.onmessage = e => {
        	 $("#mercure_messages").append(e.data+'<br />');
        	 	var response = $.parseJSON(e.data);

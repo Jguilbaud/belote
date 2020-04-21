@@ -5,3 +5,4 @@
 .buildpath
 /src/vendor/
 composer.phar
+/mercure/updates.db
