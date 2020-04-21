@@ -3,4 +3,5 @@ Auteur : Johan
 Prérequis : PHP7.4+ & MySQL
 
 ## Lancement serveur mercure (debug)
-./mercure --jwt-key='myjwt' --addr=':3000' --debug --allow-anonymous --cors-allowed-origins='*'
+./mercure --jwt-key='myjwt' --addr=':3000' --debug --allow-anonymous --cors-allowed-origins='http://localhost'
+
