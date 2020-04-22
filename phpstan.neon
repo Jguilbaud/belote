@@ -9,4 +9,4 @@ parameters:
     ignoreErrors:
     -
         message: '#Driver mysql not supported on this Operating System#'
-        path: services/Database.php
+        path: src/services/Database.php
