@@ -21,6 +21,10 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+    
+    # dépendances composer
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
 
     # PHPStan
     - name: PHPStan
