@@ -6,3 +6,7 @@ parameters:
         - src/conf/conf.inc.php
         - src/conf/constants.inc.php
         - src/conf/autoload.inc.php
+    ignoreErrors:
+    -
+        message: '#Driver mysql not supported on this Operating System#'
+        path: services/Database.php
