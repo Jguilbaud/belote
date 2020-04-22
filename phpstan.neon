@@ -1,8 +1,8 @@
 parameters:
-	level: 6
-	paths:
-		- src
-	autoload_files:
-  	- src/conf/conf.inc.php
-		- src/conf/constants.inc.php
-		- src/conf/autoload.inc.php
+    level: 6
+    paths:
+        - src
+    autoload_files:
+        - src/conf/conf.inc.php
+        - src/conf/constants.inc.php
+        - src/conf/autoload.inc.php
