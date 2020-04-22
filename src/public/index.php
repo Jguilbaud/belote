@@ -2,7 +2,7 @@
 try {
     require_once '../conf/constants.inc.php';
     require_once PATH.'/conf/conf.inc.php';
-    require_once PATH.'/conf/autoload.inc.php';
+    require_once '../conf/autoload.inc.php';
     if (DEBUG) {
         ini_set('display_errors', true);
     }

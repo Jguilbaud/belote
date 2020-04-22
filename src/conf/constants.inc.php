@@ -2,7 +2,7 @@
 // General
 define('VERSION', '0.1-alpha1');
 define('DEBUG', true);
-define('PATH', '/home/johan/eclipseworkspace/Belote/src');
+define('PATH', __DIR__.'/..');
 define('BASE_URL', 'http://localhost/belote');
 // Path
 define('CONTROLLERS_PATH', PATH . '/controllers/');
