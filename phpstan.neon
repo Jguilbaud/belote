@@ -8,5 +8,5 @@ parameters:
         - src/conf/autoload.inc.php
     ignoreErrors:
     -
-        message: '#.*Driver [a-ZA-Z0-9]* not supported on this Operating System#'
+        message: '#.*Driver [a-zA-Z0-9]* not supported on this Operating System#'
         path: src/services/Database.php
