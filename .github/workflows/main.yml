@@ -37,6 +37,6 @@ jobs:
       uses: chindit/actions-phpstan@master
       with:
           # Arguments to add to PHPStan
-          arguments: 'src/ --level=7'
+          arguments: 'src/ --level=7 -a=src/conf/autoload.inc.php'
         
         
