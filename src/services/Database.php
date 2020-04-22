@@ -316,7 +316,7 @@ class Database extends StaticAccessClass {
      * @throws DatabaseException Lève une exception si le driver n'est pas supporté, outrepassable en mettant $force à true
      */
     public function setPDODriver($PDODriverName, $force = false) {
-        if (!$force && !in_array($PDODriverName, \PDO_drivers())) {
+        if (!$force && !in_array($PDODriverName, \PDO::getAvailableDrivers())) {
             /** @phpstan-ignore-next-line */
             throw new DatabaseException('[Database.set\PDODriver] Driver ' . $PDODriverName . ' not supported on this Operating System');
         }
