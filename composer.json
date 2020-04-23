@@ -23,5 +23,7 @@
 	},
 	"config" : {
 		"vendor-dir" : "src/vendor"
+	},
+	"require-dev": {
 	}
 }
