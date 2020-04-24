@@ -12,13 +12,11 @@ class Game extends StaticAccessClass {
      *
      * @var array
      */
-
-
     public function create(?\Entities\Game &$oGame = null): int {
         $deck = DECK_CARDS_LIST;
         shuffle($deck);
         // On créé la partie en base
-        if($oGame == null){
+        if ($oGame == null) {
             $oGame = new \Entities\Game();
         }
         $oGame->setHash(Utils::generateHash(10));
@@ -28,10 +26,7 @@ class Game extends StaticAccessClass {
         return $oGame->getId();
     }
 
-    public function startNewRound(int $idGame): \Entities\Round {
-        // On récupère la partie pour avoir notamment le deck
-        $oGame = \Repositories\DbGame::get()->findOneById($idGame);
-
+    public function startNewRound(\Entities\Game &$oGame): \Entities\Round {
         // On créé la nouvelle manche
         $oRound = new \Entities\Round();
         $oRound->setId_game($oGame->getId());
@@ -51,6 +46,7 @@ class Game extends StaticAccessClass {
         \Repositories\DbRound::get()->create($oRound);
 
         // On met à jour la partie
+        $oGame->setStep(\Entities\Game::STEP_CUT_DECK);
         $oGame->setId_round_courante($oRound->getId());
         \Repositories\DbGame::get()->update($oGame);
 
@@ -114,10 +110,11 @@ class Game extends StaticAccessClass {
 
     /**
      * Distribue à chaque joueur 3 puis 2 cartes et retourne la carte proposée comme atout
+     *
      * @param int $idRound
      * @return String Carte proposée comme atout
      */
-    public function dealCards(int $idRound) : String {
+    public function dealCards(int $idRound): String {
         $oRound = \Repositories\DbRound::get()->findOneById($idRound);
         $oGame = \Repositories\DbGame::get()->findOneById($oRound->getId_game());
 
@@ -149,7 +146,7 @@ class Game extends StaticAccessClass {
      * @param String $color
      * @param String $player
      */
-    public function takeTrumpAndDeal(int $idRound, String $color, String $player) {
+    public function chooseTrumpAndDeal(int $idRound, String $color, String $player) {
         $oRound = \Repositories\DbRound::get()->findOneById($idRound);
         $oGame = \Repositories\DbGame::get()->findOneById($oRound->getId_game());
         $oRound->setTaker($player);
@@ -189,16 +186,17 @@ class Game extends StaticAccessClass {
         \Repositories\DbGame::get()->update($oGame);
     }
 
-
-    public function cutDeck(int $idGame, int $cut = 16): void {
+    public function cutDeck(\Entities\Game $oGame, int $cut = 16): void {
         if ($cut < 0 || $cut > 31) {
             throw new \Exceptions\CutOutOfRange();
         }
-
-        $oGame = \Repositories\DbGame::get()->findOneById($idGame);
         $arrayPart1 = array_slice($oGame->getCards(), 0, $cut, true);
         $arrayPart2 = array_slice($oGame->getCards(), $cut, 32, true);
         $oGame->setCards(array_merge($arrayPart2, $arrayPart1));
+        // On passe à l'étape suivante du jeu : le choix de l'atout
+        $oGame->setStep(\Entities\Game::STEP_CHOOSE_TRUMP);
+        // On défini le prochain joueur
+        $oGame->setStep(\Entities\Game::STEP_CHOOSE_TRUMP);
         \Repositories\DbGame::get()->update($oGame);
     }
 
@@ -279,8 +277,8 @@ class Game extends StaticAccessClass {
                     $bestPlayer = $currentPlayer;
                 }
             } elseif ($currentColor == strtolower($oRound->getTrump_color())) { // Sinon on joue de l'atout
-                // Si la meilleure carte pour le moment n'est pas de l'atout,c'est la premiere coupe du pli
-                // ou si de l'atout a déjà été joué, on regarde s'il est plus fort
+                                                                                // Si la meilleure carte pour le moment n'est pas de l'atout,c'est la premiere coupe du pli
+                                                                                // ou si de l'atout a déjà été joué, on regarde s'il est plus fort
                 if ($bestCardColor != strtolower($oRound->getTrump_color()) || \CARDS_TRUMP_VALUES[$currentValue] > $bestCardValue) {
                     $bestCardValue = \CARDS_TRUMP_VALUES[$currentValue];
                     $bestPlayer = $currentPlayer;
@@ -295,7 +293,7 @@ class Game extends StaticAccessClass {
         return $bestPlayer;
     }
 
-    public function closeRound(int $idRound) : \Entities\Round{
+    public function closeRound(int $idRound): \Entities\Round {
         $oRound = \Repositories\DbRound::get()->findOneById($idRound);
         $oGame = \Repositories\DbGame::get()->findOneById($oRound->getId_game());
 
@@ -303,7 +301,6 @@ class Game extends StaticAccessClass {
         $turns = \Repositories\DbTurn::get()->findAll(array(), array(
             'id_round' => $oRound->getId()
         ));
-
 
         $roundPointsNS = 0;
         $roundPointsWE = 0;
@@ -316,7 +313,7 @@ class Game extends StaticAccessClass {
             $turnPoints = 0;
             $turnCards = array();
 
-            for($i=0;$i<4;$i++){
+            for($i = 0; $i < 4; $i++) {
                 $method = 'getCard_' . strtolower($currentPlayer);
                 $card = $oTurn->$method();
                 $cardColor = $card[0];
@@ -337,58 +334,56 @@ class Game extends StaticAccessClass {
             }
 
             // - On donne les points et on met les cartes dans le tas de la bonne équipe
-            if($oTurn->getWinner() == 'N' || $oTurn->getWinner() == 'S'){
+            if ($oTurn->getWinner() == 'N' || $oTurn->getWinner() == 'S') {
                 $roundPointsNS += $turnPoints;
-                $cardsWonByNS = array_merge($turnCards,$cardsWonByNS);
-            }else{
+                $cardsWonByNS = array_merge($turnCards, $cardsWonByNS);
+            } else {
                 $roundPointsWE += $turnPoints;
-                $cardsWonByOE = array_merge($turnCards,$cardsWonByOE);
+                $cardsWonByOE = array_merge($turnCards, $cardsWonByOE);
             }
             $currentPlayer = $oTurn->getWinner();
         }
 
         // On donne le 10 de DER au dernier vainqueur
-        if($oTurn->getWinner() == 'N' || $oTurn->getWinner() == 'S' ){
+        if ($oTurn->getWinner() == 'N' || $oTurn->getWinner() == 'S') {
             $roundPointsNS += 10;
-        }else{
+        } else {
             $roundPointsWE += 10;
         }
 
         // On vérifie que le preneur a rempli son contrat
-        if($oRound->getTaker() == 'N' || $oRound->getTaker() == 'S' ){
+        if ($oRound->getTaker() == 'N' || $oRound->getTaker() == 'S') {
             $team = 'ns';
             $otherTeam = 'oe';
-        }else{
+        } else {
             $team = 'oe';
             $otherTeam = 'ns';
         }
         // SI l'équipe preneuse a fait moins de point que l'équipe adverse, le contrat n'est pas rempli
-        if(${'roundPoints'.strtoupper($team)} < ${'roundPoints'.strtoupper($otherTeam)}){
-            ${'roundPoints'.strtoupper($team)} = 0;
-            ${'roundPoints'.strtoupper($otherTeam)} = 162;
+        if (${'roundPoints' . strtoupper($team)} < ${'roundPoints' . strtoupper($otherTeam)}) {
+            ${'roundPoints' . strtoupper($team)} = 0;
+            ${'roundPoints' . strtoupper($otherTeam)} = 162;
         }
 
         $oRound->setPoints_NS($roundPointsNS);
         $oRound->setPoints_we($roundPointsWE);
         \Repositories\DbRound::get()->update($oRound);
 
-        $totalPointNS = $oGame->getTotal_Points_NS()+$roundPointsNS;
-        $totalPointOE = $oGame->getTotal_points_we()+$roundPointsWE;
+        $totalPointNS = $oGame->getTotal_Points_NS() + $roundPointsNS;
+        $totalPointOE = $oGame->getTotal_points_we() + $roundPointsWE;
         $oGame->setTotal_Points_NS($totalPointNS);
         $oGame->setTotal_Points_OE($totalPointOE);
-        //On alterne quel paquet va sur l'autre
-        if(rand(0,1)){
-            $oGame->setCards(array_merge($cardsWonByNS,$cardsWonByOE));
-        }else{
-            $oGame->setCards(array_merge($cardsWonByOE,$cardsWonByNS));
+        // On alterne quel paquet va sur l'autre
+        if (rand(0, 1)) {
+            $oGame->setCards(array_merge($cardsWonByNS, $cardsWonByOE));
+        } else {
+            $oGame->setCards(array_merge($cardsWonByOE, $cardsWonByNS));
         }
-
 
         \Repositories\DbGame::get()->update($oGame);
 
-
         // On vérifie que la partie n'est pas terminée
-        if($totalPointNS >= 1000 || $totalPointOE >= 1000){
+        if ($totalPointNS >= 1000 || $totalPointOE >= 1000) {
             throw new \Exceptions\GameIsFinished();
         }
 

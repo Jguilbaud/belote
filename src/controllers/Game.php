@@ -30,9 +30,9 @@ class Game extends AbstractController {
                         break;
                 }
 
-                //Si le jeu a démarré on renvoi vers le board
-                if($oGame->getName_north() != '' && $oGame->getName_south() != '' && $oGame->getName_west() != '' && $oGame->getName_east() != ''){
-                    header('Location: /belote/play/'.$hashGame);
+                // Si le jeu a démarré on renvoi vers le board
+                if ($oGame->getName_north() != '' && $oGame->getName_south() != '' && $oGame->getName_west() != '' && $oGame->getName_east() != '') {
+                    header('Location: /belote/play/' . $hashGame);
                 }
             } else {
                 $this->tplVars['html_disabled'] = '';
@@ -48,15 +48,15 @@ class Game extends AbstractController {
         $this->tplName = 'gamejoin.tpl.html';
         $this->tplVars['hashGame'] = $hashGame;
         $this->tplVars['playerNameNorth'] = $oGame->getName_north();
-        if($oGame->getName_south() != ''){
+        if ($oGame->getName_south() != '') {
             $this->tplVars['playerNameSouth'] = $oGame->getName_south();
             $this->tplVars['html_disabled_s'] = 'disabled="disabled"';
         }
-        if($oGame->getName_east() != ''){
+        if ($oGame->getName_east() != '') {
             $this->tplVars['playerNameEast'] = $oGame->getName_east();
             $this->tplVars['html_disabled_e'] = 'disabled="disabled"';
         }
-        if($oGame->getName_west() != ''){
+        if ($oGame->getName_west() != '') {
             $this->tplVars['playerNameWest'] = $oGame->getName_west();
             $this->tplVars['html_disabled_w'] = 'disabled="disabled"';
         }
@@ -119,7 +119,7 @@ class Game extends AbstractController {
         }
 
         $oGame->$methodSet($playerName);
-        \Repositories\DbGame::get()->update($oGame);
+
         // On positionne les cookies
         \Services\JwtCookie::get()->setOrUpdateMercureJoinCookie($oGame->getHash(), $playerPosition);
         \Services\JwtCookie::get()->setOrUpdateBeloteGameCookie($oGame->getHash(), $playerPosition);
@@ -128,9 +128,11 @@ class Game extends AbstractController {
         \Services\Mercure::get()->notifyGamePlayerJoin($hashGame, $playerPosition, $playerName);
 
         // si on a tous les joueurs, on démarre la partie
-        if($oGame->getName_north() != '' && $oGame->getName_south() != '' && $oGame->getName_west() != '' && $oGame->getName_east() != ''){
+        if ($oGame->getName_north() != '' && $oGame->getName_south() != '' && $oGame->getName_west() != '' && $oGame->getName_east() != '') {
+            \Services\Game::get()->startNewRound($oGame->getHash());
             \Services\Mercure::get()->notifyGameStart($hashGame);
         }
+        \Repositories\DbGame::get()->update($oGame);
 
         // On répond à la requete
         return array(
@@ -138,7 +140,7 @@ class Game extends AbstractController {
         );
     }
 
-    public function showPlayPage(String $hashGame){
+    public function showPlayPage(String $hashGame): void {
         try {
             $jwtBeloteCookie = \Services\JwtCookie::get()->getBeloteGameCookie($hashGame);
             $oGame = \Repositories\DbGame::get()->findOneByHash($hashGame);
@@ -150,8 +152,8 @@ class Game extends AbstractController {
                 $this->tplVars['playerName_s'] = $oGame->getName_south();
                 $this->tplVars['playerName_w'] = $oGame->getName_west();
                 $this->tplVars['playerName_e'] = $oGame->getName_east();
-                if($jwtBeloteCookie->playerPosition != ''){
-                    switch($jwtBeloteCookie->playerPosition){
+                if ($jwtBeloteCookie->getPlayerPosition() != '') {
+                    switch ($jwtBeloteCookie->getPlayerPosition()) {
                         case 'n' :
                             $this->tplVars['currentPlayerName'] = $oGame->getName_north();
                             $this->tplVars['currentPlayerTeam'] = 'ns';
@@ -169,27 +171,104 @@ class Game extends AbstractController {
                             $this->tplVars['currentPlayerTeam'] = 'we';
                             break;
                     }
-
                 }
 
                 $this->tplVars['idRound'] = $oGame->getId_current_round();
 
-
-
-
-
-
-
-
+                // TODO
+                // - points
+                // - action en cours
 
                 parent::renderPage();
-            }else{
+            } else {
                 // On redirige vers la salle d'attente
                 header('Location: /belote/join/' . $oGame->getHash());
             }
-
         } catch ( \Exceptions\BeloteException $e ) {
             throw new \Exceptions\BeloteException('Id partie inconnu');
         }
+    }
+
+    private function checkActionRequestAndGetGame(String $hashGame, String $gameStep, String &$playerPosition): ?\Entities\Game {
+        $jwtBeloteCookie = \Services\JwtCookie::get()->getBeloteGameCookie($hashGame);
+        // On vérifie que le joueur participe bien à cette partie
+        if ($jwtBeloteCookie == null || $jwtBeloteCookie->getHashGame() != $hashGame) {
+            // On répond à la requete
+            return array(
+                'response' => 'error',
+                'error_msg' => 'Vous ne participez pas à ce jeu'
+            );
+        }
+
+        $oGame = \Repositories\DbGame::get()->findOneByHash($hashGame);
+
+        // On vérifie qu'on est bien à cette étape du jeu
+
+        if ($oGame->getStep() != $gameStep) {
+            return array(
+                'response' => 'error',
+                'error_msg' => 'Action impossible à ce moment du jeu'
+            );
+        }
+
+        return $oGame;
+    }
+
+    public function cutDeck(String $hashGame, int $cutValue): array {
+        $playerPosition = '';
+        try {
+            $oGame = $this->checkActionRequestAndGetGame($hashGame, \Entities\Game::STEP_CUT_DECK, $playerPosition);
+            \Services\Game::get()->cutDeck($oGame,$cutValue);
+
+            // TODO mercure event
+
+        } catch ( \Exceptions\CutOutOfRange $e ) {
+            // On répond à la requete
+            return array(
+                'response' => 'Vous ne pouvez pas couper en dehors du deck',
+                'error_msg' => $e->getMEssage()
+            );
+        }catch ( \Exceptions\BeloteException $e ) {
+            // On répond à la requete
+            return array(
+                'response' => 'error',
+                'error_msg' => $e->getMEssage()
+            );
+        }
+    }
+
+    public function chooseTrump(String $hashGame, String $trumpColor): array {
+        try {
+            $playerPosition = '';
+            $oGame = $this->checkActionRequestAndGetGame($hashGame, \Entities\Game::STEP_CHOOSE_TRUMP, $playerPosition);
+
+            // On vérifie que la couleur demandée est valide
+            $trumpColor = strtolower($trumpColor);
+            if ($trumpColor != 'pass' && !in_array($trumpColor, \CARDS_COLORS)) {
+                return array(
+                    'response' => 'error',
+                    'error_msg' => 'Couleur inconnue'
+                );
+            }
+
+            if ($trumpColor == 'pass') {
+                $oGame->setCurrentPlayer(\Services\Game::get()->getNextPlayerFromOne($playerPosition));
+                // TODO mercure event
+            } else {
+                \Services\Game::get()->chooseTrumpAndDeal($oGame->getId_current_round(), $trumpColor, $playerPosition);
+                // TODO mercure event
+            }
+        } catch ( \Exceptions\BeloteException $e ) {
+            // On répond à la requete
+            return array(
+                'response' => 'error',
+                'error_msg' => $e->getMEssage()
+            );
+        }
+
+        // On répond à la requete
+        return array(
+            'response' => 'ok'
+        );
     }
 }

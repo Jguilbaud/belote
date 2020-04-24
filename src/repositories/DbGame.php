@@ -13,8 +13,8 @@ class DbGame extends AbstractDbTable {
     protected $entityClassName = \Entities\Game::class;
 
     public function create(\Entities\AbstractEntity &$oGame): void {
-        $query = 'INSERT INTO ' . $this->tableName . ' (`hash`, `date`, `name_north`, `name_south`, `name_west`, `name_east`, `cards`)
-        VALUES (:hash, :date, :name_north, :name_south, :name_west, :name_east,:cards)';
+        $query = 'INSERT INTO ' . $this->tableName . ' (`hash`, `date`, `name_north`, `name_south`, `name_west`, `name_east`, `cards`,`step`)
+        VALUES (:hash, :date, :name_north, :name_south, :name_west, :name_east,:cards,:step)';
 
         $values = array(
             ':hash' => $oGame->getHash(),
@@ -23,7 +23,8 @@ class DbGame extends AbstractDbTable {
             ':name_south' => $oGame->getName_south(),
             ':name_west' => $oGame->getName_west(),
             ':name_east' => $oGame->getName_east(),
-            ':cards' => json_encode(array_values($oGame->getCards()))
+            ':cards' => json_encode(array_values($oGame->getCards())),
+            ':step' => $oGame->getStep()
         );
 
         $this->db->setData($query, $values);
@@ -41,7 +42,9 @@ class DbGame extends AbstractDbTable {
                     total_points_ns = :total_points_ns,
                     total_points_we = :total_points_we,
                     cards = :cards,
-                    id_current_round = :id_current_round
+                    id_current_round = :id_current_round,
+                    step = :step,
+                    current_player = :current_player
                 WHERE id=:id';
 
         $values = array(
@@ -53,13 +56,17 @@ class DbGame extends AbstractDbTable {
             ':cards' => json_encode(array_values($oGame->getCards())),
             ':id_current_round' => $oGame->getId_current_round(),
             ':total_points_ns' => $oGame->getTotal_points_ns(),
-            ':total_points_we' => $oGame->getTotal_points_we()
+            ':total_points_we' => $oGame->getTotal_points_we(),
+            ':step' => $oGame->getStep(),
+            ':current_player' => $oGame->getCurrentPlayer()
+
+
         );
 
         $this->db->setData($query, $values);
     }
 
-    public function findOneByHash(String $hash) {
+    public function findOneByHash(String $hash) : \Entities\Game {
         return $this->findOneByColumnAndValue('hash', $hash);
     }
 }

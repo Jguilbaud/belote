@@ -4,7 +4,7 @@ function sendPostToBack(uri,data,callbackSuccess){
 	$.post(BASE_URL+uri,data,callbackSuccess);	   
 }
 function redirectToUri(uri){
-	window.location.href = BASE_URL+'/belote'+uri;
+	window.location.href = BASE_URL+uri;
 }
 
  $(document).ready(function(){
@@ -76,8 +76,18 @@ function redirectToUri(uri){
 		 
 		 
 	 }); // fin onclick rejoindre partie
+		
+	 
+	 // Coupe deck cartes
+	 $("#cutDeck #btnCutDeck").on('click', function(event){
+		 event.preventDefault();
 		 
-
+		 sendPostToBack('/play/'+$("#hashGame").val()+'/cutdeck', {value:$('#cutDeckValue').val()},function(){
+			 $("#chooseTrump").css('display','none');
+		 });
+		 
+	 });
+	 
 	 // Choix atout
 	 $("#chooseTrump img.trump").on('click', function(event){
 		 

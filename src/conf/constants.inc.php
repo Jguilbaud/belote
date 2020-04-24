@@ -2,7 +2,7 @@
 // General
 define('VERSION', '0.1-alpha1');
 define('DEBUG', true);
-define('PATH', __DIR__.'/..');
+define('PATH', __DIR__ . '/..');
 define('BASE_URL', 'http://localhost/belote');
 // Path
 define('CONTROLLERS_PATH', PATH . '/controllers/');
@@ -11,15 +11,15 @@ define('REPOSITORIES_PATH', PATH . '/repositories/');
 define('MODELS_PATH', PATH . '/models/');
 define('VIEWS_PATH', PATH . '/templates/');
 
-define('BELOTE_GAME_COOKIE_BASENAME','belote_game_');
-//Mercure
-define('MERCURE_URL','http://localhost:3000/.well-known/mercure');
-define('MERCURE_JWT_KEY','myjwt');
-define('MERCURE_JWT_ALGORITHM','HS256');
-define('MERCURE_COOKIE_NAME','mercureAuthorization');
-define('MERCURE_COOKIE_DOMAIN','localhost');
+define('BELOTE_GAME_COOKIE_BASENAME', 'belote_game_');
+// Mercure
+define('MERCURE_URL', 'http://localhost:3000/.well-known/mercure');
+define('MERCURE_JWT_KEY', 'myjwt');
+define('MERCURE_JWT_ALGORITHM', 'HS256');
+define('MERCURE_COOKIE_NAME', 'mercureAuthorization');
+define('MERCURE_COOKIE_DOMAIN', 'localhost');
 
-define('DECK_CARDS_LIST',array(
+define('DECK_CARDS_LIST', array(
     'sA',
     's10',
     'sR',
@@ -73,7 +73,13 @@ define('CARDS_TRUMP_VALUES', array(
     '8' => 0,
     '7' => 0
 ));
-define('PLAYERS',array(
+define('CARDS_COLORS', array(
+    'h' => 'heart',
+    's' => 'spade',
+    'd' => 'diamond',
+    'c' => 'club'
+));
+define('PLAYERS', array(
     'N',
     'E',
     'S',

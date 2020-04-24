@@ -1,12 +1,16 @@
 {{ include('_header.tpl.html') }}
+<input type="hidden" name="hashGame" id="hashGame" value="{{hashGame}}" />
 <div class="container  mx-auto">
     <div class="row">
         <div class="col-md-8">
             <div class="row">
-                Atout : <span id="trump_color"></span> A <span id="currentPlayerToPlay"> - </span> de jouer
+                A <span id="currentPlayerToPlay"> - </span> de jouer
             </div>
             <div class="row">
                 Atout : <span id="trump_color"></span>
+            </div>
+            <div class="row">
+            Pli :
                 <div class="col-md-2 subboard" id="subboard_1">
                     <p class="playerName">Joueur 1</p>
                     <div class="playerCard">carte 1</div>
@@ -25,7 +29,7 @@
                 </div>
             </div>
             <div class="row playerSubBoard" id="mycards">Mes cartes</div>
-            <div class="row playerSubBoard" id="cutcard">
+            <div class="row playerSubBoard" id="cutDeck">
                 <label for="customRange2">Couper le deck :</label> <input type="range" class="custom-range" min="1" max="31" id="cutDeckValue" /> <input
                     type="submit" value="Couper le deck" id="btnCutDeck" />
             </div>
@@ -33,12 +37,13 @@
                 Choisir l'atout : <br />
                 <div class="col-md-6">
                     <div class="row">
-                        <img src="/belote/img/heart.png" class="trump" id="chooseTrump_heart" /> <img src="/belote/img/diamond.png" class="trump" id="chooseTrump_diamond" /> <img
-                            src="/belote/img/spade.png" class="trump" id="chooseTrump_spade" /> <img src="/belote/img/club.png" class="trump" id="chooseTrump_club" /><br />
+                        <img src="/belote/img/heart.png" class="trump" id="chooseTrump_heart" /> <img src="/belote/img/diamond.png" class="trump"
+                            id="chooseTrump_diamond" /> <img src="/belote/img/spade.png" class="trump" id="chooseTrump_spade" /> <img
+                            src="/belote/img/club.png" class="trump" id="chooseTrump_club" /><br />
                     </div>
                     <div class="row">
-                        <input type="hidden" id="trump_selected" />
-                        <input type="submit" value="Choisir cet atout" id="btnChooseTrump" /> <input type="submit" value="Passer" id="btnPassTrump" />
+                        <input type="hidden" id="trump_selected" /> <input type="submit" value="Choisir cet atout" id="btnChooseTrump" /> <input
+                            type="submit" value="Passer" id="btnPassTrump" />
                     </div>
                 </div>
             </div>

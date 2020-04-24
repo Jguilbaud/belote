@@ -39,7 +39,9 @@ CREATE TABLE `games` (
   `total_points_ns` int(11) NOT NULL DEFAULT 0,
   `total_points_we` int(11) NOT NULL DEFAULT 0,
   `cards` text NOT NULL,
-  `id_current_round` int(11) NOT NULL DEFAULT 0
+  `id_current_round` int(11) NOT NULL DEFAULT 0,
+  `step` varchar(30) NOT NULL DEFAULT 'join',
+  `current_player` varchar(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------

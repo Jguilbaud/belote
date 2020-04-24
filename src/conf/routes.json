@@ -44,25 +44,25 @@
 			}
 		}
 	},
-	"joingameapi": {
-		"http_method": "post",
-		"type": "api",
-		"regexp": "^/join/([a-z0-9]{10})$",
-		"controller": "Game",
-		"method": "join",
-		"params": {
-		     "hash": {
+    "joingameapi": {
+        "http_method": "post",
+        "type": "api",
+        "regexp": "^/join/([a-z0-9]{10})$",
+        "controller": "Game",
+        "method": "join",
+        "params": {
+             "hash": {
                 "method": "uri",
                 "uri_position": 1
             },
-			"pseudo": {
-				"method": "post"
-			},
+            "pseudo": {
+                "method": "post"
+            },
             "playerPosition": {
                 "method": "post"
             }
-		}
-	},
+        }
+    },
 	"playgame": {
 		"http_method": "get",
 		"type": "page",
@@ -75,5 +75,37 @@
 				"uri_position": 1
 			}
 		}
-	}
+	},
+    "game_cutdeck": {
+        "http_method": "post",
+        "type": "api",
+        "regexp": "^/play/([a-z0-9]{10})/cutdeck$",
+        "controller": "Game",
+        "method": "cutDeck",
+        "params": {
+             "hash": {
+                "method": "uri",
+                "uri_position": 1
+            },
+            "value": {
+                "method": "post"
+            }
+        }
+    },
+    "game_choosetrump": {
+        "http_method": "post",
+        "type": "api",
+        "regexp": "^/play/([a-z0-9]{10})/choosetrump$",
+        "controller": "Game",
+        "method": "chooseTrump",
+        "params": {
+             "hash": {
+                "method": "uri",
+                "uri_position": 1
+            },
+            "choice": {
+                "method": "post"
+            }
+        }
+    }
 }

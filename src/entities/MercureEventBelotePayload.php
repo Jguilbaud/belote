@@ -2,7 +2,7 @@
 
 namespace Entities;
 
-class MercureEventBelotePayload extends AbstractMercurePayload {
+class MercureEventBelotePayload extends AbstractJwtPayload {
     protected String $action = '';
     protected array $data = array();
 

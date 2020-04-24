@@ -2,7 +2,7 @@
 
 namespace Entities;
 
-class MercureJwtPayload extends AbstractMercurePayload {
+class MercureJwtPayload extends AbstractJwtPayload {
     protected $subscribe = array();
     protected $publish = array();
 

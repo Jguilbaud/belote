@@ -13,12 +13,13 @@ require_once 'conf/autoload.inc.php';
 echo '###################' . "\n";
 echo '## Création partie ' . "\n";
 echo '###################' . "\n";
-$idGame = \Services\Game::get()->create();
+$oGame = null;
+$idGame = \Services\Game::get()->create($oGame);
 echo '- Partie créée : ' . $idGame . "\n";
 
 try {
     while ( true ) {
-        $oRound = \Services\Game::get()->startNewRound($idGame);
+        $oRound = \Services\Game::get()->startNewRound($oGame);
         echo ' ###################' . "\n";
         echo ' ## Démarrage manche N°' . $oRound->getNum_round() . "\n";
         echo ' ###################' . "\n";
@@ -66,7 +67,7 @@ try {
             echo '? ';
             $color = trim(fgets(STDIN));
         }
-        \Services\Game::get()->takeTrumpAndDeal($oRound->getId(), $color, $player);
+        \Services\Game::get()->chooseTrumpAndDeal($oRound->getId(), $color, $player);
 
         $currentPlayer = \Services\Game::get()->getNextPlayerFromOne($oRound->getDealer());
 
