@@ -67,7 +67,7 @@ try {
             echo '? ';
             $color = trim(fgets(STDIN));
         }
-        \Services\Game::get()->chooseTrumpAndDeal($oRound->getId(), $color, $player);
+        \Services\Game::get()->chooseTrumpAndDeal($oGame, $oRound, $color, $player);
 
         $currentPlayer = \Services\Game::get()->getNextPlayerFromOne($oRound->getDealer());
 

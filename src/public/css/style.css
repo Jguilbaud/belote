@@ -1,5 +1,6 @@
 body {
     background-color: #33AA33;
+    color : white;
 }
 
 #pannel_infos {
@@ -36,7 +37,7 @@ body {
     margin: 0 5px;
 }
 
-#myCards  .cards img {
+#myCards  .cards img, #proposedTrumpCard img {
     height: 175px;
 }
 

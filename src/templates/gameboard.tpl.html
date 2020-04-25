@@ -3,59 +3,94 @@
 <input type="hidden" name="playerPosition" id="playerPosition" value="{{playerPosition}}" />
 <div class="container  mx-auto">
     <div class="row">
+        <h1>Belote par Johan</h1>
+    </div>
+    <div class="row">
         <div class="col-md-8">
             <div class="row">
                 A <span id="currentPlayerToPlay"> {{currentPlayer}} </span> de jouer
             </div>
-            <div class="row">
-                Atout : <span id="trump_color"></span>
+            <div class="row {{hideTurnCards}}" id="trumpColor">
+                <h3>Atout :</h3>
+                <span id="trumpColorSymbol"></span>
+                <h3>Preneur :</h3>
+                <span id="trumpColorTaker"></span>
             </div>
-            <div class="row">
-            Pli :
-                <div class="col-md-2 subboard" id="subboard_1">
-                    <p class="playerName">Joueur 1</p>
-                    <div class="playerCard">carte 1</div>
-                </div>
-                <div class="col-md-2 subboard" id="subboard_2">
-                    <p class="playerName">Joueur 2</p>
-                    <div class="playerCard">carte 2</div>
-                </div>
-                <div class="col-md-2 subboard" id="subboard_3">
-                    <p class="playerName">Joueur 3</p>
-                    <div class="playerCard">carte 3</div>
-                </div>
-                <div class="col-md-2 subboard" id="subboard_4">
-                    <p class="playerName">Joueur 4</p>
-                    <div class="playerCard">carte 4</div>
-                </div>
-            </div>
-            
-            <div class="row playerSubBoard {{hideCutDeck}}" id="cutDeck">
-                <label for="customRange2">Couper le deck :</label> <input type="range" class="custom-range" min="1" max="31" id="cutDeckValue" /> <input
-                    type="submit" value="Couper le deck" id="btnCutDeck" />
-            </div>
-            <div class="row playerSubBoard {{hideChooseTrump}}" id="chooseTrump" >
-                Choisir l'atout : <br />
-                <div class="col-md-6">
+            <div class="row {{hideTurnCards}}" id="turnCards">
+                <div class="col-md-12">
                     <div class="row">
-                        <img src="/belote/img/heart.png" class="trump {{trumpHeartDisabled}}" id="chooseTrump_heart" /> <img src="/belote/img/diamond.png" class="trump  {{trumpDiamondDisabled}}"
-                            id="chooseTrump_diamond" /> <img src="/belote/img/spade.png" class="trump  {{trumpSpadeDisabled}}" id="chooseTrump_spade" /> <img
+                        <h3>Pli en cours :</h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2 subboard" id="subboard_1">
+                            <p class="playerName">Joueur 1</p>
+                            <div class="playerCard">carte 1</div>
+                        </div>
+                        <div class="col-md-2 subboard" id="subboard_2">
+                            <p class="playerName">Joueur 2</p>
+                            <div class="playerCard">carte 2</div>
+                        </div>
+                        <div class="col-md-2 subboard" id="subboard_3">
+                            <p class="playerName">Joueur 3</p>
+                            <div class="playerCard">carte 3</div>
+                        </div>
+                        <div class="col-md-2 subboard" id="subboard_4">
+                            <p class="playerName">Joueur 4</p>
+                            <div class="playerCard">carte 4</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row playerSubBoard {{hideCutDeck}}" id="cutDeck">
+                <h3>
+                    <label for="customRange2">Couper le deck :</label>
+                </h3>
+                <input type="range" class="custom-range" min="1" max="31" id="cutDeckValue" /> <input type="submit" value="Couper le deck"
+                    id="btnCutDeck" />
+            </div>
+            <div class="row playerSubBoard {{hideChooseTrump}}" id="chooseTrump">
+                <div class="col-md-12">
+                    <div class="row">
+                        <h3>Choisir l'atout :</h3>
+                    </div>
+                    <div class="row">
+                        <h4>Atout proposé :</h4>
+                        <div id="proposedTrumpCard">
+                            <img src="{{proposedTrumpCardSrcImg}}" />                        
+                        </div>
+                    </div>
+                    <div class="row">
+                        <img src="/belote/img/heart.png" class="trump {{trumpHeartDisabled}}" id="chooseTrump_heart" /> <img
+                            src="/belote/img/diamond.png" class="trump  {{trumpDiamondDisabled}}" id="chooseTrump_diamond" /> <img
+                            src="/belote/img/spade.png" class="trump  {{trumpSpadeDisabled}}" id="chooseTrump_spade" /> <img
                             src="/belote/img/club.png" class="trump  {{trumpClubDisabled}}" id="chooseTrump_club" /><br />
                     </div>
                     <div class="row">
-                        <input type="hidden" id="trump_selected" /> <input type="submit" value="Choisir cet atout" id="btnChooseTrump" /> <input
-                            type="submit" value="Passer" id="btnPassTrump" />
+                        <input type="hidden" id="trump_selected" /> <input type="submit" value="Choisir cet atout" id="btnChooseTrump" {{hideChooseTrumpBtn|raw}} />
+                        <input type="submit" value="Passer" id="btnPassTrump" {{hideChooseTrumpBtn|raw}} />
                     </div>
                 </div>
             </div>
-            <div class="row playerSubBoard" id="myCards" >Mes cartes
-                <div class="cards">{{myCards|raw}}</div>
-                <input type="button" value="Jouer cette carte" id="playCard"  {{hidePlayCardBtn}} />
+            <div class="row playerSubBoard" id="myCards">
+                <div class="col-md-12">
+                    <div class="row">
+                        <h3>Mes cartes</h3>
+                    </div>
+                    <div class="row">
+                        <div class="cards">{{myCards|raw}}</div>                        
+                    </div>
+                    <div class="row">
+                        <input type="button" value="Jouer cette carte" id="playCard" {{hidePlayCardBtn|raw}} />                        
+                    </div>
+                </div>
+                
+                
             </div>
         </div>
         <div class="col-md-4 h-100" id="pannel_infos">
             <div>
-                <h1>Belote par Johan</h1>
+                
                 <p>v0.1-alpha1</p>
                 <p>
                     <b>Partie :</b> #{{hashGame}}<br /> <b>Manche n°:</b> #<span id="round_id">{{idRound}}</span><br /> <b>Votre nom :</b>
@@ -79,7 +114,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
                         <tr>
                             <td>1</td>
                             <td>+23 (23)</td>
@@ -97,6 +132,10 @@
 
             <div id="mercure_messages">
                 <h3>Journal d'évènements</h3>
+                <p></p>
+            </div>
+            <div id="mercure_messages_debug">
+                <h3>Journal d'évènements (debug)</h3>
                 <p></p>
             </div>
         </div>

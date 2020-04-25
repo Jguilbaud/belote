@@ -101,7 +101,7 @@ class Game extends StaticAccessClass {
                 return 'w';
             case 'w' :
                 return 'n';
-            default:
+            default :
                 throw new \Exceptions\BeloteException('Invalid player');
         }
     }
@@ -109,7 +109,7 @@ class Game extends StaticAccessClass {
     /**
      * Récupérer le joueur précédent un joueur donné
      *
-     * @param String $currentPlayer  (n, e, s ou w)
+     * @param String $currentPlayer (n, e, s ou w)
      * @return string
      */
     public function getPrecedentPlayerFromOne(String $currentPlayer = 'N') {
@@ -122,7 +122,7 @@ class Game extends StaticAccessClass {
                 return 'e';
             case 'w' :
                 return 's';
-            default:
+            default :
                 throw new \Exceptions\BeloteException('Invalid player');
         }
     }
@@ -160,12 +160,10 @@ class Game extends StaticAccessClass {
     /**
      * Prendre l'atout
      *
-     * @param String $color
+     * @param String $color sur un caractère
      * @param String $player
      */
-    public function chooseTrumpAndDeal(int $idRound, String $color, String $player) {
-        $oRound = \Repositories\DbRound::get()->findOneById($idRound);
-        $oGame = \Repositories\DbGame::get()->findOneById($oRound->getId_game());
+    public function chooseTrumpAndDeal(\Entities\Game &$oGame, \Entities\Round &$oRound, String $color, String $player) {
         $oRound->setTaker($player);
         $oRound->setTrump_color($color[0]);
 
@@ -195,10 +193,10 @@ class Game extends StaticAccessClass {
             $cardsOffset += $nbCards;
         }
 
+        $oGame->setCurrent_player(\Services\Game::get()->getNextPlayerFromOne($oRound->getDealer()));
+        $oGame->setStep(\Entities\Game::STEP_PLAY_CARD);
         // On enleve du deck les cartes ditribuées, c'est à dire toutes :)
         $oGame->setCards(array());
-        \Repositories\DbGame::get()->update($oGame);
-
         \Repositories\DbRound::get()->update($oRound);
         \Repositories\DbGame::get()->update($oGame);
     }

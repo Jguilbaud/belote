@@ -8,7 +8,17 @@ class Game extends AbstractEntity {
 
     const STEP_CUT_DECK = 'cutdeck';
 
+    /**
+     * Etape de choix de l'atout de la carte proposée
+     * @var string
+     */
     const STEP_CHOOSE_TRUMP = 'choosetrump';
+
+    /**
+     * Etape de choix libre de l'atout
+     * @var string
+     */
+    const STEP_CHOOSE_TRUMP_2 = 'choosetrump2';
 
     const STEP_PLAY_CARD = 'playcard';
 
