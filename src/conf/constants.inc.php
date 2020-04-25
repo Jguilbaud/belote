@@ -20,55 +20,55 @@ define('MERCURE_COOKIE_NAME', 'mercureAuthorization');
 define('MERCURE_COOKIE_DOMAIN', 'localhost');
 
 define('DECK_CARDS_LIST', array(
-    'sA',
+    'sa',
     's10',
-    'sR',
-    'sD',
-    'sV',
+    'sk',
+    'sq',
+    'sj',
     's9',
     's8',
     's7',
-    'hA',
+    'ha',
     'h10',
-    'hR',
-    'hD',
-    'hV',
+    'hk',
+    'hq',
+    'hj',
     'h9',
     'h8',
     'h7',
-    'cA',
+    'ca',
     'c10',
-    'cR',
-    'cD',
-    'cV',
+    'ck',
+    'cq',
+    'cj',
     'c9',
     'c8',
     'c7',
-    'dA',
+    'da',
     'd10',
-    'dR',
-    'dD',
-    'dV',
+    'dk',
+    'dq',
+    'dj',
     'd9',
     'd8',
     'd7'
 ));
 define('CARDS_VALUES', array(
-    'A' => 11,
+    'a' => 11,
     '10' => 10,
-    'R' => 4,
-    'D' => 3,
-    'V' => 2,
+    'k' => 4,
+    'q' => 3,
+    'j' => 2,
     '9' => 0,
     '8' => 0,
     '7' => 0
 ));
 define('CARDS_TRUMP_VALUES', array(
-    'A' => 11,
+    'a' => 11,
     '10' => 10,
-    'R' => 4,
-    'D' => 3,
-    'V' => 20,
+    'k' => 4,
+    'q' => 3,
+    'j' => 20,
     '9' => 14,
     '8' => 0,
     '7' => 0
@@ -80,8 +80,8 @@ define('CARDS_COLORS', array(
     'c' => 'club'
 ));
 define('PLAYERS', array(
-    'N',
-    'E',
-    'S',
-    'W'
+    'n',
+    'e',
+    's',
+    'w'
 ));

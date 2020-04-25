@@ -9,7 +9,7 @@ class JwtCookie extends StaticAccessClass {
         setcookie(\MERCURE_COOKIE_NAME, $jwt, time() + 3600, '/', \MERCURE_COOKIE_DOMAIN);
     }
 
-    private function setBeloteGameJwtCookie(String $hashGame, \stdClass $oPayload) {
+    private function setBeloteGameJwtCookie(String $hashGame, \Entities\GameJwtPayload $oPayload) {
         $jwt = \Firebase\JWT\JWT::encode($oPayload, \MERCURE_JWT_KEY, \MERCURE_JWT_ALGORITHM);
         setcookie(\BELOTE_GAME_COOKIE_BASENAME . $hashGame, $jwt, time() + (3600 * 24), '/');
     }
@@ -26,9 +26,10 @@ class JwtCookie extends StaticAccessClass {
      * @param String $hashGame
      */
     public function setOrUpdateMercureJoinCookie(String $hashGame, String $playerPosition = 'guest') {
+        //TODO gérer partie multiple avec le cookie mercure qui se fait écraser pour le moment
         $oPayload = new \Entities\MercureJwtPayload();
-        $oPayload->addSubscribe(\BASE_URL . '/game/' . $hashGame); // TODO mettre domaine dans conf/constante
-        $oPayload->addSubscribe(\BASE_URL . '/game/' . $hashGame . '/' . $playerPosition); // TODO mettre domaine dans conf/constante
+        $oPayload->addSubscribe(\BASE_URL . '/game/' . $hashGame);
+        $oPayload->addSubscribe(\BASE_URL . '/game/' . $hashGame . '/' . $playerPosition);
         $this->setMercureJwtCookie($oPayload);
     }
 

@@ -10,25 +10,36 @@ body {
     margin-top: 10px;
 }
 
-
-#cutDeckValue{
-    width : 300px;
+#cutDeckValue {
+    width: 300px;
 }
 
-#chooseTrump img {
-    display: flex;
-    height : 50px;
-    cursor:pointer;
+#chooseTrump img.trump {
+    display: flex; 
+    height: 50px; 
+    cursor: pointer;
 }
 
-#chooseTrump img.selected {
-    display: flex;
-    height : 50px;
-    cursor:pointer;
-    border: 1px solid green;    
+#chooseTrump img.trump.disabled {
+    opacity : 0.5;
+}
+
+#chooseTrump img.selected,#myCards .cards img.selected {
+    display: flex; 
+    height: 50px; 
+    cursor: pointer; 
+    border: 1px solid green;
     background-color: #55DD55;
 }
 
-#currentPlayerToPlay{
+#currentPlayerToPlay {
     margin: 0 5px;
+}
+
+#myCards  .cards img {
+    height: 175px;
+}
+
+.hidden {
+    display: none;
 }

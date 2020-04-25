@@ -48,9 +48,9 @@ class MercureEventBelotePayload extends AbstractJwtPayload {
 
     /**
      *
-     * @param mixed $data
+     * @param String|array $data
      */
-    public function addData(String $key, String $value) {
+    public function addData(String $key, $value) : void {
         $this->data[$key] = $value;
     }
 }

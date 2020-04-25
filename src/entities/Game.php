@@ -6,11 +6,11 @@ class Game extends AbstractEntity {
 
     const STEP_JOIN = 'join';
 
-    const STEP_CUT_DECK = 'cut';
+    const STEP_CUT_DECK = 'cutdeck';
 
     const STEP_CHOOSE_TRUMP = 'choosetrump';
 
-    const STEP_PLAY_CARD = 'play';
+    const STEP_PLAY_CARD = 'playcard';
 
     const STEP_FINISHED = 'finished';
 
@@ -26,7 +26,7 @@ class Game extends AbstractEntity {
     protected array $cards = array();
     protected int $id_current_round = 0;
     protected String $step = self::STEP_JOIN;
-    protected String $current_player = null;
+    protected ?String $current_player = null;
 
     public function populateObjectFromDb(array $dbRow, array $excludedParticularFields = array()): void {
         $excludedParticularFields[] = 'cards';

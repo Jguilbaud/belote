@@ -4,8 +4,8 @@ require_once 'conf/conf.inc.php';
 require_once 'conf/autoload.inc.php';
 
 // $decoded = \Firebase\JWT\JWT::decode('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjdXJlIjp7InN1YnNjcmliZSI6WyIqIl0sInB1Ymxpc2giOlsiKiJdfX0.aFuPpA3XL8PhSoZ1S4EhwvgB2iTSVGrYGyE1fT2pd6g',
-//         MERCURE_JWT_KEY,
-//         array(MERCURE_JWT_ALGORITHM));
+// MERCURE_JWT_KEY,
+// array(MERCURE_JWT_ALGORITHM));
 // print_r($decoded);
 
 // exit;
@@ -39,7 +39,7 @@ try {
         echo '  ###################' . "\n";
         echo '  ## Distribution des cartes automatique ' . "\n";
         echo '  ###################' . "\n";
-        $proposedTrumpCard = \Services\Game::get()->dealCards($oRound->getId());
+        $proposedTrumpCard = \Services\Game::get()->dealCards($oGame, $oRound);
 
         echo '  ###################' . "\n";
         echo '  ## Atout proposé : ' . $proposedTrumpCard . "\n";

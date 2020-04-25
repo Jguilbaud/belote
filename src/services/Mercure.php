@@ -4,7 +4,7 @@ namespace Services;
 
 class Mercure extends StaticAccessClass {
 
-    protected function notify(array $targets, array $topics, \Entities\AbstractMercurePayload $data) {
+    protected function notify(array $targets, array $topics, \Entities\AbstractJwtPayload $data) {
         $oJwtPublisher = new \Entities\MercureJwtPayload();
         $oJwtPublisher->addPublish('*');
         $jwtPublisher = \Firebase\JWT\JWT::encode($oJwtPublisher, \MERCURE_JWT_KEY, \MERCURE_JWT_ALGORITHM);
@@ -36,6 +36,22 @@ class Mercure extends StaticAccessClass {
             \BASE_URL . '/game/' . $hashGame
         ], [
             \BASE_URL . '/game/' . $hashGame
+        ], $payload);
+    }
+
+    public function notifyRoundStart(String $hashGame, int $numRound, String $firstPlayer, String $player, array $cards, String $proposedTrumpCard) {
+        $payload = new \Entities\MercureEventBelotePayload();
+        $payload->setAction('showproposedtrump');
+        $payload->addData('hashGame', $hashGame);
+        $payload->addData('numRound', $numRound);
+        $payload->addData('firstPlayer', $firstPlayer);
+        $payload->addData('cards', $cards);
+        $payload->addData('proposedTrumpCard', $proposedTrumpCard);
+
+        $this->notify([
+            \BASE_URL . '/game/' . $hashGame . '/' . $player
+        ], [
+            \BASE_URL . '/game/' . $hashGame . '/' . $player
         ], $payload);
     }
 }

@@ -7,10 +7,39 @@ function redirectToUri(uri){
 	window.location.href = BASE_URL+uri;
 }
 
+
+function showProposedTrump(data){
+	
+	// Joueur actif : currentPlayerToPlay
+	$("#currentPlayerToPlay").html($("#playerName_"+data.firstPlayer).text());
+	
+	// Numéro de manche
+	$("#round_id").html(data.numRound);
+	
+	// proposedTrumpCard
+	
+	// Cartes
+	jQuery.each(data.cards, function(index, value) {
+		addCardInHand(value)
+	});
+	
+}
+
+function addCardInHand(cardCode){	
+	$("#myCards .cards").append('<img src="'+BASE_URL+'/img/cards/'+cardCode+'.png" id="mycard_'+cardCode+'" />');
+}
+
+
  $(document).ready(function(){
 	 	// JoinGame - Mercure event
         const url = new URL(MERCURE_BASE_URL);
         url.searchParams.append('topic', BASE_URL+'/game/'+$("#hashGame").val());
+        
+        if($("#playerPosition")){
+        	url.searchParams.append('topic', BASE_URL+'/game/'+$("#hashGame").val()+'/'+$("#playerPosition").val());
+        }
+        
+        
         const eventSource = new EventSource(url, { withCredentials: true });
         eventSource.onmessage = e => {
        	 $("#mercure_messages").append(e.data+'<br />');
@@ -23,6 +52,10 @@ function redirectToUri(uri){
        	 		case 'launchgame' :
        	 			redirectToUri('/play/'+$("#hashGame").val());       	 			
        	 			break;
+       	 		case 'showproposedtrump' :
+       	 			
+   	 				showProposedTrump(response.data);       	 			
+   	 			break;
        	 	}
        	 
         };

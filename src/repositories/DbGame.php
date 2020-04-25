@@ -58,7 +58,7 @@ class DbGame extends AbstractDbTable {
             ':total_points_ns' => $oGame->getTotal_points_ns(),
             ':total_points_we' => $oGame->getTotal_points_we(),
             ':step' => $oGame->getStep(),
-            ':current_player' => $oGame->getCurrentPlayer()
+            ':current_player' => $oGame->getCurrent_player()
 
 
         );

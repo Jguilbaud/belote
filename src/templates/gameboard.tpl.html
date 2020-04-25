@@ -1,10 +1,11 @@
 {{ include('_header.tpl.html') }}
 <input type="hidden" name="hashGame" id="hashGame" value="{{hashGame}}" />
+<input type="hidden" name="playerPosition" id="playerPosition" value="{{playerPosition}}" />
 <div class="container  mx-auto">
     <div class="row">
         <div class="col-md-8">
             <div class="row">
-                A <span id="currentPlayerToPlay"> - </span> de jouer
+                A <span id="currentPlayerToPlay"> {{currentPlayer}} </span> de jouer
             </div>
             <div class="row">
                 Atout : <span id="trump_color"></span>
@@ -28,24 +29,28 @@
                     <div class="playerCard">carte 4</div>
                 </div>
             </div>
-            <div class="row playerSubBoard" id="mycards">Mes cartes</div>
-            <div class="row playerSubBoard" id="cutDeck">
+            
+            <div class="row playerSubBoard {{hideCutDeck}}" id="cutDeck">
                 <label for="customRange2">Couper le deck :</label> <input type="range" class="custom-range" min="1" max="31" id="cutDeckValue" /> <input
                     type="submit" value="Couper le deck" id="btnCutDeck" />
             </div>
-            <div class="row playerSubBoard" id="chooseTrump">
+            <div class="row playerSubBoard {{hideChooseTrump}}" id="chooseTrump" >
                 Choisir l'atout : <br />
                 <div class="col-md-6">
                     <div class="row">
-                        <img src="/belote/img/heart.png" class="trump" id="chooseTrump_heart" /> <img src="/belote/img/diamond.png" class="trump"
-                            id="chooseTrump_diamond" /> <img src="/belote/img/spade.png" class="trump" id="chooseTrump_spade" /> <img
-                            src="/belote/img/club.png" class="trump" id="chooseTrump_club" /><br />
+                        <img src="/belote/img/heart.png" class="trump {{trumpHeartDisabled}}" id="chooseTrump_heart" /> <img src="/belote/img/diamond.png" class="trump  {{trumpDiamondDisabled}}"
+                            id="chooseTrump_diamond" /> <img src="/belote/img/spade.png" class="trump  {{trumpSpadeDisabled}}" id="chooseTrump_spade" /> <img
+                            src="/belote/img/club.png" class="trump  {{trumpClubDisabled}}" id="chooseTrump_club" /><br />
                     </div>
                     <div class="row">
                         <input type="hidden" id="trump_selected" /> <input type="submit" value="Choisir cet atout" id="btnChooseTrump" /> <input
                             type="submit" value="Passer" id="btnPassTrump" />
                     </div>
                 </div>
+            </div>
+            <div class="row playerSubBoard" id="myCards" >Mes cartes
+                <div class="cards">{{myCards|raw}}</div>
+                <input type="button" value="Jouer cette carte" id="playCard"  {{hidePlayCardBtn}} />
             </div>
         </div>
         <div class="col-md-4 h-100" id="pannel_infos">
@@ -56,7 +61,6 @@
                     <b>Partie :</b> #{{hashGame}}<br /> <b>Manche n°:</b> #<span id="round_id">{{idRound}}</span><br /> <b>Votre nom :</b>
                     {{currentPlayerName}}<br /> <b>Votre équipe :</b> {{currentPlayerTeam}}<br />
                 </p>
-
             </div>
 
             <div id="points">
@@ -68,8 +72,14 @@
                             <td>Nord-Sud</td>
                             <td>Ouest-Est</td>
                         </tr>
+                        <tr>
+                            <td>Noms :</td>
+                            <td><span id='playerName_n'>{{playerName_n}}</span> &amp; <span id='playerName_s'>{{playerName_s}}</span></td>
+                            <td><span id='playerName_w'>{{playerName_w}}</span> &amp; <span id='playerName_e'>{{playerName_e}}</span></td>
+                        </tr>
                     </thead>
                     <tbody>
+                        
                         <tr>
                             <td>1</td>
                             <td>+23 (23)</td>
@@ -85,7 +95,7 @@
             </div>
 
 
-            <div id="messages">
+            <div id="mercure_messages">
                 <h3>Journal d'évènements</h3>
                 <p></p>
             </div>

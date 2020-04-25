@@ -41,13 +41,16 @@ class Game extends StaticAccessClass {
             $newRound = $oPrecedentRound->getNum_round() + 1;
             $dealer = $this->getNextPlayerFromOne($oPrecedentRound->getDealer());
         }
+
         $oRound->setDealer($dealer);
         $oRound->setNum_round($newRound);
         \Repositories\DbRound::get()->create($oRound);
 
         // On met à jour la partie
         $oGame->setStep(\Entities\Game::STEP_CUT_DECK);
-        $oGame->setId_round_courante($oRound->getId());
+        // Le joueur actif devient celui avant le donneur pour pouvoir couper le deck avant distribution
+        $oGame->setCurrent_player($this->getPrecedentPlayerFromOne($dealer));
+        $oGame->setId_current_round($oRound->getId());
         \Repositories\DbGame::get()->update($oGame);
 
         return $oRound;
@@ -82,42 +85,56 @@ class Game extends StaticAccessClass {
         return $oTurn;
     }
 
+    /**
+     * Récupérer le joueur suivant un joueur donné
+     *
+     * @param String $currentPlayer (n, e, s ou w)
+     * @return string
+     */
     public function getNextPlayerFromOne(String $currentPlayer = 'N') {
-        switch ($currentPlayer) {
-            case 'N' :
-                return 'E';
-            case 'E' :
-                return 'S';
-            case 'S' :
-                return 'W';
-            case 'W' :
-                return 'N';
+        switch (strtolower($currentPlayer)) {
+            case 'n' :
+                return 'e';
+            case 'e' :
+                return 's';
+            case 's' :
+                return 'w';
+            case 'w' :
+                return 'n';
+            default:
+                throw new \Exceptions\BeloteException('Invalid player');
         }
     }
 
+    /**
+     * Récupérer le joueur précédent un joueur donné
+     *
+     * @param String $currentPlayer  (n, e, s ou w)
+     * @return string
+     */
     public function getPrecedentPlayerFromOne(String $currentPlayer = 'N') {
-        switch ($currentPlayer) {
-            case 'N' :
-                return 'W';
-            case 'E' :
-                return 'N';
-            case 'S' :
-                return 'E';
-            case 'W' :
-                return 'S';
+        switch (strtolower($currentPlayer)) {
+            case 'n' :
+                return 'w';
+            case 'e' :
+                return 'n';
+            case 's' :
+                return 'e';
+            case 'w' :
+                return 's';
+            default:
+                throw new \Exceptions\BeloteException('Invalid player');
         }
     }
 
     /**
      * Distribue à chaque joueur 3 puis 2 cartes et retourne la carte proposée comme atout
      *
-     * @param int $idRound
+     * @param \Entities\Game $oGame
+     * @param \Entities\Round $oRound
      * @return String Carte proposée comme atout
      */
-    public function dealCards(int $idRound): String {
-        $oRound = \Repositories\DbRound::get()->findOneById($idRound);
-        $oGame = \Repositories\DbGame::get()->findOneById($oRound->getId_game());
-
+    public function dealCards(\Entities\Game &$oGame, \Entities\Round &$oRound): String {
         $currentDealedPlayer = $oRound->getDealer();
         // On donne les 3 + 2 cartes à chacun
         for($i = 0; $i < 4; $i++) {
@@ -127,7 +144,7 @@ class Game extends StaticAccessClass {
             $arrayPart2 = array_slice($oGame->getCards(), $i * 2 + 12, 2, true);
 
             $oHand = new \Entities\Hand();
-            $oHand->setId_round($idRound);
+            $oHand->setId_round($oRound->getId());
             $oHand->setPlayer($currentDealedPlayer);
             $oHand->setCards(array_merge($arrayPart1, $arrayPart2));
             \Repositories\DbHand::get()->create($oHand);
