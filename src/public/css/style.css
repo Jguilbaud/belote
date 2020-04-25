@@ -24,11 +24,14 @@ body {
 #chooseTrump img.trump.disabled {
     opacity : 0.5;
 }
-
-#chooseTrump img.selected,#myCards .cards img.selected {
-    display: flex; 
-    height: 50px; 
+#myCards .cards, #chooseTrump img{
     cursor: pointer; 
+    opacity : 0.8;
+}
+
+#chooseTrump img.selected,#myCards .cards img.selected {    
+    
+    opacity : 1;
     border: 1px solid green;
     background-color: #55DD55;
 }
