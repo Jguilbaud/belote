@@ -277,8 +277,14 @@ function startFirstTurn(data){
 
 
 function cardPlayed(data){
+        $("#turn_info").html('');
 	logEvent('[Carte jouée] '+getPlayerName(data.player)+' a joué : '+data.card);
 	//On affiche la carte
+        if(data.cardPosition == 1){
+            //Si c'est la première carte on vide les emplacements
+            $("#turnCards  .playerCard").html('');
+            $("#turnCards  .playerName").html('');
+        }
 	$("#turnCards #subboard_"+data.cardPosition+" .playerCard").html('<img src="'+BASE_URL+'/img/cards/'+data.card+'.png" />');
 	$("#turnCards #subboard_"+data.cardPosition+" .playerName").html(getPlayerName(data.player));
 	
@@ -294,13 +300,29 @@ function cardPlayed(data){
 }
 
 function changeTurn(data){
-	// TODO
-	// hashGame
-    // player
-    // card
-    // winner
-    // newTurnNum
+    logEvent('[Carte jouée] '+getPlayerName(data.player)+' a joué : '+data.card);
+    
+    // {"action":"changeturn","data":{"hashGame":"e6405d1c32","player":"n","card":"sa","winner":"n","newTurnNum":3}}
+    
+    //On affiche la carte
+    $("#turnCards #subboard_"+data.cardPosition+" .playerCard").html('<img src="'+BASE_URL+'/img/cards/'+data.card+'.png" />');
+    $("#turnCards #subboard_"+data.cardPosition+" .playerName").html(getPlayerName(data.player));
+    
+    
+    // On affiche le gagnant
+    $("#turn_info").html(getPlayerName(data.winner)+"  gagne le pli !");
+
+    // Joueur actif : currentPlayerToPlay
+   $("#currentPlayerToPlay").html(getPlayerName(data.winner));
+        
+    //Si on est désormais le joueur actif
+    if($("#playerPosition").val() == data.winner){
+            $("#btnPlayCard").removeAttr('disabled');
+    }else{
+            $("#btnPlayCard").attr('disabled','disabled');
+    }
 }
+ 
 function changeRound(data){
 	// TODO
 	 // hashGame

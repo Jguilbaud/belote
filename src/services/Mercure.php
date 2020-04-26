@@ -102,12 +102,13 @@ class Mercure extends StaticAccessClass {
         ], $payload);
     }
 
-    public function notifyChangeTurn(String $hashGame, String $player, String $card, String $winner, int $newTurnNum) {
+    public function notifyChangeTurn(String $hashGame, String $player, int $cardTurnPosition, String $card, String $winner, int $newTurnNum) {
         $payload = new \Entities\MercureEventBelotePayload();
         $payload->setAction('changeturn');
         $payload->addData('hashGame', $hashGame);
         $payload->addData('player', $player);
         $payload->addData('card', $card);
+        $payload->addData('cardPosition', $cardTurnPosition);
         $payload->addData('winner', $winner);
         $payload->addData('newTurnNum', $newTurnNum);
 
@@ -118,7 +119,7 @@ class Mercure extends StaticAccessClass {
         ], $payload);
     }
 
-    public function notifyChangeRound(String $hashGame, int $newRoundNum, String $dealer, String $cutter, array $points) {
+    public function notifyChangeRound(String $hashGame, String $player, int $cardTurnPosition, String $card, int $newRoundNum, String $dealer, String $cutter, array $points) {
         $payload = new \Entities\MercureEventBelotePayload();
         $payload->setAction('changeround');
         $payload->addData('hashGame', $hashGame);
@@ -126,5 +127,9 @@ class Mercure extends StaticAccessClass {
         $payload->addData('newRoundNum', $newRoundNum);
         $payload->addData('dealer', $dealer);
         $payload->addData('cutter', $cutter);
+        $payload->addData('player', $player);
+        $payload->addData('card', $card);
+        $payload->addData('cardPosition', $cardTurnPosition);
+        $payload->addData('winner', $winner);
     }
 }
