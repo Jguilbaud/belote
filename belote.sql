@@ -108,7 +108,8 @@ ALTER TABLE `games`
 -- Index pour la table `hands`
 --
 ALTER TABLE `hands`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE( `id_round`, `player`); 
 
 --
 -- Index pour la table `rounds`

@@ -80,8 +80,8 @@ define('CARDS_COLORS', array(
     'c' => 'club'
 ));
 define('PLAYERS', array(
-    'n',
-    'e',
-    's',
-    'w'
+    'n' => 'north',
+    'e' => 'east',
+    's' => 'south',
+    'w' => 'west'
 ));

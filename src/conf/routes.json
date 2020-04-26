@@ -107,5 +107,21 @@
                 "method": "post"
             }
         }
+    },
+    "game_playcard": {
+        "http_method": "post",
+        "type": "api",
+        "regexp": "^/play/([a-z0-9]{10})/playcard",
+        "controller": "Game",
+        "method": "playCard",
+        "params": {
+             "hash": {
+                "method": "uri",
+                "uri_position": 1
+            },
+            "card": {
+                "method": "post"
+            }
+        }
     }
 }

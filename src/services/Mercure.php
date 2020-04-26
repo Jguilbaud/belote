@@ -85,4 +85,46 @@ class Mercure extends StaticAccessClass {
             \BASE_URL . '/game/' . $hashGame . '/' . $player
         ], $payload);
     }
+
+    public function notifyCardPlayed(String $hashGame, String $player, int $cardTurnPosition, String $card, String $newPlayer) {
+        $payload = new \Entities\MercureEventBelotePayload();
+        $payload->setAction('cardplayed');
+        $payload->addData('hashGame', $hashGame);
+        $payload->addData('player', $player);
+        $payload->addData('card', $card);
+        $payload->addData('cardPosition', $cardTurnPosition);
+        $payload->addData('newPlayer', $newPlayer);
+
+        $this->notify([
+            \BASE_URL . '/game/' . $hashGame
+        ], [
+            \BASE_URL . '/game/' . $hashGame
+        ], $payload);
+    }
+
+    public function notifyChangeTurn(String $hashGame, String $player, String $card, String $winner, int $newTurnNum) {
+        $payload = new \Entities\MercureEventBelotePayload();
+        $payload->setAction('changeturn');
+        $payload->addData('hashGame', $hashGame);
+        $payload->addData('player', $player);
+        $payload->addData('card', $card);
+        $payload->addData('winner', $winner);
+        $payload->addData('newTurnNum', $newTurnNum);
+
+        $this->notify([
+            \BASE_URL . '/game/' . $hashGame
+        ], [
+            \BASE_URL . '/game/' . $hashGame
+        ], $payload);
+    }
+
+    public function notifyChangeRound(String $hashGame, int $newRoundNum, String $dealer, String $cutter, array $points) {
+        $payload = new \Entities\MercureEventBelotePayload();
+        $payload->setAction('changeround');
+        $payload->addData('hashGame', $hashGame);
+        $payload->addData('points', $points);
+        $payload->addData('newRoundNum', $newRoundNum);
+        $payload->addData('dealer', $dealer);
+        $payload->addData('cutter', $cutter);
+    }
 }

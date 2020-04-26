@@ -11,10 +11,16 @@
                 A <span id="currentPlayerToPlay"> {{currentPlayer}} </span> de jouer
             </div>
             <div class="row {{hideTurnCards}}" id="trumpColor">
-                <h3>Atout :</h3>
-                <span id="trumpColorSymbol"></span>
-                <h3>Preneur :</h3>
-                <span id="trumpColorTaker"></span>
+                <div class="col-md-12">
+                    <div class="row">
+                        <h3>Atout :</h3>
+                        <span id="trumpColorSymbol">{{trumpColorImg|raw}}</span>
+                    </div>
+                    <div class="row">
+                        <h3>Preneur :</h3>
+                        <span id="trumpColorTaker">{{takerName}}</span>
+                    </div>
+                </div>
             </div>
             <div class="row {{hideTurnCards}}" id="turnCards">
                 <div class="col-md-12">
@@ -22,19 +28,19 @@
                         <h3>Pli en cours :</h3>
                     </div>
                     <div class="row">
-                        <div class="col-md-2 subboard" id="subboard_1">
+                        <div class="col-md-3 subboard" id="subboard_1">
                             <p class="playerName">Joueur 1</p>
                             <div class="playerCard">carte 1</div>
                         </div>
-                        <div class="col-md-2 subboard" id="subboard_2">
+                        <div class="col-md-3 subboard" id="subboard_2">
                             <p class="playerName">Joueur 2</p>
                             <div class="playerCard">carte 2</div>
                         </div>
-                        <div class="col-md-2 subboard" id="subboard_3">
+                        <div class="col-md-3 subboard" id="subboard_3">
                             <p class="playerName">Joueur 3</p>
                             <div class="playerCard">carte 3</div>
                         </div>
-                        <div class="col-md-2 subboard" id="subboard_4">
+                        <div class="col-md-3 subboard" id="subboard_4">
                             <p class="playerName">Joueur 4</p>
                             <div class="playerCard">carte 4</div>
                         </div>
@@ -81,7 +87,8 @@
                         <div class="cards">{{myCards|raw}}</div>                        
                     </div>
                     <div class="row">
-                        <input type="button" value="Jouer cette carte" id="playCard" {{hidePlayCardBtn|raw}} />                        
+                    
+                        <input type="button" value="Jouer cette carte" id="btnPlayCard" {{hidePlayCardBtn|raw}} />                        
                     </div>
                 </div>
                 

@@ -133,7 +133,6 @@ class Game extends AbstractController {
             \Services\Mercure::get()->notifyGameStart($hashGame);
         }
         \Repositories\DbGame::get()->update($oGame);
-
         // On répond à la requete
         return array(
             'response' => 'ok'
@@ -225,6 +224,19 @@ class Game extends AbstractController {
                         // Cet atout a été refusé au premier tour, on ne peut donc plus le prendre
                         $this->tplVars['trump' . ucfirst(\CARDS_COLORS[substr($oGame->getCards()[0], 0, 1)]) . 'Disabled'] = 'disabled';
                         break;
+
+                    case \Entities\Game::STEP_PLAY_CARD :
+                        $oRound = \Repositories\DbRound::get()->findOneById($oGame->getId_current_round());
+                        $this->tplVars['hideTurnCards'] = '';
+                        $method = 'getName_' . \PLAYERS[$oRound->getTaker()];
+                        $this->tplVars['takerName'] = $oGame->$method();
+                        $this->tplVars['trumpColorImg'] = '<img src="' . \BASE_URL . '/img/' . \CARDS_COLORS[$oRound->getTrump_color()] . '.png" />';
+                        $this->showHand($oGame->getId_current_round(), $jwtBeloteCookie->getPlayerPosition());
+                        if ($jwtBeloteCookie->getPlayerPosition() == $oGame->getCurrent_player()) {
+                            $this->tplVars['hidePlayCardBtn'] = '';
+                        }
+
+                        break;
                     // TODO autres etapes
                 }
 
@@ -240,13 +252,16 @@ class Game extends AbstractController {
 
     private function showHand(int $idRound, String $playerPosition) {
         $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($idRound, $playerPosition);
-        foreach ( $oHand->getCards() as $card ) {
+        $cards = $oHand->getCards();
+        sort($cards);
+        foreach ( $cards as $card ) {
             $this->tplVars['myCards'] .= '<img src="' . \BASE_URL . '/img/cards/' . $card . '.png" id="mycard_' . $card . '" />';
         }
     }
 
     /**
      * Vérification préliminaire lors d'une action soumise dans le jeu
+     *
      * @param String $hashGame
      * @param array $requestedGameStep
      * @param String $playerPosition
@@ -288,7 +303,7 @@ class Game extends AbstractController {
             $proposedTrumpCard = \Services\Game::get()->dealCards($oGame, $oRound);
 
             // On envoie les mains à chaque joueur via mercure
-            foreach ( \PLAYERS as $player ) {
+            foreach ( array_keys(\PLAYERS) as $player ) {
                 $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oGame->getId_current_round(), $player);
                 \Services\Mercure::get()->notifyRoundStart($oGame->getHash(), $oRound->getNum_round(), \Services\Game::get()->getNextPlayerFromOne($oRound->getDealer()), $player, $oHand->getCards(), $proposedTrumpCard);
             }
@@ -313,6 +328,7 @@ class Game extends AbstractController {
 
     /**
      * Action lors du choix de l'atout (choix atout ou passer)
+     *
      * @param String $hashGame
      * @param String $trumpColor
      * @return array
@@ -335,7 +351,8 @@ class Game extends AbstractController {
             }
 
             // On vérifie qu'on essaye de prendre l'atout proposé au tour de choix 1 ou un autre que celui proposé au tour de choix 2
-            if ($trumpColor != 'pass' && (($oGame->getStep() == \Entities\Game::STEP_CHOOSE_TRUMP && $trumpColor != substr($oGame->getCards()[0], 0, 1)) || ($oGame->getStep() == \Entities\Game::STEP_CHOOSE_TRUMP && $trumpColor == substr($oGame->getCards()[0], 0, 1)))) {
+
+            if ($trumpColor != 'pass' && (($oGame->getStep() == \Entities\Game::STEP_CHOOSE_TRUMP && $trumpColor != \CARDS_COLORS[substr($oGame->getCards()[0], 0, 1)]) || ($oGame->getStep() == \Entities\Game::STEP_CHOOSE_TRUMP && $trumpColor == substr($oGame->getCards()[0], 0, 1)))) {
                 return array(
                     'response' => 'error',
                     'error_msg' => 'Couleur impossible à ce tour de choix'
@@ -348,7 +365,7 @@ class Game extends AbstractController {
                 $newCurrentPlayer = \Services\Game::get()->getNextPlayerFromOne($playerPosition);
                 $oGame->setCurrent_player($newCurrentPlayer);
 
-                echo $oRound->getDealer().' == '.$playerPosition;
+                echo $oRound->getDealer() . ' == ' . $playerPosition;
                 // On regarde si on passe au deuxième tour de passe ou si tout le monde a passé 2 fois
                 if ($oRound->getDealer() == $playerPosition) {
                     if ($oGame->getStep() == \Entities\Game::STEP_CHOOSE_TRUMP_2) {
@@ -365,12 +382,90 @@ class Game extends AbstractController {
                 // Si on ne passe c'est qu'on prend une couleur
                 \Services\Game::get()->chooseTrumpAndDeal($oGame, $oRound, array_search($trumpColor, \CARDS_COLORS), $playerPosition);
                 // On envoie les mains à chaque joueur via mercure
-                foreach ( \PLAYERS as $player ) {
+                foreach ( array_keys(\PLAYERS) as $player ) {
                     $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oGame->getId_current_round(), $player);
                     \Services\Mercure::get()->notifyChosenTrump($oGame->getHash(), $trumpColor, $playerPosition, $oGame->getCurrent_player(), $player, $oHand->getCards());
                 }
             }
         } catch ( \Exceptions\BeloteException $e ) {
+            // On répond à la requete
+            return array(
+                'response' => 'error',
+                'error_msg' => $e->getMessage()
+            );
+        }
+
+        // On répond à la requete
+        return array(
+            'response' => 'ok'
+        );
+    }
+
+    public function playCard(String $hashGame, String $card) {
+        try {
+            $playerPosition = '';
+            $oGame = $this->checkActionRequestAndGetGame($hashGame, [
+                \Entities\Game::STEP_PLAY_CARD
+            ], $playerPosition);
+
+            $oRound = \Repositories\DbRound::get()->findOneById($oGame->getId_current_round());
+            $oTurn = \Services\Game::get()->playCard($oRound->getId_current_turn(), $playerPosition, $card);
+
+            // On regarde si le tour est terminé
+            if (\Services\Game::get()->getNextPlayerFromOne($playerPosition) == $oTurn->getFirst_player()) {
+                $winner = \Services\Game::get()->calculateTurnWinner($oRound, $oTurn);
+                try {
+                    // On démarre un nouveau tour, lève une exception catchée plus bas si la manche est terminée
+                    $oNewTurn = \Services\Game::get()->startNewTurn($oRound, $oTurn);
+
+                    // On notifie de la fin de tour, et on commence un nouveau tour
+                    \Services\Mercure::get()->notifyChangeTurn($oGame->getHash(), $playerPosition, $card, $winner, $oNewTurn->getNum_turn());
+                } catch ( \Exceptions\TurnNumberOutofBound $e ) {
+
+                    // Si la manche est terminée, on la clot
+                    $isGameFinished = \Services\Game::get()->closeRound($oGame, $oRound);
+
+                    $points = array();
+                    $points['numRound'] = $oRound->getNum_round();
+                    $points['pointsNS'] = $oRound->getPoints_ns();
+                    $points['totalPointsNS'] = $oGame->getTotal_points_ns();
+                    $points['pointsWE'] = $oRound->getPoints_we();
+                    $points['totalPointsWE'] = $oGame->getTotal_points_we();
+
+                    if ($isGameFinished) {
+                        // TODO fin du jeu
+                        // \Services\Mercure::get()->notifyGameEnd();
+                    } else {
+                        // ... et on en démarre une nouvelle
+                        $oNewRound = \Services\Game::get()->startNewRound($oGame, $oRound);
+
+                        \Services\Mercure::get()->notifyChangeRound($oGame->getHash(), $oNewRound->getNum_Round(), $oNewRound->getDealer(), \Services\Game::get()->getPrecedentPlayerFromOne($oNewRound->getDealer()), $points);
+                    }
+                }
+            } else {
+
+                // sinon, On notifie la carte jouée et qui est le prochain joueur
+                // on calcule la position de la carte (1, 2 3 ou 4) dans le tour
+                $cardPosition = 4;
+                $tNextPlayer = \Services\Game::get()->getNextPlayerFromOne($playerPosition);
+
+                while ( $oTurn->getFirst_player() != $tNextPlayer ) {
+                    $cardPosition--;
+                    $tNextPlayer = \Services\Game::get()->getNextPlayerFromOne($tNextPlayer);
+                }
+                $oGame->setCurrent_player(\Services\Game::get()->getNextPlayerFromOne($playerPosition));
+
+                \Services\Mercure::get()->notifyCardPlayed($oGame->getHash(), $playerPosition, $cardPosition, $card, $oGame->getCurrent_player());
+            }
+            // On enregistre les mises à jour en base
+            \Repositories\DbGame::get()->update($oGame);
+            \Repositories\DbRound::get()->update($oRound);
+            \Repositories\DbTurn::get()->update($oTurn);
+        } catch ( \Exceptions\BeloteException $e ) {
+            // DEBUG dev
+            echo $e->getMessage() . " \n";
+            echo $e->getFile() . " [" . $e->getLine() . "]  \n";
+            echo $e->getTraceAsString() . " \n";
             // On répond à la requete
             return array(
                 'response' => 'error',

@@ -26,18 +26,17 @@ class Game extends StaticAccessClass {
         return $oGame->getId();
     }
 
-    public function startNewRound(\Entities\Game &$oGame): \Entities\Round {
+    public function startNewRound(\Entities\Game &$oGame, ?\Entities\Round $oPrecedentRound = null): \Entities\Round {
         // On créé la nouvelle manche
         $oRound = new \Entities\Round();
         $oRound->setId_game($oGame->getId());
 
         // Cas première manche
-        if ($oGame->getId_current_round() == 0) {
-            $dealer = \PLAYERS[rand(0, 3)];
+        if ($oGame->getId_current_round() == 0 || $oPrecedentRound == null) {
+            $dealer = array_keys(\PLAYERS)[rand(0, 3)];
             $newRound = 1;
         } else {
-            // On récupère le précédent donneur
-            $oPrecedentRound = \Repositories\DbRound::get()->findOneById($oGame->getId_current_round());
+            // On récupère le précédent donneur et numéro de manche
             $newRound = $oPrecedentRound->getNum_round() + 1;
             $dealer = $this->getNextPlayerFromOne($oPrecedentRound->getDealer());
         }
@@ -51,37 +50,31 @@ class Game extends StaticAccessClass {
         // Le joueur actif devient celui avant le donneur pour pouvoir couper le deck avant distribution
         $oGame->setCurrent_player($this->getPrecedentPlayerFromOne($dealer));
         $oGame->setId_current_round($oRound->getId());
-        \Repositories\DbGame::get()->update($oGame);
 
         return $oRound;
     }
 
-    public function startNewTurn(int $idRound, String $firstPlayer): \Entities\Turn {
-        $oRound = \Repositories\DbRound::get()->findOneById($idRound);
-
+    public function startNewTurn(\Entities\Round &$oRound, ?\Entities\Turn $oPrecedentTurn = null): \Entities\Turn {
         $oTurn = new \Entities\Turn();
-        $oTurn->setId_round($idRound);
-        $oTurn->setFirst_player($firstPlayer);
+        $oTurn->setId_round($oRound->getId());
 
         // On calcule le numéro de tour
-        if ($oRound->getId_current_turn() == 0) {
+        if ($oRound->getId_current_turn() == 0 || $oPrecedentTurn == null) {
+            $oTurn->setFirst_player($this->getNextPlayerFromOne($oRound->getDealer()));
             $newTurn = 1;
         } else {
-            // On récupère le précédent donneur
-            $oPrecedentTurn = \Repositories\DbTurn::get()->findOneById($oRound->getId_current_turn());
             $newTurn = $oPrecedentTurn->getNum_turn() + 1;
             // On détecte si on essaye pas de créer une manche de trop
             if ($newTurn >= 9) {
                 throw new \Exceptions\TurnNumberOutofBound();
             }
+            $oTurn->setFirst_player($oPrecedentTurn->getWinner());
         }
         $oTurn->setNum_turn($newTurn);
         \Repositories\DbTurn::get()->create($oTurn);
 
         // On met à jour la partie
         $oRound->setId_current_turn($oTurn->getId());
-        \Repositories\DbRound::get()->update($oRound);
-
         return $oTurn;
     }
 
@@ -197,6 +190,10 @@ class Game extends StaticAccessClass {
         $oGame->setStep(\Entities\Game::STEP_PLAY_CARD);
         // On enleve du deck les cartes ditribuées, c'est à dire toutes :)
         $oGame->setCards(array());
+
+        // On démarre le premier tour
+        $this->startNewTurn($oRound);
+
         \Repositories\DbRound::get()->update($oRound);
         \Repositories\DbGame::get()->update($oGame);
     }
@@ -235,11 +232,11 @@ class Game extends StaticAccessClass {
         // On vérifie qu'il n'a pas déjà joué une carte
         $method = 'getCard_' . strtolower($player);
         if ($oTurn->$method() != '') {
-            throw new \Exceptions\PlayerHasAlreadyPlayedCard();
+            throw new \Exceptions\PlayerHasAlreadyPlayedCard("Ce joueur a déjà joué une carte");
         }
         // On vérifie que le joueur a bien cette carte en main
         if (!in_array($card, $oHand->getCards())) {
-            throw new \Exceptions\IllegalCard();
+            throw new \Exceptions\IllegalCard("Carte non possédée ou inconnue");
         }
         $method = 'setCard_' . strtolower($player);
 
@@ -256,13 +253,10 @@ class Game extends StaticAccessClass {
         return $oTurn;
     }
 
-    public function calculateTurnWinner(\Entities\Turn &$oTurn) {
+    public function calculateTurnWinner(\Entities\Round &$oRound, \Entities\Turn &$oTurn) {
         if ($oTurn->getCard_n() == '' || $oTurn->getCard_e() == '' || $oTurn->getCard_s() == '' || $oTurn->getCard_w() == '') {
             throw new \Exceptions\TurnIsIncomplete();
         }
-
-        // On récupère la manche
-        $oRound = \Repositories\DbRound::get()->findOneById($oTurn->getId_round());
 
         $currentPlayer = $oTurn->getFirst_Player();
         $method = 'getCard_' . strtolower($currentPlayer);
@@ -304,14 +298,16 @@ class Game extends StaticAccessClass {
         }
 
         $oTurn->setWinner($bestPlayer);
-        \Repositories\DbTurn::get()->update($oTurn);
         return $bestPlayer;
     }
 
-    public function closeRound(int $idRound): \Entities\Round {
-        $oRound = \Repositories\DbRound::get()->findOneById($idRound);
-        $oGame = \Repositories\DbGame::get()->findOneById($oRound->getId_game());
-
+    /**
+     * Cloture une manche et calcule les points
+     * @param \Entities\Game $oGame
+     * @param \Entities\Round $oRound
+     * @return bool Retourne vrai si la partie est terminée, sinon false
+     */
+    public function closeRound(\Entities\Game &$oGame, \Entities\Round &$oRound): bool {
         // On récupère les tours
         $turns = \Repositories\DbTurn::get()->findAll(array(), array(
             'id_round' => $oRound->getId()
@@ -398,11 +394,7 @@ class Game extends StaticAccessClass {
         \Repositories\DbGame::get()->update($oGame);
 
         // On vérifie que la partie n'est pas terminée
-        if ($totalPointNS >= 1000 || $totalPointOE >= 1000) {
-            throw new \Exceptions\GameIsFinished();
-        }
-
-        return $oRound;
+        return ($totalPointNS >= 1000 || $totalPointOE >= 1000);
     }
 }
 

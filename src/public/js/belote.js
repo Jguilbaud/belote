@@ -13,6 +13,9 @@ function getPlayerName(playerPosition){
 }
 
 
+function logEvent(message){
+	$("#mercure_messages p").append(message+'<br />');
+}
 
 function setMercureEventHandler(){
 	const url = new URL(MERCURE_BASE_URL);
@@ -46,7 +49,18 @@ function setMercureEventHandler(){
 	 		case 'startfirstturn' :   	 			
 	 			startFirstTurn(response.data);       	 			
 	 			break;	
-	 			
+	 		case 'cardplayed' :   	 			
+	 			cardPlayed(response.data);       	 			
+	 			break;
+	 		case 'changeturn' :   	 			
+	 			changeTurn(response.data);       	 			
+	 			break;	
+	 		case 'changeround' :   	 			
+	 			changeRound(response.data);       	 			
+	 			break;	
+	 		case 'endgame' :   	 			
+	 			endGame(response.data);       	 			
+	 			break;	
    	 	}
    	 
     };
@@ -54,44 +68,8 @@ function setMercureEventHandler(){
 	
 }
 
-
 function addCardInHand(cardCode){	
 	$("#myCards .cards").append('<img src="'+BASE_URL+'/img/cards/'+cardCode+'.png" id="mycard_'+cardCode+'" />');
-}
-
-
-function setChooseTrumpEvents(){
-	$("#chooseTrump img.trump:not(.disabled)").on('click', function(event){
-		 
-		 $("#chooseTrump img.trump").removeClass("selected");
-		 $(this).addClass("selected");
-		 $("#trump_selected").val($(this).attr("id"));
-		 
-	 });
-	 // valider l'atout choisi
-	 $("#chooseTrump #btnChooseTrump").on('click', function(event){
-		 event.preventDefault();
-		 if($("#trump_selected").val() == ""){
-			 alert("Vous devez choisir un atout");
-			 return;
-		 }
-
-		 	sendPostToBack('/play/'+$("#hashGame").val()+'/choosetrump', {choice: $("#trump_selected").val().replace("chooseTrump_","")},function(){
-				 $("#btnPassTrump").attr('disabled','disabled');
-				 $("#btnChooseTrump").attr('disabled','disabled');
-		 });
-		 
-	 });
-	 // passer
-	 $("#chooseTrump #btnPassTrump").on('click', function(event){
-		 event.preventDefault();
-		 
-		 sendPostToBack('/play/'+$("#hashGame").val()+'/choosetrump', {choice:"pass"},function(){
-			 $("#btnPassTrump").attr('disabled','disabled');
-			 $("#btnChooseTrump").attr('disabled','disabled');
-		 });
-		 
-	 });
 }
 
 
@@ -147,6 +125,41 @@ function setJoinGameEvents(){
 }
 
 
+function setChooseTrumpEvents(){
+	$("#chooseTrump img.trump:not(.disabled)").on('click', function(event){
+		 
+		 $("#chooseTrump img.trump").removeClass("selected");
+		 $(this).addClass("selected");
+		 $("#trump_selected").val($(this).attr("id"));
+		 
+	 });
+	 // valider l'atout choisi
+	 $("#chooseTrump #btnChooseTrump").on('click', function(event){
+		 event.preventDefault();
+		 if($("#trump_selected").val() == ""){
+			 alert("Vous devez choisir un atout");
+			 return;
+		 }
+
+		 	sendPostToBack('/play/'+$("#hashGame").val()+'/choosetrump', {choice: $("#trump_selected").val().replace("chooseTrump_","")},function(){
+				 $("#btnPassTrump").attr('disabled','disabled');
+				 $("#btnChooseTrump").attr('disabled','disabled');
+		 });
+		 
+	 });
+	 // passer
+	 $("#chooseTrump #btnPassTrump").on('click', function(event){
+		 event.preventDefault();
+		 
+		 sendPostToBack('/play/'+$("#hashGame").val()+'/choosetrump', {choice:"pass"},function(){
+			 $("#btnPassTrump").attr('disabled','disabled');
+			 $("#btnChooseTrump").attr('disabled','disabled');
+		 });
+		 
+	 });
+}
+
+
 function setCutDeckEvents(){
 	$("#cutDeck #btnCutDeck").on('click', function(event){
 		 event.preventDefault();
@@ -158,7 +171,30 @@ function setCutDeckEvents(){
 	 });
 }
 
+function setPlayCardEvents(){
+	
+	$("#myCards .cards img").on('click', function(event){
+		 
+		 $("#myCards .cards img").removeClass("selected");
+		 $(this).addClass("selected");		 
+	 });
+	
+	
+	$("#myCards #btnPlayCard").on('click', function(event){
+		
+		if($("#myCards .cards img.selected").length){
+			var card = $("#myCards .cards img.selected").attr("id").replace('mycard_','');
 
+			sendPostToBack('/play/'+$("#hashGame").val()+'/playcard', {card:card},function(){
+				$("#myCards .cards img.selected").remove();
+			 });
+		}else{
+			alert("Vous devez choisir une carte");
+		}
+		
+	});
+	
+}
 
 function showProposedTrump(data){
 	
@@ -169,7 +205,7 @@ function showProposedTrump(data){
 	$("#round_id").html(data.numRound);
 	
 	// proposedTrumpCard
-	//TODO
+	// TODO
 	
 	// Cartes
 	jQuery.each(data.cards, function(index, value) {
@@ -199,12 +235,11 @@ function chooseTrumpNextPlayer(data){
 		$(".trump.disabled").removeClass("disabled");
 		$(proposedTurn).addClass("disabled");
 		$(proposedTurn).unbind('click');
-		setChooseTrumpEvents();
-		
+		setChooseTrumpEvents();		
 	}
 	
 	// On logs dans les messages l'evenement
-	$("#mercure_messages p").append('[Choix atout] '+getPlayerName(data.precedentPlayer)+' passe<br />');
+	logEvent('[Choix atout] '+getPlayerName(data.precedentPlayer)+' passe');
 }
 
 
@@ -226,12 +261,56 @@ function startFirstTurn(data){
 	
 	// On cache le choix de l'atout
 	$("#chooseTrump").css('display','none');
-	
+
 	// On active la possibilité de jouer
+	$("#turnCards").removeClass('hidden');
+	//On permet de sélectionner les cartes
+	setPlayCardEvents();
 	
 	// On active le bouton de choix de carte au premier joueur
+	if($("#playerPosition").val() == data.newPlayer){
+		$("#btnPlayCard").removeAttr('disabled');
+	}
 	
+}
+
+
+
+function cardPlayed(data){
+	logEvent('[Carte jouée] '+getPlayerName(data.player)+' a joué : '+data.card);
+	//On affiche la carte
+	$("#turnCards #subboard_"+data.cardPosition+" .playerCard").html('<img src="'+BASE_URL+'/img/cards/'+data.card+'.png" />');
+	$("#turnCards #subboard_"+data.cardPosition+" .playerName").html(getPlayerName(data.player));
 	
+	// Joueur actif : currentPlayerToPlay
+	$("#currentPlayerToPlay").html(getPlayerName(data.newPlayer));
+
+	// Si on est désormais le joueur actif
+	if($("#playerPosition").val() == data.newPlayer){
+		$("#btnPlayCard").removeAttr('disabled');
+	}else{
+		$("#btnPlayCard").attr('disabled','disabled');
+	}
+}
+
+function changeTurn(data){
+	// TODO
+	// hashGame
+    // player
+    // card
+    // winner
+    // newTurnNum
+}
+function changeRound(data){
+	// TODO
+	 // hashGame
+     // points
+     // newRoundNum
+     // dealer
+     // cutter
+}
+function endGame(data){
+	// TODO
 }
 
 $(document).ready(function(){
@@ -245,6 +324,9 @@ $(document).ready(function(){
 	 
 	// Choix atout
 	setChooseTrumpEvents();
+	
+	// Jouer une carte
+	setPlayCardEvents();
  });
  
 
