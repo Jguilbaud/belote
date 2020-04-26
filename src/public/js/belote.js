@@ -17,6 +17,14 @@ function logEvent(message){
 	$("#mercure_messages p").append(message+'<br />');
 }
 
+function setGameMessage(message){
+	$("#gameInfo").html(message);
+}
+
+function setCurrentPlayer(playerPosition){
+	$("#currentPlayerToPlay").html(getPlayerName(playerPosition));
+}
+
 function setMercureEventHandler(){
 	const url = new URL(MERCURE_BASE_URL);
     url.searchParams.append('topic', BASE_URL+'/game/'+$("#hashGame").val());
@@ -163,7 +171,8 @@ function setChooseTrumpEvents(){
 function setCutDeckEvents(){
 	$("#cutDeck #btnCutDeck").on('click', function(event){
 		 event.preventDefault();
-		 
+		// On désactive la zone de pli à tout le monde
+		$("#turnCards").addClass('hidden');
 		 sendPostToBack('/play/'+$("#hashGame").val()+'/cutdeck', {value:$('#cutDeckValue').val()},function(){
 			 $("#chooseTrump").css('display','none');
 		 });
@@ -199,13 +208,38 @@ function setPlayCardEvents(){
 function showProposedTrump(data){
 	
 	// Joueur actif : currentPlayerToPlay
-	$("#currentPlayerToPlay").html(getPlayerName(data.firstPlayer));
+	setCurrentPlayer(data.firstPlayer);
 	
 	// Numéro de manche
 	$("#round_id").html(data.numRound);
+        
+        // On cache la coupe de deck
+        $("#cutDeck").addClass("hidden");
 	
 	// proposedTrumpCard
-	// TODO
+        $("#chooseTrump").removeClass("hidden");
+        setChooseTrumpEvents();
+        //TODO activer les bon choix d'atout
+        $("#chooseTrump img.trump").removeClass("disabled").addClass("disabled");
+        //On active seulement le premier
+        switch(data.proposedTrumpCard.substr(0,1)){
+            case 's' :
+                $("#chooseTrump_spade").removeClass("disabled");
+                break;
+                case 'h' :
+                $("#chooseTrump_heart").removeClass("disabled");
+                break;
+                case 'd' :
+                $("#chooseTrump_diamond").removeClass("disabled");
+                break;
+                case 'c' :
+                $("#chooseTrump_club").removeClass("disabled");
+                break;
+        }
+        
+        
+        
+	$("#proposedTrumpCard img").attr('src',BASE_URL+'/img/cards/'+data.proposedTrumpCard+'.png')
 	
 	// Cartes
 	jQuery.each(data.cards, function(index, value) {
@@ -217,7 +251,7 @@ function showProposedTrump(data){
 
 function chooseTrumpNextPlayer(data){
 	// Joueur actif : currentPlayerToPlay
-	$("#currentPlayerToPlay").html(getPlayerName(data.newPlayer));
+	setCurrentPlayer(data.newPlayer);
 	
 	// Si le joueur devient le joueur actif, on active les boutons
 	if($("#playerPosition").val() == data.newPlayer){
@@ -246,7 +280,7 @@ function chooseTrumpNextPlayer(data){
 
 function startFirstTurn(data){
 	// Joueur actif : currentPlayerToPlay
-	$("#currentPlayerToPlay").html(getPlayerName(data.newPlayer));
+	setCurrentPlayer(data.newPlayer);
 	
 	// On remet toutes les cartes (triées) dans la main
 	$("#myCards .cards").html("");
@@ -264,7 +298,7 @@ function startFirstTurn(data){
 
 	// On active la possibilité de jouer
 	$("#turnCards").removeClass('hidden');
-	//On permet de sélectionner les cartes
+	// On permet de sélectionner les cartes
 	setPlayCardEvents();
 	
 	// On active le bouton de choix de carte au premier joueur
@@ -277,19 +311,19 @@ function startFirstTurn(data){
 
 
 function cardPlayed(data){
-        $("#turn_info").html('');
 	logEvent('[Carte jouée] '+getPlayerName(data.player)+' a joué : '+data.card);
-	//On affiche la carte
+	// On affiche la carte
         if(data.cardPosition == 1){
-            //Si c'est la première carte on vide les emplacements
+            // Si c'est la première carte on vide les emplacements
             $("#turnCards  .playerCard").html('');
             $("#turnCards  .playerName").html('');
         }
+        // On affiche la carte
 	$("#turnCards #subboard_"+data.cardPosition+" .playerCard").html('<img src="'+BASE_URL+'/img/cards/'+data.card+'.png" />');
 	$("#turnCards #subboard_"+data.cardPosition+" .playerName").html(getPlayerName(data.player));
 	
 	// Joueur actif : currentPlayerToPlay
-	$("#currentPlayerToPlay").html(getPlayerName(data.newPlayer));
+	setCurrentPlayer(data.newPlayer);
 
 	// Si on est désormais le joueur actif
 	if($("#playerPosition").val() == data.newPlayer){
@@ -304,18 +338,19 @@ function changeTurn(data){
     
     // {"action":"changeturn","data":{"hashGame":"e6405d1c32","player":"n","card":"sa","winner":"n","newTurnNum":3}}
     
-    //On affiche la carte
+    // On affiche la carte
     $("#turnCards #subboard_"+data.cardPosition+" .playerCard").html('<img src="'+BASE_URL+'/img/cards/'+data.card+'.png" />');
     $("#turnCards #subboard_"+data.cardPosition+" .playerName").html(getPlayerName(data.player));
     
     
     // On affiche le gagnant
-    $("#turn_info").html(getPlayerName(data.winner)+"  gagne le pli !");
+    setGameMessage(getPlayerName(data.winner)+' gagne le pli !');
+    logEvent(getPlayerName(data.winner)+' gagne le pli !');
 
     // Joueur actif : currentPlayerToPlay
    $("#currentPlayerToPlay").html(getPlayerName(data.winner));
         
-    //Si on est désormais le joueur actif
+    // Si on est désormais le joueur actif
     if($("#playerPosition").val() == data.winner){
             $("#btnPlayCard").removeAttr('disabled');
     }else{
@@ -324,12 +359,30 @@ function changeTurn(data){
 }
  
 function changeRound(data){
-	// TODO
-	 // hashGame
-     // points
-     // newRoundNum
-     // dealer
-     // cutter
+	logEvent('[Carte jouée] '+getPlayerName(data.player)+' a joué : '+data.card);
+	logEvent('## Nouvelle manche n° : '+data.newRoundNum);
+	logEvent(' - Donneur : '+getPlayerName(data.dealer));
+
+        // On affiche la carte
+	$("#turnCards #subboard_"+data.cardPosition+" .playerCard").html('<img src="'+BASE_URL+'/img/cards/'+data.card+'.png" />');
+	$("#turnCards #subboard_"+data.cardPosition+" .playerName").html(getPlayerName(data.player));
+	
+        
+	// On met à jour le numéro de manche
+	$("#round_id").html(data.newRoundNum);
+        
+	// On désactive la zone de pli à tout le monde
+	$("#btnPlayCard").attr('disabled','disabled');
+
+	// On met à jour les points
+	$("#points table tbody").append('<tr><td>'+data.points.numRound+'</td><td>'+data.points.pointsNS+' ('+data.points.totalPointsNS+')</td><td>'+data.points.pointsWE+' ('+data.points.totalPointsWE+')</td></tr>');
+	
+	setGameMessage(getPlayerName(data.cutter)+' doit couper le deck');
+	
+	// Si on est désormais le joueur actif
+        if($("#playerPosition").val() == data.cutter){
+            $("#cutDeck").removeClass('hidden');
+        }
 }
 function endGame(data){
 	// TODO

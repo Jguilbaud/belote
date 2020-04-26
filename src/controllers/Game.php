@@ -143,11 +143,12 @@ class Game extends AbstractController {
         try {
             $jwtBeloteCookie = \Services\JwtCookie::get()->getBeloteGameCookie($hashGame);
             $oGame = \Repositories\DbGame::get()->findOneByHash($hashGame);
+            $oRound = \Repositories\DbRound::get()->findOneById($oGame->getId_current_round());
             // Si on a déjà le cookie du jeu
             if ($jwtBeloteCookie != null) {
                 $this->tplName = 'gameboard.tpl.html';
                 $this->tplVars['hashGame'] = $hashGame;
-                $this->tplVars['idRound'] = $oGame->getId_current_round();
+                $this->tplVars['idRound'] = $oRound->getNum_round();
                 $this->tplVars['playerPosition'] = $jwtBeloteCookie->getPlayerPosition();
                 $this->tplVars['playerName_n'] = $oGame->getName_north();
                 $this->tplVars['playerName_s'] = $oGame->getName_south();
@@ -296,6 +297,9 @@ class Game extends AbstractController {
             // On récupère la manche
             $oRound = \Repositories\DbRound::get()->findOneById($oGame->getId_current_round());
 
+            // On défini le prochain joueur
+            $oGame->setCurrent_player(\Services\Game::get()->getNextPlayerFromOne($oRound->getDealer()));
+            
             // On coupe le deck
             \Services\Game::get()->cutDeck($oGame, $cutValue);
 
@@ -410,7 +414,7 @@ class Game extends AbstractController {
 
             $oRound = \Repositories\DbRound::get()->findOneById($oGame->getId_current_round());
             $oTurn = \Services\Game::get()->playCard($oRound->getId_current_turn(), $playerPosition, $card);
-            
+
             // on calcule la position de la carte (1, 2 3 ou 4) dans le tour
             $cardPosition = 4;
             $tNextPlayer = \Services\Game::get()->getNextPlayerFromOne($playerPosition);
@@ -423,6 +427,7 @@ class Game extends AbstractController {
             // On regarde si le tour est terminé
             if (\Services\Game::get()->getNextPlayerFromOne($playerPosition) == $oTurn->getFirst_player()) {
                 $winner = \Services\Game::get()->calculateTurnWinner($oRound, $oTurn);
+                $oGame->setCurrent_player($winner);
                 try {
                     // On démarre un nouveau tour, lève une exception catchée plus bas si la manche est terminée
                     $oNewTurn = \Services\Game::get()->startNewTurn($oRound, $oTurn);
@@ -442,19 +447,20 @@ class Game extends AbstractController {
                     $points['totalPointsWE'] = $oGame->getTotal_points_we();
 
                     if ($isGameFinished) {
+                        die("game finished");
                         // TODO fin du jeu
                         // \Services\Mercure::get()->notifyGameEnd();
                     } else {
-                        // ... et on en démarre une nouvelle
+                        // on en démarre une nouvelle manche
                         $oNewRound = \Services\Game::get()->startNewRound($oGame, $oRound);
 
-                        \Services\Mercure::get()->notifyChangeRound($oGame->getHash(), $playerPosition, $cardPosition, $card, $oNewRound->getNum_Round(), $oNewRound->getDealer(), \Services\Game::get()->getPrecedentPlayerFromOne($oNewRound->getDealer()), $points);
+                        \Services\Mercure::get()->notifyChangeRound($oGame->getHash(), $playerPosition, $cardPosition, $card, $winner, $oNewRound->getNum_Round(), $oNewRound->getDealer(), \Services\Game::get()->getPrecedentPlayerFromOne($oNewRound->getDealer()), $points);
                     }
                 }
             } else {
 
                 // sinon, On notifie la carte jouée et qui est le prochain joueur
-                
+
                 $oGame->setCurrent_player(\Services\Game::get()->getNextPlayerFromOne($playerPosition));
 
                 \Services\Mercure::get()->notifyCardPlayed($oGame->getHash(), $playerPosition, $cardPosition, $card, $oGame->getCurrent_player());

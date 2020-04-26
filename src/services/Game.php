@@ -207,8 +207,6 @@ class Game extends StaticAccessClass {
         $oGame->setCards(array_merge($arrayPart2, $arrayPart1));
         // On passe à l'étape suivante du jeu : le choix de l'atout
         $oGame->setStep(\Entities\Game::STEP_CHOOSE_TRUMP);
-        // On défini le prochain joueur
-        $oGame->setStep(\Entities\Game::STEP_CHOOSE_TRUMP);
         \Repositories\DbGame::get()->update($oGame);
     }
 
@@ -303,6 +301,7 @@ class Game extends StaticAccessClass {
 
     /**
      * Cloture une manche et calcule les points
+     *
      * @param \Entities\Game $oGame
      * @param \Entities\Round $oRound
      * @return bool Retourne vrai si la partie est terminée, sinon false
@@ -316,7 +315,7 @@ class Game extends StaticAccessClass {
         $roundPointsNS = 0;
         $roundPointsWE = 0;
         $cardsWonByNS = array();
-        $cardsWonByOE = array();
+        $cardsWonByWE = array();
         $currentPlayer = $this->getNextPlayerFromOne($oRound->getDealer());
 
         // On calcule les points de la manche et on reconstitue le deck
@@ -345,29 +344,29 @@ class Game extends StaticAccessClass {
             }
 
             // - On donne les points et on met les cartes dans le tas de la bonne équipe
-            if ($oTurn->getWinner() == 'N' || $oTurn->getWinner() == 'S') {
+            if ($oTurn->getWinner() == 'n' || $oTurn->getWinner() == 's') {
                 $roundPointsNS += $turnPoints;
                 $cardsWonByNS = array_merge($turnCards, $cardsWonByNS);
             } else {
                 $roundPointsWE += $turnPoints;
-                $cardsWonByOE = array_merge($turnCards, $cardsWonByOE);
+                $cardsWonByWE = array_merge($turnCards, $cardsWonByWE);
             }
             $currentPlayer = $oTurn->getWinner();
         }
 
         // On donne le 10 de DER au dernier vainqueur
-        if ($oTurn->getWinner() == 'N' || $oTurn->getWinner() == 'S') {
+        if ($oTurn->getWinner() == 'n' || $oTurn->getWinner() == 's') {
             $roundPointsNS += 10;
         } else {
             $roundPointsWE += 10;
         }
 
         // On vérifie que le preneur a rempli son contrat
-        if ($oRound->getTaker() == 'N' || $oRound->getTaker() == 'S') {
+        if ($oRound->getTaker() == 'n' || $oRound->getTaker() == 's') {
             $team = 'ns';
-            $otherTeam = 'oe';
+            $otherTeam = 'we';
         } else {
-            $team = 'oe';
+            $team = 'we';
             $otherTeam = 'ns';
         }
         // SI l'équipe preneuse a fait moins de point que l'équipe adverse, le contrat n'est pas rempli
@@ -381,20 +380,20 @@ class Game extends StaticAccessClass {
         \Repositories\DbRound::get()->update($oRound);
 
         $totalPointNS = $oGame->getTotal_Points_NS() + $roundPointsNS;
-        $totalPointOE = $oGame->getTotal_points_we() + $roundPointsWE;
+        $totalPointWE = $oGame->getTotal_points_we() + $roundPointsWE;
         $oGame->setTotal_Points_NS($totalPointNS);
-        $oGame->setTotal_Points_OE($totalPointOE);
+        $oGame->setTotal_Points_WE($totalPointWE);
         // On alterne quel paquet va sur l'autre
         if (rand(0, 1)) {
-            $oGame->setCards(array_merge($cardsWonByNS, $cardsWonByOE));
+            $oGame->setCards(array_merge($cardsWonByNS, $cardsWonByWE));
         } else {
-            $oGame->setCards(array_merge($cardsWonByOE, $cardsWonByNS));
+            $oGame->setCards(array_merge($cardsWonByWE, $cardsWonByNS));
         }
 
         \Repositories\DbGame::get()->update($oGame);
 
         // On vérifie que la partie n'est pas terminée
-        return ($totalPointNS >= 1000 || $totalPointOE >= 1000);
+        return ($totalPointNS >= 1000 || $totalPointWE >= 1000);
     }
 }
 

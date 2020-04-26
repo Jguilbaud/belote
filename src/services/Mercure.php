@@ -119,7 +119,7 @@ class Mercure extends StaticAccessClass {
         ], $payload);
     }
 
-    public function notifyChangeRound(String $hashGame, String $player, int $cardTurnPosition, String $card, int $newRoundNum, String $dealer, String $cutter, array $points) {
+    public function notifyChangeRound(String $hashGame, String $player, int $cardTurnPosition, String $card, String $winner, int $newRoundNum, String $dealer, String $cutter, array $points) {
         $payload = new \Entities\MercureEventBelotePayload();
         $payload->setAction('changeround');
         $payload->addData('hashGame', $hashGame);
@@ -131,5 +131,11 @@ class Mercure extends StaticAccessClass {
         $payload->addData('card', $card);
         $payload->addData('cardPosition', $cardTurnPosition);
         $payload->addData('winner', $winner);
+
+        $this->notify([
+            \BASE_URL . '/game/' . $hashGame
+        ], [
+            \BASE_URL . '/game/' . $hashGame
+        ], $payload);
     }
 }
