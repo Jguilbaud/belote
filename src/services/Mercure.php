@@ -7,10 +7,10 @@ class Mercure extends StaticAccessClass {
     protected function notify(array $targets, array $topics, \Entities\AbstractJwtPayload $data) {
         $oJwtPublisher = new \Entities\MercureJwtPayload();
         $oJwtPublisher->addPublish('*');
-        $jwtPublisher = \Firebase\JWT\JWT::encode($oJwtPublisher, \MERCURE_JWT_KEY, \MERCURE_JWT_ALGORITHM);
+        $jwtPublisher = \Firebase\JWT\JWT::encode($oJwtPublisher, \Conf::MERCURE_JWT_KEY, \Conf::MERCURE_JWT_ALGORITHM);
 
         // init mercure publisher
-        $mercurePublisher = new \Symfony\Component\Mercure\Publisher(\MERCURE_URL, new \Symfony\Component\Mercure\Jwt\StaticJwtProvider($jwtPublisher));
+        $mercurePublisher = new \Symfony\Component\Mercure\Publisher(\Conf::MERCURE_URL, new \Symfony\Component\Mercure\Jwt\StaticJwtProvider($jwtPublisher));
         // Serialize the update, and dispatch it to the hub, that will broadcast it to the clients
         return $mercurePublisher(new \Symfony\Component\Mercure\Update($topics, json_encode($data), $targets));
     }
@@ -23,9 +23,9 @@ class Mercure extends StaticAccessClass {
         $payload->addData('newPlayerName', $playerName);
 
         $this->notify([
-            \BASE_URL . '/game/' . $hashGame
+            \Conf::BASE_URL . '/game/' . $hashGame
         ], [
-            \BASE_URL . '/game/' . $hashGame
+            \Conf::BASE_URL . '/game/' . $hashGame
         ], $payload);
     }
 
@@ -33,9 +33,9 @@ class Mercure extends StaticAccessClass {
         $payload = new \Entities\MercureEventBelotePayload();
         $payload->setAction('launchgame');
         $this->notify([
-            \BASE_URL . '/game/' . $hashGame
+            \Conf::BASE_URL . '/game/' . $hashGame
         ], [
-            \BASE_URL . '/game/' . $hashGame
+            \Conf::BASE_URL . '/game/' . $hashGame
         ], $payload);
     }
 
@@ -49,9 +49,9 @@ class Mercure extends StaticAccessClass {
         $payload->addData('proposedTrumpCard', $proposedTrumpCard);
 
         $this->notify([
-            \BASE_URL . '/game/' . $hashGame . '/' . $player
+            \Conf::BASE_URL . '/game/' . $hashGame . '/' . $player
         ], [
-            \BASE_URL . '/game/' . $hashGame . '/' . $player
+            \Conf::BASE_URL . '/game/' . $hashGame . '/' . $player
         ], $payload);
     }
 
@@ -64,9 +64,9 @@ class Mercure extends StaticAccessClass {
         $payload->addData('isFirstChoiceTurn', $isFirstTurnTrumpChoice);
 
         $this->notify([
-            \BASE_URL . '/game/' . $hashGame
+            \Conf::BASE_URL . '/game/' . $hashGame
         ], [
-            \BASE_URL . '/game/' . $hashGame
+            \Conf::BASE_URL . '/game/' . $hashGame
         ], $payload);
     }
 
@@ -80,9 +80,9 @@ class Mercure extends StaticAccessClass {
         $payload->addData('trumpColor', $trumpColor);
 
         $this->notify([
-            \BASE_URL . '/game/' . $hashGame . '/' . $player
+            \Conf::BASE_URL . '/game/' . $hashGame . '/' . $player
         ], [
-            \BASE_URL . '/game/' . $hashGame . '/' . $player
+            \Conf::BASE_URL . '/game/' . $hashGame . '/' . $player
         ], $payload);
     }
 
@@ -96,9 +96,9 @@ class Mercure extends StaticAccessClass {
         $payload->addData('newPlayer', $newPlayer);
 
         $this->notify([
-            \BASE_URL . '/game/' . $hashGame
+            \Conf::BASE_URL . '/game/' . $hashGame
         ], [
-            \BASE_URL . '/game/' . $hashGame
+            \Conf::BASE_URL . '/game/' . $hashGame
         ], $payload);
     }
 
@@ -113,9 +113,9 @@ class Mercure extends StaticAccessClass {
         $payload->addData('newTurnNum', $newTurnNum);
 
         $this->notify([
-            \BASE_URL . '/game/' . $hashGame
+            \Conf::BASE_URL . '/game/' . $hashGame
         ], [
-            \BASE_URL . '/game/' . $hashGame
+            \Conf::BASE_URL . '/game/' . $hashGame
         ], $payload);
     }
 
@@ -133,9 +133,9 @@ class Mercure extends StaticAccessClass {
         $payload->addData('winner', $winner);
 
         $this->notify([
-            \BASE_URL . '/game/' . $hashGame
+            \Conf::BASE_URL . '/game/' . $hashGame
         ], [
-            \BASE_URL . '/game/' . $hashGame
+            \Conf::BASE_URL . '/game/' . $hashGame
         ], $payload);
     }
 }

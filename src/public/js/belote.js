@@ -1,5 +1,3 @@
-const BASE_URL = 'http://localhost/belote';
-const MERCURE_BASE_URL = 'http://localhost:3000/.well-known/mercure';
 function sendPostToBack(uri,data,callbackSuccess){
 	$.post(BASE_URL+uri,data,callbackSuccess);	   
 }

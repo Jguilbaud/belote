@@ -18,12 +18,14 @@ abstract class AbstractController {
 
         $this->tplEngine = new \Twig\Environment($loader, array(
             // 'cache' => TMP_PATH . 'cache',
-            'debug' => DEBUG
+            'debug' => \Conf::DEBUG
         ));
+
+        $this->tplVars['BASE_URL'] = \Conf::BASE_URL;
+        $this->tplVars['MERCURE_URL'] = \Conf::MERCURE_URL;
     }
 
     protected function renderPage() {
         echo $this->tplEngine->render($this->tplName, $this->tplVars);
     }
-
 }

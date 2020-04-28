@@ -207,7 +207,7 @@ class Game extends AbstractController {
                         if ($jwtBeloteCookie->getPlayerPosition() == $oGame->getCurrent_player()) {
                             $this->tplVars['hideChooseTrumpBtn'] = '';
                         }
-                        $this->tplVars['proposedTrumpCardSrcImg'] = \BASE_URL . '/img/cards/' . $oGame->getCards()[0] . '.png';
+                        $this->tplVars['proposedTrumpCardSrcImg'] = \Conf::BASE_URL . '/img/cards/' . $oGame->getCards()[0] . '.png';
                         $this->tplVars['trump' . ucfirst(\CARDS_COLORS[substr($oGame->getCards()[0], 0, 1)]) . 'Disabled'] = '';
 
                         break;
@@ -217,7 +217,7 @@ class Game extends AbstractController {
                         if ($jwtBeloteCookie->getPlayerPosition() == $oGame->getCurrent_player()) {
                             $this->tplVars['hideChooseTrumpBtn'] = '';
                         }
-                        $this->tplVars['proposedTrumpCardSrcImg'] = \BASE_URL . '/img/cards/' . $oGame->getCards()[0] . '.png';
+                        $this->tplVars['proposedTrumpCardSrcImg'] = \Conf::BASE_URL . '/img/cards/' . $oGame->getCards()[0] . '.png';
                         $this->tplVars['trumpHeartDisabled'] = '';
                         $this->tplVars['trumpDiamondDisabled'] = '';
                         $this->tplVars['trumpClubDisabled'] = '';
@@ -231,7 +231,7 @@ class Game extends AbstractController {
                         $this->tplVars['hideTurnCards'] = '';
                         $method = 'getName_' . \PLAYERS[$oRound->getTaker()];
                         $this->tplVars['takerName'] = $oGame->$method();
-                        $this->tplVars['trumpColorImg'] = '<img src="' . \BASE_URL . '/img/' . \CARDS_COLORS[$oRound->getTrump_color()] . '.png" />';
+                        $this->tplVars['trumpColorImg'] = '<img src="' . \Conf::BASE_URL . '/img/' . \CARDS_COLORS[$oRound->getTrump_color()] . '.png" />';
                         $this->showHand($oGame->getId_current_round(), $jwtBeloteCookie->getPlayerPosition());
                         if ($jwtBeloteCookie->getPlayerPosition() == $oGame->getCurrent_player()) {
                             $this->tplVars['hidePlayCardBtn'] = '';
@@ -256,7 +256,7 @@ class Game extends AbstractController {
         $cards = $oHand->getCards();
         sort($cards);
         foreach ( $cards as $card ) {
-            $this->tplVars['myCards'] .= '<img src="' . \BASE_URL . '/img/cards/' . $card . '.png" id="mycard_' . $card . '" />';
+            $this->tplVars['myCards'] .= '<img src="' . \Conf::BASE_URL . '/img/cards/' . $card . '.png" id="mycard_' . $card . '" />';
         }
     }
 

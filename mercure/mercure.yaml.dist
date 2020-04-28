@@ -1,0 +1,9 @@
+addr: :3000
+debug: true
+allow_anonymous: true
+# cert_file: fullchain.pem
+# key_file: privkey.pem
+cors_allowed_origins: [http://localhost]
+jwt_key: 'myjwt'
+log_format: JSON
+publish_allowed_origins: [http://localhost:3000]

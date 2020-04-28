@@ -3,7 +3,7 @@ try {
     require_once '../conf/constants.inc.php';
     require_once PATH.'/conf/conf.inc.php';
     require_once '../conf/autoload.inc.php';
-    if (DEBUG) {
+    if (\Conf::DEBUG) {
         ini_set('display_errors', true);
     }
 
@@ -12,7 +12,7 @@ try {
 } catch ( Throwable $e ) {
     echo 'Une erreur imprévue et ingérable est survenue <br />' . "\n";
 
-    if (defined('DEBUG') && DEBUG) {
+    if (\Conf::DEBUG) {
         echo $e->getMessage() . '<br />' . "\n";
         echo $e->getFile() . '(' . $e->getLine() . ')<br />' . "\n";
         echo $e->getTraceAsString();

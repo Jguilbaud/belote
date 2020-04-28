@@ -5,17 +5,17 @@ namespace Services;
 class JwtCookie extends StaticAccessClass {
 
     private function setMercureJwtCookie(\Entities\MercureJwtPayload $oPayload) {
-        $jwt = \Firebase\JWT\JWT::encode($oPayload, \MERCURE_JWT_KEY, \MERCURE_JWT_ALGORITHM);
-        setcookie(\MERCURE_COOKIE_NAME, $jwt, time() + 3600, '/', \MERCURE_COOKIE_DOMAIN);
+        $jwt = \Firebase\JWT\JWT::encode($oPayload, \Conf::MERCURE_JWT_KEY, \MERCURE_JWT_ALGORITHM);
+        setcookie(\MERCURE_COOKIE_NAME, $jwt, time() + 3600, '/', \Conf::MERCURE_COOKIE_DOMAIN);
     }
 
     private function setBeloteGameJwtCookie(String $hashGame, \Entities\GameJwtPayload $oPayload) {
-        $jwt = \Firebase\JWT\JWT::encode($oPayload, \MERCURE_JWT_KEY, \MERCURE_JWT_ALGORITHM);
+        $jwt = \Firebase\JWT\JWT::encode($oPayload, \Conf::MERCURE_JWT_KEY, \MERCURE_JWT_ALGORITHM);
         setcookie(\BELOTE_GAME_COOKIE_BASENAME . $hashGame, $jwt, time() + (3600 * 24), '/');
     }
 
     public function decodeJwtCookie(String $jwt): \stdClass {
-        return \Firebase\JWT\JWT::decode($jwt, \MERCURE_JWT_KEY, [
+        return \Firebase\JWT\JWT::decode($jwt, \Conf::MERCURE_JWT_KEY, [
             \MERCURE_JWT_ALGORITHM
         ]);
     }
@@ -28,8 +28,8 @@ class JwtCookie extends StaticAccessClass {
     public function setOrUpdateMercureJoinCookie(String $hashGame, String $playerPosition = 'guest') {
         //TODO gérer partie multiple avec le cookie mercure qui se fait écraser pour le moment
         $oPayload = new \Entities\MercureJwtPayload();
-        $oPayload->addSubscribe(\BASE_URL . '/game/' . $hashGame);
-        $oPayload->addSubscribe(\BASE_URL . '/game/' . $hashGame . '/' . $playerPosition);
+        $oPayload->addSubscribe(\Conf::BASE_URL . '/game/' . $hashGame);
+        $oPayload->addSubscribe(\Conf::BASE_URL . '/game/' . $hashGame . '/' . $playerPosition);
         $this->setMercureJwtCookie($oPayload);
     }
 
