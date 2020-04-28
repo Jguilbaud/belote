@@ -63,7 +63,7 @@ abstract class AbstractDbTable extends \Services\StaticAccessClass {
         return $oObject;
     }
 
-    public function findAll(array $columns = array(), array $filters = array(), String $order = null, String $groupBy = null, $filtersTypes = null, bool $distinct = false) {
+    public function findAll(array $columns = array(), array $filters = array(), ?String $order = null, $filtersTypes = null, bool $distinct = false) {
         // Formatage SQL des colonnes
         $sqlColumns = '*';
         if (count($columns) > 0) {
@@ -88,12 +88,18 @@ abstract class AbstractDbTable extends \Services\StaticAccessClass {
             $sqlWhereClause = ' WHERE ' . implode(' AND ', $whereClause);
         }
 
+        $sqlOrder = '';
+        // Formatage du ORDER
+        if ($order != null) {
+            $sqlOrder = ' ORDER BY ' . $order . ' ';
+        }
+
         // Formatage SQL du distinct
         $sqlDistinct = '';
         if ($distinct) {
             $sqlDistinct = 'DISTINCT ';
         }
-        $results = \Services\Database::get()->getData('SELECT ' . $sqlDistinct . $sqlColumns . ' FROM ' . $this->tableName . $sqlWhereClause, $sqlWhereValues, $filtersTypes);
+        $results = \Services\Database::get()->getData('SELECT ' . $sqlDistinct . $sqlColumns . ' FROM ' . $this->tableName . $sqlWhereClause . $sqlOrder, $sqlWhereValues, $filtersTypes);
         if (!$results) {
             throw new \Exceptions\RepositoryRowsNotFound();
         }

@@ -16,7 +16,6 @@ class DbRound extends AbstractDbTable {
         $query = 'INSERT INTO ' . $this->tableName . ' (id_game,num_round,dealer)
         VALUES (:id_game,:num_round,:dealer)';
 
-
         $values = array(
             ':id_game' => $oRound->getId_game(),
             ':num_round' => $oRound->getNum_round(),
@@ -42,21 +41,25 @@ class DbRound extends AbstractDbTable {
                 WHERE id=:id';
 
         $values = array(
-            ':id' =>  $oRound->getId(),
+            ':id' => $oRound->getId(),
             ':id_game' => $oRound->getId_game(),
             ':num_round' => $oRound->getNum_round(),
             ':points_ns' => $oRound->getPoints_ns(),
             ':points_we' => $oRound->getPoints_we(),
             ':trump_color' => $oRound->getTrump_color(),
             ':dealer' => strtolower($oRound->getDealer()),
-                    ':taker' => strtolower($oRound->getTaker()),
+            ':taker' => strtolower($oRound->getTaker()),
             ':id_current_turn' => $oRound->getId_current_turn()
         );
 
         $this->db->setData($query, $values);
+    }
 
-
-
-
+    public function findAllByGameId(int $idGame): ?\SplFixedArray {
+        return $this->findAll([
+            '*'
+        ], [
+            'id_game' => $idGame
+        ], 'num_round ASC');
     }
 }

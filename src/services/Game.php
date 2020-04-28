@@ -38,7 +38,7 @@ class Game extends StaticAccessClass {
         } else {
             // On récupère le précédent donneur et numéro de manche
             $newRound = $oPrecedentRound->getNum_round() + 1;
-            $dealer = $this->getNextPlayerFromOne($oPrecedentRound->getDealer());
+            $dealer = \Services\Utils::getNextPlayerFromOne($oPrecedentRound->getDealer());
         }
 
         $oRound->setDealer($dealer);
@@ -48,7 +48,7 @@ class Game extends StaticAccessClass {
         // On met à jour la partie
         $oGame->setStep(\Entities\Game::STEP_CUT_DECK);
         // Le joueur actif devient celui avant le donneur pour pouvoir couper le deck avant distribution
-        $oGame->setCurrent_player($this->getPrecedentPlayerFromOne($dealer));
+        $oGame->setCurrent_player(\Services\Utils::getPrecedentPlayerFromOne($dealer));
         $oGame->setId_current_round($oRound->getId());
 
         return $oRound;
@@ -60,7 +60,7 @@ class Game extends StaticAccessClass {
 
         // On calcule le numéro de tour
         if ($oRound->getId_current_turn() == 0 || $oPrecedentTurn == null) {
-            $oTurn->setFirst_player($this->getNextPlayerFromOne($oRound->getDealer()));
+            $oTurn->setFirst_player(\Services\Utils::getNextPlayerFromOne($oRound->getDealer()));
             $newTurn = 1;
         } else {
             $newTurn = $oPrecedentTurn->getNum_turn() + 1;
@@ -79,59 +79,17 @@ class Game extends StaticAccessClass {
     }
 
     /**
-     * Récupérer le joueur suivant un joueur donné
-     *
-     * @param String $currentPlayer (n, e, s ou w)
-     * @return string
-     */
-    public function getNextPlayerFromOne(String $currentPlayer = 'N') {
-        switch (strtolower($currentPlayer)) {
-            case 'n' :
-                return 'e';
-            case 'e' :
-                return 's';
-            case 's' :
-                return 'w';
-            case 'w' :
-                return 'n';
-            default :
-                throw new \Exceptions\BeloteException('Invalid player');
-        }
-    }
-
-    /**
-     * Récupérer le joueur précédent un joueur donné
-     *
-     * @param String $currentPlayer (n, e, s ou w)
-     * @return string
-     */
-    public function getPrecedentPlayerFromOne(String $currentPlayer = 'N') {
-        switch (strtolower($currentPlayer)) {
-            case 'n' :
-                return 'w';
-            case 'e' :
-                return 'n';
-            case 's' :
-                return 'e';
-            case 'w' :
-                return 's';
-            default :
-                throw new \Exceptions\BeloteException('Invalid player');
-        }
-    }
-
-    /**
      * Distribue à chaque joueur 3 puis 2 cartes et retourne la carte proposée comme atout
      *
      * @param \Entities\Game $oGame
      * @param \Entities\Round $oRound
      * @return String Carte proposée comme atout
      */
-    public function dealCards(\Entities\Game &$oGame, \Entities\Round &$oRound): String {
+    public function dealCardsBeforeTrumpChoose(\Entities\Game &$oGame, \Entities\Round &$oRound): String {
         $currentDealedPlayer = $oRound->getDealer();
         // On donne les 3 + 2 cartes à chacun
         for($i = 0; $i < 4; $i++) {
-            $currentDealedPlayer = $this->getNextPlayerFromOne($currentDealedPlayer);
+            $currentDealedPlayer = \Services\Utils::getNextPlayerFromOne($currentDealedPlayer);
 
             $arrayPart1 = array_slice($oGame->getCards(), $i * 3, 3, true);
             $arrayPart2 = array_slice($oGame->getCards(), $i * 2 + 12, 2, true);
@@ -164,7 +122,7 @@ class Game extends StaticAccessClass {
         $currentDealedPlayer = $oRound->getDealer();
         // On donne les 3 + 2 cartes à chacun
         for($i = 0; $i < 4; $i++) {
-            $currentDealedPlayer = $this->getNextPlayerFromOne($currentDealedPlayer);
+            $currentDealedPlayer = \Services\Utils::getNextPlayerFromOne($currentDealedPlayer);
 
             // On récupère la main du joueur
             $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oRound->getId(), $currentDealedPlayer);
@@ -186,13 +144,39 @@ class Game extends StaticAccessClass {
             $cardsOffset += $nbCards;
         }
 
-        $oGame->setCurrent_player(\Services\Game::get()->getNextPlayerFromOne($oRound->getDealer()));
+        $oGame->setCurrent_player(\Services\Utils::getNextPlayerFromOne($oRound->getDealer()));
         $oGame->setStep(\Entities\Game::STEP_PLAY_CARD);
         // On enleve du deck les cartes ditribuées, c'est à dire toutes :)
         $oGame->setCards(array());
 
         // On démarre le premier tour
         $this->startNewTurn($oRound);
+
+        \Repositories\DbRound::get()->update($oRound);
+        \Repositories\DbGame::get()->update($oGame);
+    }
+
+    /**
+     * Cas où personne n'a voulu de l'atout, on reprend les cartes et on se remet à l'étape où on coupe
+     *
+     * @param \Entities\Game &$oGame
+     * @param \Entities\Round &$oRound
+     */
+    public function noTrumpChosen(\Entities\Game &$oGame, \Entities\Round &$oRound): void {
+
+        // On récupère les mains des joueurs pour reconstituer le deck
+        $deck = $oGame->getCards();
+        foreach ( array_keys(\PLAYERS) as $player ) {
+            $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oGame->getId_current_round(), $player);
+            $deck = array_merge($oHand->getCards(), $deck);
+        }
+        $oGame->setCards($deck);
+
+        // On se remet à l'étape de coupe et on passe au donneur suivant, on positionne le dealer comme celui qui coupe le deck
+        $oGame->setStep(\Entities\Game::STEP_CUT_DECK);
+        $oGame->setCurrent_player($oRound->getDealer());
+        // On change donc de dealer
+        $oRound->setDealer(\Services\Utils::getNextPlayerFromOne($oRound->getDealer()));
 
         \Repositories\DbRound::get()->update($oRound);
         \Repositories\DbGame::get()->update($oGame);
@@ -271,7 +255,7 @@ class Game extends StaticAccessClass {
         // On parcoure les cartes jouées par les autres joueurs
         for($i = 0; $i < 3; $i++) {
             // On passe au joueur suivant
-            $currentPlayer = $this->getNextPlayerFromOne($currentPlayer);
+            $currentPlayer = \Services\Utils::getNextPlayerFromOne($currentPlayer);
 
             // On regarde si c'est la couleur demandée n'est pas de l'atout que l'atout n'est pas la meilleure carte du pli
             $method = 'getCard_' . strtolower($currentPlayer);
@@ -316,7 +300,7 @@ class Game extends StaticAccessClass {
         $roundPointsWE = 0;
         $cardsWonByNS = array();
         $cardsWonByWE = array();
-        $currentPlayer = $this->getNextPlayerFromOne($oRound->getDealer());
+        $currentPlayer = \Services\Utils::getNextPlayerFromOne($oRound->getDealer());
 
         // On calcule les points de la manche et on reconstitue le deck
         foreach ( $turns as $oTurn ) {
@@ -340,7 +324,7 @@ class Game extends StaticAccessClass {
                     $turnPoints += \CARDS_VALUES[$cardChar];
                 }
                 // On passe au joueur suivant en fin de boucle
-                $currentPlayer = $this->getNextPlayerFromOne($currentPlayer);
+                $currentPlayer = \Services\Utils::getNextPlayerFromOne($currentPlayer);
             }
 
             // - On donne les points et on met les cartes dans le tas de la bonne équipe

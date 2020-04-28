@@ -35,34 +35,50 @@ class Utils {
         return trim($str);
     }
 
-    /**
-     * Renvoi la taille en octets (bytes)
-     *
-     * @param int $size la taille
-     * @param String $i l'unité (Mo, B, etc)
-     * @return int La taille formattée en Octets
-     */
-    public static function getSizeInBytes($size, $unit) {
-        $sizeInBytes = 0;
-        switch (strtolower($unit)) {
-            case "b" :
-            case "o" :
-                $sizeInBytes = ( int ) $size;
-                break;
-            case "kb" :
-            case "ko" :
-                $sizeInBytes = ( int ) $size * 1024;
-                break;
-            case "mb" :
-            case "mo" :
-                $sizeInBytes = ( int ) $size * 1024 * 1024;
-                break;
-            case "gb" :
-            case "go" :
-                $sizeInBytes = ( int ) $size * 1024 * 1024 * 1024;
-                break;
-        }
+    public static function getCardImgUrl(String $cardCode): String {
+        return \Conf::BASE_URL . '/img/cards' . strtolower($cardCode) . '.png';
+    }
 
-        return $sizeInBytes;
+
+    /**
+     * Récupérer le joueur suivant un joueur donné
+     *
+     * @param String $currentPlayer (n, e, s ou w)
+     * @return string
+     */
+    public static function getNextPlayerFromOne(String $currentPlayer = 'N') {
+        switch (strtolower($currentPlayer)) {
+            case 'n' :
+                return 'e';
+            case 'e' :
+                return 's';
+            case 's' :
+                return 'w';
+            case 'w' :
+                return 'n';
+            default :
+                throw new \Exceptions\BeloteException('Invalid player');
+        }
+    }
+
+    /**
+     * Récupérer le joueur précédent un joueur donné
+     *
+     * @param String $currentPlayer (n, e, s ou w)
+     * @return string
+     */
+    public static function getPrecedentPlayerFromOne(String $currentPlayer = 'N') {
+        switch (strtolower($currentPlayer)) {
+            case 'n' :
+                return 'w';
+            case 'e' :
+                return 'n';
+            case 's' :
+                return 'e';
+            case 'w' :
+                return 's';
+            default :
+                throw new \Exceptions\BeloteException('Invalid player');
+        }
     }
 }

@@ -6,3 +6,5 @@
 /src/vendor/
 composer.phar
 /mercure/updates.db
+/src/conf/conf.inc.php
+/mercure/mercure.yaml

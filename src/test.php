@@ -17,7 +17,7 @@ while ( true ) {
     echo ' ###################' . "\n";
     echo '-- donneur : ' . $oRound->getDealer() . "\n";
     echo '  ###################' . "\n";
-    echo '  ## Coupe deck par ' . \Services\Game::get()->getPrecedentPlayerFromOne($oRound->getNum_round()) . "\n";
+    echo '  ## Coupe deck par ' . \Services\Utils::getPrecedentPlayerFromOne($oRound->getNum_round()) . "\n";
     echo '  ###################' . "\n";
     $cut = 0;
     while ( $cut <= 0 || $cut >= 32 ) {
@@ -31,7 +31,7 @@ while ( true ) {
     echo '  ###################' . "\n";
     echo '  ## Distribution des cartes automatique ' . "\n";
     echo '  ###################' . "\n";
-    $proposedTrumpCard = \Services\Game::get()->dealCards($oGame, $oRound);
+    $proposedTrumpCard = \Services\Game::get()->dealCardsBeforeTrumpChoose($oGame, $oRound);
 
     echo '  ###################' . "\n";
     echo '  ## Atout proposé : ' . $proposedTrumpCard . "\n";
@@ -61,7 +61,7 @@ while ( true ) {
     }
     \Services\Game::get()->chooseTrumpAndDeal($oGame, $oRound, $color, $player);
 
-    $currentPlayer = \Services\Game::get()->getNextPlayerFromOne($oRound->getDealer());
+    $currentPlayer = \Services\Utils::getNextPlayerFromOne($oRound->getDealer());
 
     try {
         $oTurn = null;
@@ -85,7 +85,7 @@ while ( true ) {
                     echo $e->getMessage();
                     echo '- Carte jouée interdite (non possédée ou déjà jouée) - ' . get_class($e) . "\n";
                 }
-                $currentPlayer = \Services\Game::get()->getNextPlayerFromOne($currentPlayer);
+                $currentPlayer = \Services\Utils::getNextPlayerFromOne($currentPlayer);
             }
 
             // On regarde si le tour est complet
