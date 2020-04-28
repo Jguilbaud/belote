@@ -144,7 +144,6 @@ class Game extends AbstractController {
             $jwtBeloteCookie = \Services\JwtCookie::get()->getBeloteGameCookie($hashGame);
             $oGame = \Repositories\DbGame::get()->findOneByHash($hashGame);
             $oRound = \Repositories\DbRound::get()->findOneById($oGame->getId_current_round());
-            $oTurn = \Repositories\DbTurn::get()->findOneById($oRound->getId_current_turn());
 
             // Si on a déjà le cookie du jeu
             if ($jwtBeloteCookie != null) {
@@ -256,6 +255,7 @@ class Game extends AbstractController {
                         }
 
                         // On affiche les cartes du pli
+                        $oTurn = \Repositories\DbTurn::get()->findOneById($oRound->getId_current_turn());
                         $tPlayer = $oTurn->getFirst_player();
                         for($i = 1; $i < 5; $i++) {
                             $methodCard = 'getCard_' + $tPlayer;
@@ -412,7 +412,6 @@ class Game extends AbstractController {
 
                         // On repasse à l'étape de coupe
                         \Services\Mercure::get()->notifyRecutDeck($hashGame, $oGame->getCurrent_player());
-                        // TODO mercure
                     } else {
                         // On passe au deuxième tour de choix d'atout
                         $oGame->setStep(\Entities\Game::STEP_CHOOSE_TRUMP_2);
@@ -487,9 +486,8 @@ class Game extends AbstractController {
                     $points['totalPointsWE'] = $oGame->getTotal_points_we();
 
                     if ($isGameFinished) {
-                        die("game finished");
-                        // TODO fin du jeu
-                        // \Services\Mercure::get()->notifyGameEnd();
+                        \Services\Mercure::get()->notifyGameEnd($oGame->getHash(), $playerPosition, $cardPosition, $card, $winner, $points);
+                        $oGame->setStep(\Entities\Game::STEP_FINISHED);
                     } else {
                         // on en démarre une nouvelle manche
                         $oNewRound = \Services\Game::get()->startNewRound($oGame, $oRound);
@@ -510,10 +508,6 @@ class Game extends AbstractController {
             \Repositories\DbRound::get()->update($oRound);
             \Repositories\DbTurn::get()->update($oTurn);
         } catch ( \Exceptions\BeloteException $e ) {
-            // DEBUG dev
-            echo $e->getMessage() . " \n";
-            echo $e->getFile() . " [" . $e->getLine() . "]  \n";
-            echo $e->getTraceAsString() . " \n";
             // On répond à la requete
             return array(
                 'response' => 'error',

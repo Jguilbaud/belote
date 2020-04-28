@@ -15,7 +15,7 @@ class Mercure extends StaticAccessClass {
     protected function notify(array $targets, array $topics, \Entities\AbstractJwtPayload $data) {
         $oJwtPublisher = new \Entities\MercureJwtPayload();
         $oJwtPublisher->addPublish('*');
-        $jwtPublisher = \Firebase\JWT\JWT::encode($oJwtPublisher, \Conf::MERCURE_JWT_KEY, \Conf::MERCURE_JWT_ALGORITHM);
+        $jwtPublisher = \Firebase\JWT\JWT::encode($oJwtPublisher, \Conf::MERCURE_JWT_KEY, \MERCURE_JWT_ALGORITHM);
 
         // init mercure publisher
         $mercurePublisher = new \Symfony\Component\Mercure\Publisher(\Conf::MERCURE_URL, new \Symfony\Component\Mercure\Jwt\StaticJwtProvider($jwtPublisher));
@@ -230,6 +230,33 @@ class Mercure extends StaticAccessClass {
         $payload->setAction('recutdeck');
         $payload->addData('hashGame', $hashGame);
         $payload->addData('player', $player);
+
+        $this->notify([
+            \Conf::BASE_URL . '/game/' . $hashGame
+        ], [
+            \Conf::BASE_URL . '/game/' . $hashGame
+        ], $payload);
+    }
+
+    /**
+     * Notifie la fin de partie suite à la dernière carte posée
+     *
+     * @param String $hashGame
+     * @param String $player
+     * @param int $cardTurnPosition
+     * @param String $card Carte posée (qui est donc la dernière du tour, de la manche et de la partie)
+     * @param String $winner Gagnant du pli
+     * @param array $points Points de la manche
+     */
+    public function notifyGameEnd(String $hashGame, String $player, int $cardTurnPosition, String $card, String $winner, array $points) {
+        $payload = new \Entities\MercureEventBelotePayload();
+        $payload->setAction('changeround');
+        $payload->addData('hashGame', $hashGame);
+        $payload->addData('points', $points);
+        $payload->addData('player', $player);
+        $payload->addData('card', $card);
+        $payload->addData('cardPosition', $cardTurnPosition);
+        $payload->addData('winner', $winner);
 
         $this->notify([
             \Conf::BASE_URL . '/game/' . $hashGame

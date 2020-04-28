@@ -20,33 +20,31 @@
                         <h3>Preneur :</h3>
                         <span id="trumpColorTaker">{{takerName}}</span>
                     </div>
-                    <div class="row" id="gameInfo">
-                        
-                    </div>
+                    <div class="row" id="gameInfo"></div>
                 </div>
             </div>
             <div class="row {{hideTurnCards}}" id="turnCards">
                 <div class="col-md-12">
-                    
+
                     <div class="row">
                         <h3>Pli en cours :</h3>
                     </div>
                     <div class="row">
                         <div class="col-md-3 subboard" id="subboard_1">
-                            <p class="playerName">Joueur 1</p>
-                            <div class="playerCard">carte 1</div>
+                            <p class="playerName">{{turnPlayer_1}}</p>
+                            <div class="playerCard">{{turnCard_1}}</div>
                         </div>
                         <div class="col-md-3 subboard" id="subboard_2">
-                            <p class="playerName">Joueur 2</p>
-                            <div class="playerCard">carte 2</div>
+                            <p class="playerName">{{turnPlayer_2}}</p>
+                            <div class="playerCard">{{turnCard_2}}</div>
                         </div>
                         <div class="col-md-3 subboard" id="subboard_3">
-                            <p class="playerName">Joueur 3</p>
-                            <div class="playerCard">carte 3</div>
+                            <p class="playerName">{{turnPlayer_3}}</p>
+                            <div class="playerCard">{{turnCard_2}}</div>
                         </div>
                         <div class="col-md-3 subboard" id="subboard_4">
-                            <p class="playerName">Joueur 4</p>
-                            <div class="playerCard">carte 4</div>
+                            <p class="playerName">{{turnPlayer_4}}</p>
+                            <div class="playerCard">{{turnCard_4}}</div>
                         </div>
                     </div>
                 </div>
@@ -67,7 +65,7 @@
                     <div class="row">
                         <h4>Atout proposé :</h4>
                         <div id="proposedTrumpCard">
-                            <img src="{{proposedTrumpCardSrcImg}}" />                        
+                            <img src="{{proposedTrumpCardSrcImg}}" />
                         </div>
                     </div>
                     <div class="row">
@@ -88,20 +86,20 @@
                         <h3>Mes cartes</h3>
                     </div>
                     <div class="row">
-                        <div class="cards">{{myCards|raw}}</div>                        
+                        <div class="cards">{{myCards|raw}}</div>
                     </div>
                     <div class="row">
-                    
-                        <input type="button" value="Jouer cette carte" id="btnPlayCard" {{hidePlayCardBtn|raw}} />                        
+
+                        <input type="button" value="Jouer cette carte" id="btnPlayCard" {{hidePlayCardBtn|raw}} />
                     </div>
                 </div>
-                
-                
+
+
             </div>
         </div>
         <div class="col-md-4 h-100" id="pannel_infos">
             <div>
-                
+
                 <p>v0.1-alpha1</p>
                 <p>
                     <b>Partie :</b> #{{hashGame}}<br /> <b>Manche n°:</b> #<span id="round_id">{{idRound}}</span><br /> <b>Votre nom :</b>
@@ -124,8 +122,7 @@
                             <td><span id='playerName_w'>{{playerName_w}}</span> &amp; <span id='playerName_e'>{{playerName_e}}</span></td>
                         </tr>
                     </thead>
-                    <tbody>
-                        {{htmlPoints|raw}}
+                    <tbody>{{htmlPoints|raw}}
                     </tbody>
                 </table>
             </div>
