@@ -172,7 +172,7 @@ function setCutDeckEvents(){
 		// On désactive la zone de pli à tout le monde
 		$("#turnCards").addClass('hidden');
 		 sendPostToBack('/play/'+$("#hashGame").val()+'/cutdeck', {value:$('#cutDeckValue').val()},function(){
-			 $("#chooseTrump").css('display','none');
+			 $("#chooseTrump").addClass('hidden');
 		 });
 		 
 	 });
@@ -211,34 +211,34 @@ function showProposedTrump(data){
 	// Numéro de manche
 	$("#round_id").html(data.numRound);
         
-        // On cache la coupe de deck
-        $("#cutDeck").addClass("hidden");
+    // On cache la coupe de deck
+    $("#cutDeck").addClass("hidden");
 	
 	// proposedTrumpCard
-        $("#chooseTrump").removeClass("hidden");
-        setChooseTrumpEvents();
-        //TODO activer les bon choix d'atout
-        $("#chooseTrump img.trump").removeClass("disabled").addClass("disabled");
-        //On active seulement le premier
-        switch(data.proposedTrumpCard.substr(0,1)){
-            case 's' :
-                $("#chooseTrump_spade").removeClass("disabled");
-                break;
-                case 'h' :
-                $("#chooseTrump_heart").removeClass("disabled");
-                break;
-                case 'd' :
-                $("#chooseTrump_diamond").removeClass("disabled");
-                break;
-                case 'c' :
-                $("#chooseTrump_club").removeClass("disabled");
-                break;
-        }
-        
-        
-        
-	$("#proposedTrumpCard img").attr('src',BASE_URL+'/img/cards/'+data.proposedTrumpCard+'.png')
-	
+    // On affiche la carte
+    $("#proposedTrumpCard img").attr('src',BASE_URL+'/img/cards/'+data.proposedTrumpCard+'.png');
+    $("#chooseTrump").removeClass("hidden");
+
+    // On désactive les choix d'atouts poru ensuite activer seulement celui
+	// qu'il faut
+    $("#chooseTrump img.trump").removeClass("disabled").addClass("disabled");
+    // On active seulement le premier
+    switch(data.proposedTrumpCard.substr(0,1)){
+        case 's' :
+            $("#chooseTrump_spade").removeClass("disabled");
+            break;
+        case 'h' :
+            $("#chooseTrump_heart").removeClass("disabled");
+            break;
+        case 'd' :
+            $("#chooseTrump_diamond").removeClass("disabled");
+            break;
+        case 'c' :
+            $("#chooseTrump_club").removeClass("disabled");
+            break;
+    }
+    setChooseTrumpEvents();
+
 	// Cartes
 	jQuery.each(data.cards, function(index, value) {
 		addCardInHand(value)
@@ -292,7 +292,7 @@ function startFirstTurn(data){
 
 	
 	// On cache le choix de l'atout
-	$("#chooseTrump").css('display','none');
+	$("#chooseTrump").addClass('hidden');
 
 	// On active la possibilité de jouer
 	$("#turnCards").removeClass('hidden');
