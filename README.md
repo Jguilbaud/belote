@@ -1,11 +1,15 @@
 # Belote
 * Auteur : Johan GUILBAUD
 * Prérequis : PHP7.4+ & MySQL
-* Statut : En cours de développement
+* Statut : En cours de test
 
 ## Configuration
-Copier le fichier src/conf/conf.inc.php.dist en conf.inc.php et y mettre la configuration adéquate
+* Copier le fichier src/conf/conf.inc.php.dist en conf.inc.php et y mettre la configuration adéquate
+* Configurer mercure via /mercure/mercure.yaml
 
-## Lancement serveur mercure (debug)
-./mercure --jwt-key='myjwt' --addr=':3000' --debug --cors-allowed-origins='http://localhost'
+### Installation dans un sous répertoire (alias web)
+Si installé dans un sous-répertoire/alias (par exemple monsite.com/belote/) mettre à jour également le fichier .htaccess
+
+## Lancement serveur mercure depuis le répertoire mercure/
+./mercure
 
