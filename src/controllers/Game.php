@@ -258,19 +258,20 @@ class Game extends AbstractController {
                         $oTurn = \Repositories\DbTurn::get()->findOneById($oRound->getId_current_turn());
                         $tPlayer = $oTurn->getFirst_player();
                         for($i = 1; $i < 5; $i++) {
-                            $methodCard = 'getCard_' + $tPlayer;
+                            $methodCard = 'getCard_' . $tPlayer;
                             $card = $oTurn->$methodCard();
                             $methodPlayer = 'getName_' . \PLAYERS[$tPlayer];
                             $player = $oGame->$methodPlayer();
                             if ($card != '') {
-                                $this->tplVars['turnCard_' . $i] = \Services\Utils::getCardImgUrl($oGame->getCards()[0]);
-                                $this->tplVars['turnPlayer_' . $i] = $oGame->$player();
+                                $this->tplVars['turnCard_' . $i] = '<img src="' .\Services\Utils::getCardImgUrl($card).'" />';
+                                $this->tplVars['turnPlayer_' . $i] = $oGame->$methodPlayer();
                             } else {
                                 $this->tplVars['turnCard_' . $i] = '';
                                 $this->tplVars['turnPlayer_' . $i] = '';
                             }
                             $tPlayer = \Services\Utils::getNextPlayerFromOne($tPlayer);
                         }
+
 
                         break;
                     // TODO autres etapes - fin du jeu ?
