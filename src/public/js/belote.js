@@ -383,7 +383,21 @@ function changeRound(data){
         }
 }
 function endGame(data){
-	// TODO
+    logEvent('[Carte jouée] '+getPlayerName(data.player)+' a joué : '+data.card);
+    
+    // On affiche la carte
+    $("#turnCards #subboard_"+data.cardPosition+" .playerCard").html('<img src="'+BASE_URL+'/img/cards/'+data.card+'.png" />');
+    $("#turnCards #subboard_"+data.cardPosition+" .playerName").html(getPlayerName(data.player));
+    
+    setGameMessage('La partie est terminée !');
+    
+    // On désactive la zone de pli à tout le monde
+    $("#btnPlayCard").attr('disabled','disabled');
+
+    // On met à jour les points
+    $("#points table tbody").append('<tr><td>'+data.points.numRound+'</td><td>'+data.points.pointsNS+' ('+data.points.totalPointsNS+')</td><td>'+data.points.pointsWE+' ('+data.points.totalPointsWE+')</td></tr>');
+    //TODO autre chose à faire à la fin du jeu ? :)
+	
 }
 
 $(document).ready(function(){
