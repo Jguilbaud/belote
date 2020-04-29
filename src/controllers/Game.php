@@ -32,7 +32,7 @@ class Game extends AbstractController {
 
                 // Si le jeu a démarré on renvoi vers le board
                 if ($oGame->getName_north() != '' && $oGame->getName_south() != '' && $oGame->getName_west() != '' && $oGame->getName_east() != '') {
-                    header('Location: /belote/play/' . $hashGame);
+                    header('Location: '.\Conf::BASE_URL.'/play/' . $hashGame);
                 }
             } else {
                 $this->tplVars['html_disabled'] = '';
@@ -75,7 +75,7 @@ class Game extends AbstractController {
         \Services\JwtCookie::get()->setOrUpdateBeloteGameCookie($oGame->getHash(), 'N');
 
         // On redirige vers la salle d'attente
-        header('Location: /belote/join/' . $oGame->getHash());
+        header('Location: '.\Conf::BASE_URL.'join/' . $oGame->getHash());
     }
 
     public function join(String $hashGame, String $playerName, String $playerPosition) {
@@ -279,7 +279,7 @@ class Game extends AbstractController {
                 parent::renderPage();
             } else {
                 // On redirige vers la salle d'attente
-                header('Location: /belote/join/' . $oGame->getHash());
+                header('Location: '.\Conf::BASE_URL.'join/' . $oGame->getHash());
             }
         } catch ( \Exceptions\BeloteException $e ) {
             throw new \Exceptions\BeloteException('Id partie inconnu');
