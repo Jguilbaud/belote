@@ -36,7 +36,7 @@ class Utils {
     }
 
     public static function getCardImgUrl(String $cardCode): String {
-        return \Conf::BASE_URL . '/img/cards' . strtolower($cardCode) . '.png';
+        return \Conf::BASE_URL . '/img/cards/' . strtolower($cardCode) . '.png';
     }
 
 
