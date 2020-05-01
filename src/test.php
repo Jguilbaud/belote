@@ -17,7 +17,7 @@ while ( true ) {
     echo ' ###################' . "\n";
     echo '-- donneur : ' . $oRound->getDealer() . "\n";
     echo '  ###################' . "\n";
-    echo '  ## Coupe deck par ' . \Services\Utils::getPrecedentPlayerFromOne($oRound->getNum_round()) . "\n";
+    echo '  ## Coupe deck par ' . \Services\Utils::getPrecedentPlayerFromOne($oRound->getDealer()) . "\n";
     echo '  ###################' . "\n";
     $cut = 0;
     while ( $cut <= 0 || $cut >= 32 ) {
@@ -25,7 +25,7 @@ while ( true ) {
         echo '? ';
         $cut = trim(fgets(STDIN));
     }
-    \Services\Game::get()->cutDeck($idGame, $cut);
+    \Services\Game::get()->cutDeck($oGame, $cut);
     echo '  - Coupe faite' . "\n";
 
     echo '  ###################' . "\n";
@@ -49,15 +49,10 @@ while ( true ) {
     }
 
     $color = '';
-    while ( !in_array($color, array(
-        'H',
-        'D',
-        'C',
-        'S'
-    )) ) {
+    while ( !in_array($color, array_keys(\CARDS_COLORS)) ) {
         echo '  => Quelle couleur ? (Coeur : H, Carreau : D, Trèfle : C ou Pique : S) ' . "\n";
         echo '? ';
-        $color = trim(fgets(STDIN));
+        $color = strtolower(trim(fgets(STDIN)));
     }
     \Services\Game::get()->chooseTrumpAndDeal($oGame, $oRound, $color, $player);
 

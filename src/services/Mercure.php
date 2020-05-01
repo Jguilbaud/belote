@@ -74,7 +74,7 @@ class Mercure extends StaticAccessClass {
         $payload->setAction('showproposedtrump');
         $payload->addData('hashGame', $hashGame);
         $payload->addData('numRound', $numRound);
-        $payload->addData('firstPlayer', $firstPlayer);
+        $payload->addData('newPlayer', $firstPlayer);
         $payload->addData('cards', $cards);
         $payload->addData('proposedTrumpCard', $proposedTrumpCard);
 
@@ -95,7 +95,7 @@ class Mercure extends StaticAccessClass {
      */
     public function notifyChooseTrumpPassed(String $hashGame, String $precedentPlayer, String $newCurrentPlayer, bool $isFirstTurnTrumpChoice) {
         $payload = new \Entities\MercureEventBelotePayload();
-        $payload->setAction('chooseTrumpNextPlayer');
+        $payload->setAction('choosetrumpnextplayer');
         $payload->addData('hashGame', $hashGame);
         $payload->addData('newPlayer', $newCurrentPlayer);
         $payload->addData('precedentPlayer', $precedentPlayer);

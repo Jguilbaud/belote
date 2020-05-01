@@ -12,7 +12,7 @@ function getPlayerName(playerPosition){
 
 
 function logEvent(message){
-	$("#mercure_messages p").append(message+'<br />');
+	$("#mercure_messages p").prepend(message+'<br />');
 }
 
 function setGameMessage(message){
@@ -48,9 +48,13 @@ function setMercureEventHandler(){
 	 			showProposedTrump(response.data);       	 			
 	 			break;
 
-   	 		case 'chooseTrumpNextPlayer' :   	 			
+   	 		case 'choosetrumpnextplayer' :   	 			
    	 			chooseTrumpNextPlayer(response.data);       	 			
 	 			break;
+	 			
+	 		case 'recutdeck' :   	 			
+	 			recutDeck(response.data);       	 			
+	 			break;	
 	 			
 	 		case 'startfirstturn' :   	 			
 	 			startFirstTurn(response.data);       	 			
@@ -80,6 +84,7 @@ function addCardInHand(cardCode){
 
 
 function setJoinGameEvents(){
+	$(".btnJoinGame").unbind('click');
 	$(".btnJoinGame").on('click', function(event){
 		 event.preventDefault();
 		 
@@ -131,7 +136,11 @@ function setJoinGameEvents(){
 }
 
 
-function setChooseTrumpEvents(){
+function setChooseTrumpEvents(){	
+	$("#chooseTrump img.trump:not(.disabled)").unbind('click');
+	$("#chooseTrump #btnChooseTrump").unbind('click');
+	$("#chooseTrump #btnPassTrump").unbind('click');
+					
 	$("#chooseTrump img.trump:not(.disabled)").on('click', function(event){
 		 
 		 $("#chooseTrump img.trump").removeClass("selected");
@@ -167,18 +176,20 @@ function setChooseTrumpEvents(){
 
 
 function setCutDeckEvents(){
+	$("#cutDeck #btnCutDeck").unbind('click');
 	$("#cutDeck #btnCutDeck").on('click', function(event){
 		 event.preventDefault();
 		// On désactive la zone de pli à tout le monde
 		$("#turnCards").addClass('hidden');
 		 sendPostToBack('/play/'+$("#hashGame").val()+'/cutdeck', {value:$('#cutDeckValue').val()},function(){
-			 $("#chooseTrump").addClass('hidden');
 		 });
 		 
 	 });
 }
 
 function setPlayCardEvents(){
+	$("#myCards .cards img").unbind('click');
+	$("#myCards #btnPlayCard").unbind('click');
 	
 	$("#myCards .cards img").on('click', function(event){
 		 
@@ -206,7 +217,7 @@ function setPlayCardEvents(){
 function showProposedTrump(data){
 	
 	// Joueur actif : currentPlayerToPlay
-	setCurrentPlayer(data.firstPlayer);
+	setCurrentPlayer(data.newPlayer);
 	
 	// Numéro de manche
 	$("#round_id").html(data.numRound);
@@ -218,8 +229,18 @@ function showProposedTrump(data){
     // On affiche la carte
     $("#proposedTrumpCard img").attr('src',BASE_URL+'/img/cards/'+data.proposedTrumpCard+'.png');
     $("#chooseTrump").removeClass("hidden");
+    
+    // Si le joueur devient le joueur actif, on active les boutons
+	if($("#playerPosition").val() == data.newPlayer){
+		$("#btnPassTrump").removeAttr("disabled");
+		$("#btnChooseTrump").removeAttr("disabled");
+	}else{
+		// Sinon on les désactive
+		$("#btnPassTrump").attr("disabled","disabled");
+		$("#btnChooseTrump").attr("disabled","disabled");
+	}
 
-    // On désactive les choix d'atouts poru ensuite activer seulement celui
+    // On désactive les choix d'atouts pour ensuite activer seulement celui
 	// qu'il faut
     $("#chooseTrump img.trump").removeClass("disabled").addClass("disabled");
     // On active seulement le premier
@@ -251,6 +272,9 @@ function chooseTrumpNextPlayer(data){
 	// Joueur actif : currentPlayerToPlay
 	setCurrentPlayer(data.newPlayer);
 	
+	// On cache la zone de jeu (cas à partir du 2eme tour)
+	$("#turnCards").addClass('hidden');
+	
 	// Si le joueur devient le joueur actif, on active les boutons
 	if($("#playerPosition").val() == data.newPlayer){
 		$("#btnPassTrump").removeAttr("disabled");
@@ -263,12 +287,12 @@ function chooseTrumpNextPlayer(data){
 	
 	// Si on passe au deuxieme tour de choix
 	if(!data.isFirstChoiceTurn){
-		proposedTurn = $(".trump:not(.disabled)");
+		proposedTrump = $(".trump:not(.disabled)");
 		$(".trump.disabled").removeClass("disabled");
-		$(proposedTurn).addClass("disabled");
-		$(proposedTurn).unbind('click');
-		setChooseTrumpEvents();		
+		$(proposedTrump).addClass("disabled");
+		$(proposedTrump).unbind('click');	
 	}
+	setChooseTrumpEvents();
 	
 	// On logs dans les messages l'evenement
 	logEvent('[Choix atout] '+getPlayerName(data.precedentPlayer)+' passe');
@@ -289,7 +313,7 @@ function startFirstTurn(data){
 	// On affiche l'atout demandé
 	$("#trumpColorSymbol").html('<img src="'+BASE_URL+'/img/'+trumpColor+'.png" />');
 	$("#trumpColorTaker").html(getPlayerName(data.taker));
-
+	$("#trumpColor").removeClass('hidden');
 	
 	// On cache le choix de l'atout
 	$("#chooseTrump").addClass('hidden');
@@ -355,13 +379,32 @@ function changeTurn(data){
             $("#btnPlayCard").attr('disabled','disabled');
     }
 }
+
+function recutDeck(data){
+	
+	// Si on est désormais le joueur actif
+    if($("#playerPosition").val() == data.player){
+        $("#cutDeck").removeClass('hidden');
+    	setCutDeckEvents();
+    }
+    setGameMessage(getPlayerName(data.cutter)+' doit couper le deck');
+    
+    // On vide les mains des joueurs
+    $("#myCards .cards").html('');
+    
+    // On cache le choix de l'atout
+	$("#chooseTrump").addClass('hidden');
+	
+}
  
 function changeRound(data){
 	logEvent('[Carte jouée] '+getPlayerName(data.player)+' a joué : '+data.card);
+	setGameMessage(getPlayerName(data.winner)+' gagne le pli !');
+    logEvent(getPlayerName(data.winner)+' gagne le pli !');
 	logEvent('## Nouvelle manche n° : '+data.newRoundNum);
 	logEvent(' - Donneur : '+getPlayerName(data.dealer));
 
-        // On affiche la carte
+    // On affiche la carte
 	$("#turnCards #subboard_"+data.cardPosition+" .playerCard").html('<img src="'+BASE_URL+'/img/cards/'+data.card+'.png" />');
 	$("#turnCards #subboard_"+data.cardPosition+" .playerName").html(getPlayerName(data.player));
 	
@@ -378,9 +421,9 @@ function changeRound(data){
 	setGameMessage(getPlayerName(data.cutter)+' doit couper le deck');
 	
 	// Si on est désormais le joueur actif
-        if($("#playerPosition").val() == data.cutter){
-            $("#cutDeck").removeClass('hidden');
-        }
+    if($("#playerPosition").val() == data.cutter){
+        $("#cutDeck").removeClass('hidden');
+    }
 }
 function endGame(data){
     logEvent('[Carte jouée] '+getPlayerName(data.player)+' a joué : '+data.card);

@@ -32,7 +32,7 @@ class Game extends AbstractController {
 
                 // Si le jeu a démarré on renvoi vers le board
                 if ($oGame->getName_north() != '' && $oGame->getName_south() != '' && $oGame->getName_west() != '' && $oGame->getName_east() != '') {
-                    header('Location: '.\Conf::BASE_URL.'/play/' . $hashGame);
+                    header('Location: ' . \Conf::BASE_URL . '/play/' . $hashGame);
                 }
             } else {
                 $this->tplVars['html_disabled'] = '';
@@ -75,7 +75,7 @@ class Game extends AbstractController {
         \Services\JwtCookie::get()->setOrUpdateBeloteGameCookie($oGame->getHash(), 'N');
 
         // On redirige vers la salle d'attente
-        header('Location: '.\Conf::BASE_URL.'/join/' . $oGame->getHash());
+        header('Location: ' . \Conf::BASE_URL . '/join/' . $oGame->getHash());
     }
 
     public function join(String $hashGame, String $playerName, String $playerPosition) {
@@ -261,9 +261,8 @@ class Game extends AbstractController {
                             $methodCard = 'getCard_' . $tPlayer;
                             $card = $oTurn->$methodCard();
                             $methodPlayer = 'getName_' . \PLAYERS[$tPlayer];
-                            $player = $oGame->$methodPlayer();
                             if ($card != '') {
-                                $this->tplVars['turnCard_' . $i] = '<img src="' .\Services\Utils::getCardImgUrl($card).'" />';
+                                $this->tplVars['turnCard_' . $i] = '<img src="' . \Services\Utils::getCardImgUrl($card) . '" />';
                                 $this->tplVars['turnPlayer_' . $i] = $oGame->$methodPlayer();
                             } else {
                                 $this->tplVars['turnCard_' . $i] = '';
@@ -272,7 +271,6 @@ class Game extends AbstractController {
                             $tPlayer = \Services\Utils::getNextPlayerFromOne($tPlayer);
                         }
 
-
                         break;
                     // TODO autres etapes - fin du jeu ?
                 }
@@ -280,10 +278,15 @@ class Game extends AbstractController {
                 parent::renderPage();
             } else {
                 // On redirige vers la salle d'attente
-                header('Location: '.\Conf::BASE_URL.'/join/' . $oGame->getHash());
+                header('Location: ' . \Conf::BASE_URL . '/join/' . $oGame->getHash());
             }
         } catch ( \Exceptions\BeloteException $e ) {
-            throw new \Exceptions\BeloteException('Id partie inconnu');
+            echo 'Une erreur interne s\est produite' . "<br />\n";
+            if (\Conf::DEBUG) {
+                echo $e->getMessage() . "<br />\n";
+                echo $e->getFile() . ' (' . $e->getLine() . ')' . "<br />\n";
+                echo $e->getTraceAsString();
+            }
         }
     }
 
@@ -403,8 +406,6 @@ class Game extends AbstractController {
             if ($trumpColor == 'pass') {
                 $newCurrentPlayer = \Services\Utils::getNextPlayerFromOne($playerPosition);
                 $oGame->setCurrent_player($newCurrentPlayer);
-
-                echo $oRound->getDealer() . ' == ' . $playerPosition;
                 // On regarde si on passe au deuxième tour de passe ou si tout le monde a passé 2 fois
                 if ($oRound->getDealer() == $playerPosition) {
                     if ($oGame->getStep() == \Entities\Game::STEP_CHOOSE_TRUMP_2) {
@@ -421,7 +422,10 @@ class Game extends AbstractController {
 
                 \Repositories\DbGame::get()->update($oGame);
 
-                \Services\Mercure::get()->notifyChooseTrumpPassed($oGame->getHash(), $playerPosition, $newCurrentPlayer, ($oGame->getStep() == \Entities\Game::STEP_CHOOSE_TRUMP));
+                // Si on ne doit pas redistribuer les cartes, on indique que c'est au joueur suivant de s'exprimer
+                if ($oGame->getStep() != \Entities\Game::STEP_CUT_DECK) {
+                    \Services\Mercure::get()->notifyChooseTrumpPassed($oGame->getHash(), $playerPosition, $newCurrentPlayer, ($oGame->getStep() == \Entities\Game::STEP_CHOOSE_TRUMP));
+                }
             } else {
                 // Si on ne passe c'est qu'on prend une couleur
                 \Services\Game::get()->chooseTrumpAndDeal($oGame, $oRound, array_search($trumpColor, \CARDS_COLORS), $playerPosition);

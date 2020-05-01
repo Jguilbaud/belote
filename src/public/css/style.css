@@ -60,3 +60,8 @@ body {
     margin-left: 10px;
 
 }
+
+#mercure_messages p{
+    max-height: 100px;
+    overflow-y: auto;
+}

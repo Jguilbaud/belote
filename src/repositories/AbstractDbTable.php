@@ -128,7 +128,7 @@ abstract class AbstractDbTable extends \Services\StaticAccessClass {
     abstract public function update(\Entities\AbstractEntity $object): void;
 
     public function remove(\Entities\AbstractEntity $object): void {
-        \Services\Database::get()->getData('DELETE FROM ' . $this->tableName . ' WHERE id=:id', array(
+        \Services\Database::get()->setData('DELETE FROM ' . $this->tableName . ' WHERE id=:id', array(
             ':id' => $object->getId()
         ));
     }

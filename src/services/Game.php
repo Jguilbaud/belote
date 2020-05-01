@@ -101,8 +101,8 @@ class Game extends StaticAccessClass {
             \Repositories\DbHand::get()->create($oHand);
         }
 
-        // On enleve du deck les cartes ditribuées
-        $oGame->setCards(array_slice($oGame->getCards(), 20, 32, true));
+        // On enleve du deck les cartes ditribuées, array values permet de réinexer depuis  zéro le tableau des cartes restantes
+        $oGame->setCards(array_values(array_slice($oGame->getCards(), 20, 32, true)));
         \Repositories\DbGame::get()->update($oGame);
 
         return array_values($oGame->getCards())[0];
@@ -114,11 +114,13 @@ class Game extends StaticAccessClass {
      * @param String $color sur un caractère
      * @param String $player
      */
-    public function chooseTrumpAndDeal(\Entities\Game &$oGame, \Entities\Round &$oRound, String $color, String $player) {
-        $oRound->setTaker($player);
+    public function chooseTrumpAndDeal(\Entities\Game &$oGame, \Entities\Round &$oRound, String $color, String $taker) {
+        $oRound->setTaker($taker);
         $oRound->setTrump_color($color[0]);
 
+        // On ne prend pas la premier carte par défaut qui est pour le preneur
         $cardsOffset = 1;
+        //On commencere par le joueur à droite du donneur
         $currentDealedPlayer = $oRound->getDealer();
         // On donne les 3 + 2 cartes à chacun
         for($i = 0; $i < 4; $i++) {
@@ -128,7 +130,7 @@ class Game extends StaticAccessClass {
             $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oRound->getId(), $currentDealedPlayer);
 
             // Si c'est le preneur
-            if ($currentDealedPlayer == $player) {
+            if ($currentDealedPlayer == $taker) {
                 $nbCards = 2;
                 $newCards = array(
                     $oGame->getCards()[0]
@@ -169,6 +171,9 @@ class Game extends StaticAccessClass {
         foreach ( array_keys(\PLAYERS) as $player ) {
             $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oGame->getId_current_round(), $player);
             $deck = array_merge($oHand->getCards(), $deck);
+
+            // On supprime la main en base
+            \Repositories\DbHand::get()->remove($oHand);
         }
         $oGame->setCards($deck);
 
@@ -180,6 +185,7 @@ class Game extends StaticAccessClass {
 
         \Repositories\DbRound::get()->update($oRound);
         \Repositories\DbGame::get()->update($oGame);
+
     }
 
     public function cutDeck(\Entities\Game $oGame, int $cut = 16): void {
