@@ -27,6 +27,7 @@ body {
 #chooseTrump img.trump.disabled {
     opacity : 0.5;
 }
+
 #myCards .cards img, #chooseTrump img{
     cursor: pointer; 
     opacity : 0.8;
@@ -61,7 +62,13 @@ body {
 
 }
 
-#mercure_messages p{
+#game_messages p, #game_messages_debug p {
     max-height: 100px;
     overflow-y: auto;
 }
+
+#game_messages img.icon{
+    height :18px;
+}
+
+

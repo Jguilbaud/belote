@@ -3,14 +3,14 @@
 namespace Entities;
 
 class MercureJwtPayload extends AbstractJwtPayload {
-    protected $subscribe = array();
-    protected $publish = array();
+    protected array $subscribe = array();
+    protected array $publish = array();
 
     /**
      *
      * @return multitype:
      */
-    public function getSubscribe() {
+    public function getSubscribe(): array {
         return $this->subscribe;
     }
 
@@ -18,7 +18,7 @@ class MercureJwtPayload extends AbstractJwtPayload {
      *
      * @param multitype: $subscribe
      */
-    public function setSubscribe($subscribe) {
+    public function setSubscribe(array $subscribe): void {
         $this->subscribe = $subscribe;
     }
 
@@ -26,7 +26,7 @@ class MercureJwtPayload extends AbstractJwtPayload {
      *
      * @return multitype:
      */
-    public function getPublish() {
+    public function getPublish(): array {
         return $this->publish;
     }
 
@@ -34,24 +34,29 @@ class MercureJwtPayload extends AbstractJwtPayload {
      *
      * @param multitype: $publish
      */
-    public function setPublish($publish) {
+    public function setPublish(array $publish): void {
         $this->publish = $publish;
     }
 
-    public function addSubscribe($subscribe) {
+    public function addSubscribe(String $subscribe): void {
         $this->subscribe[] = $subscribe;
     }
 
-    public function addPublish($publish) {
+    public function addPublish(String $publish): void {
         $this->publish[] = $publish;
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): array {
         return array(
             'mercure' => array(
-                'publish' => $this->publish,
-                'subscribe' => $this->subscribe
+                'publish' => array_values(array_unique($this->publish)),
+                'subscribe' => array_values(array_unique($this->subscribe))
             )
         );
+    }
+
+    public function fromStdClass(\stdClass $stdClass): void {
+        $this->publish = json_decode(json_encode($stdClass->mercure->publish), true);
+        $this->subscribe = json_decode(json_encode($stdClass->mercure->subscribe), true);
     }
 }

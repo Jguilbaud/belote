@@ -12,7 +12,7 @@ function getPlayerName(playerPosition){
 
 
 function logEvent(message){
-	$("#mercure_messages p").prepend(message+'<br />');
+	$("#game_messages p").prepend(message+'<br />');
 }
 
 function setGameMessage(message){
@@ -23,11 +23,23 @@ function setCurrentPlayer(playerPosition){
 	$("#currentPlayerToPlay").html(getPlayerName(playerPosition));
 }
 
+function getColorImgSrc(colorCode){
+	switch(colorCode){
+	case 'h': return BASE_URL+'/img/heart.png';
+	case 'd': return BASE_URL+'/img/diamond.png';
+	case 's': return BASE_URL+'/img/spade.png';
+	case 'c': return BASE_URL+'/img/club.png';
+		default:
+			return;
+	}
+	
+}
+
 function setMercureEventHandler(){
 	const url = new URL(MERCURE_BASE_URL);
     url.searchParams.append('topic', BASE_URL+'/game/'+$("#hashGame").val());
     
-    if($("#playerPosition")){
+    if($("#playerPosition").val()){
     	url.searchParams.append('topic', BASE_URL+'/game/'+$("#hashGame").val()+'/'+$("#playerPosition").val());
     }
     
@@ -221,7 +233,7 @@ function showProposedTrump(data){
 	
 	// Numéro de manche
 	$("#round_id").html(data.numRound);
-        
+
     // On cache la coupe de deck
     $("#cutDeck").addClass("hidden");
 	
@@ -304,6 +316,10 @@ function startFirstTurn(data){
 	// Joueur actif : currentPlayerToPlay
 	setCurrentPlayer(data.newPlayer);
 	
+	// On logs le choix de l'atout dans les messages l'evenement
+	logEvent('[Choix atout] '+getPlayerName(data.taker)+' prend à <img src="'+getColorImgSrc(data.trumpColor)+'" />');
+	
+	
 	// On remet toutes les cartes (triées) dans la main
 	$("#myCards .cards").html("");
 	jQuery.each(data.cards, function(index, value) {
@@ -311,7 +327,7 @@ function startFirstTurn(data){
 	});
 	
 	// On affiche l'atout demandé
-	$("#trumpColorSymbol").html('<img src="'+BASE_URL+'/img/'+trumpColor+'.png" />');
+	$("#trumpColorSymbol").html('<img src="'+getColorImgSrc(data.trumpColor)+'" />');
 	$("#trumpColorTaker").html(getPlayerName(data.taker));
 	$("#trumpColor").removeClass('hidden');
 	
@@ -333,14 +349,14 @@ function startFirstTurn(data){
 
 
 function cardPlayed(data){
-	logEvent('[Carte jouée] '+getPlayerName(data.player)+' a joué : '+data.card);
+	logEvent('[Carte jouée] '+getPlayerName(data.player)+' a joué : <img class="icon" src="'+getColorImgSrc(data.card.substring(0,1))+'" />'+data.card.substring(1,2));
 	// On affiche la carte
-        if(data.cardPosition == 1){
-            // Si c'est la première carte on vide les emplacements
-            $("#turnCards  .playerCard").html('');
-            $("#turnCards  .playerName").html('');
-        }
-        // On affiche la carte
+    if(data.cardPosition == 1){
+        // Si c'est la première carte on vide les emplacements
+        $("#turnCards  .playerCard").html('');
+        $("#turnCards  .playerName").html('');
+    }
+    // On affiche la carte
 	$("#turnCards #subboard_"+data.cardPosition+" .playerCard").html('<img src="'+BASE_URL+'/img/cards/'+data.card+'.png" />');
 	$("#turnCards #subboard_"+data.cardPosition+" .playerName").html(getPlayerName(data.player));
 	
@@ -356,21 +372,20 @@ function cardPlayed(data){
 }
 
 function changeTurn(data){
-    logEvent('[Carte jouée] '+getPlayerName(data.player)+' a joué : '+data.card);
+    logEvent('[Carte jouée] '+getPlayerName(data.player)+' a joué : <img class="icon" src="'+getColorImgSrc(data.card.substring(0,1))+'" />'+data.card.substring(1,2));
+    // On affiche le gagnant du pli
+    logEvent('[Fin du tour] '+getPlayerName(data.winner)+' gagne le pli !');
+    setGameMessage(getPlayerName(data.winner)+' gagne le pli !');
+    logEvent('-------');
     
     // {"action":"changeturn","data":{"hashGame":"e6405d1c32","player":"n","card":"sa","winner":"n","newTurnNum":3}}
     
     // On affiche la carte
     $("#turnCards #subboard_"+data.cardPosition+" .playerCard").html('<img src="'+BASE_URL+'/img/cards/'+data.card+'.png" />');
     $("#turnCards #subboard_"+data.cardPosition+" .playerName").html(getPlayerName(data.player));
-    
-    
-    // On affiche le gagnant
-    setGameMessage(getPlayerName(data.winner)+' gagne le pli !');
-    logEvent(getPlayerName(data.winner)+' gagne le pli !');
-
+ 
     // Joueur actif : currentPlayerToPlay
-   $("#currentPlayerToPlay").html(getPlayerName(data.winner));
+    $("#currentPlayerToPlay").html(getPlayerName(data.winner));
         
     // Si on est désormais le joueur actif
     if($("#playerPosition").val() == data.winner){
@@ -401,22 +416,26 @@ function changeRound(data){
 	logEvent('[Carte jouée] '+getPlayerName(data.player)+' a joué : '+data.card);
 	setGameMessage(getPlayerName(data.winner)+' gagne le pli !');
     logEvent(getPlayerName(data.winner)+' gagne le pli !');
+    logEvent('############ ');
 	logEvent('## Nouvelle manche n° : '+data.newRoundNum);
 	logEvent(' - Donneur : '+getPlayerName(data.dealer));
 
-    // On affiche la carte
+	// On met à jour les points
+	$("#points table tbody").append('<tr><td>'+data.points.numRound+'</td><td>'+data.points.pointsNS+' ('+data.points.totalPointsNS+')</td><td>'+data.points.pointsWE+' ('+data.points.totalPointsWE+')</td></tr>');
+	
+    // On affiche la carte proposée à l'atout
 	$("#turnCards #subboard_"+data.cardPosition+" .playerCard").html('<img src="'+BASE_URL+'/img/cards/'+data.card+'.png" />');
 	$("#turnCards #subboard_"+data.cardPosition+" .playerName").html(getPlayerName(data.player));
-	
         
 	// On met à jour le numéro de manche
 	$("#round_id").html(data.newRoundNum);
         
 	// On désactive la zone de pli à tout le monde
-	$("#btnPlayCard").attr('disabled','disabled');
+	// On vide et cache la zone de jeu
+	$("#turnCards").addClass("hidden");
+	$("#turnCards div.playerCard").html('');
+	$("#turnCards div.playerName").html('');
 
-	// On met à jour les points
-	$("#points table tbody").append('<tr><td>'+data.points.numRound+'</td><td>'+data.points.pointsNS+' ('+data.points.totalPointsNS+')</td><td>'+data.points.pointsWE+' ('+data.points.totalPointsWE+')</td></tr>');
 	
 	setGameMessage(getPlayerName(data.cutter)+' doit couper le deck');
 	
@@ -439,7 +458,7 @@ function endGame(data){
 
     // On met à jour les points
     $("#points table tbody").append('<tr><td>'+data.points.numRound+'</td><td>'+data.points.pointsNS+' ('+data.points.totalPointsNS+')</td><td>'+data.points.pointsWE+' ('+data.points.totalPointsWE+')</td></tr>');
-    //TODO autre chose à faire à la fin du jeu ? :)
+    // TODO autre chose à faire à la fin du jeu ? :)
 	
 }
 

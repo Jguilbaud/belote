@@ -10,7 +10,7 @@ define('REPOSITORIES_PATH', PATH . '/repositories/');
 define('MODELS_PATH', PATH . '/models/');
 define('VIEWS_PATH', PATH . '/templates/');
 
-define('BELOTE_GAME_COOKIE_BASENAME', 'belote_game_');
+define('BELOTE_GAME_COOKIE_BASENAME', 'belote');
 // Mercure
 define('MERCURE_JWT_ALGORITHM', 'HS256');
 define('MERCURE_COOKIE_NAME', 'mercureAuthorization');

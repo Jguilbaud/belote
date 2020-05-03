@@ -9,6 +9,7 @@ class Game extends AbstractController {
             $jwtBeloteCookie = \Services\JwtCookie::get()->getBeloteGameCookie($hashGame);
             $oGame = \Repositories\DbGame::get()->findOneByHash($hashGame);
 
+            $playerPosition = 'guest';
             // Si on a déjà le cookie du jeu
             if ($jwtBeloteCookie != null) {
                 $this->tplVars['html_disabled_pseudo'] = 'disabled="disabled"';
@@ -18,15 +19,19 @@ class Game extends AbstractController {
                 switch ($jwtBeloteCookie->getPlayerPosition()) {
                     case 'n' :
                         $this->tplVars['currentPlayerName'] = $oGame->getName_north();
+                        $playerPosition = 'n';
                         break;
                     case 'w' :
                         $this->tplVars['currentPlayerName'] = $oGame->getName_west();
+                        $playerPosition = 'w';
                         break;
                     case 'e' :
                         $this->tplVars['currentPlayerName'] = $oGame->getName_east();
+                        $playerPosition = 'e';
                         break;
                     case 's' :
                         $this->tplVars['currentPlayerName'] = $oGame->getName_south();
+                        $playerPosition = 's';
                         break;
                 }
 
@@ -40,7 +45,7 @@ class Game extends AbstractController {
             }
 
             // On positionne un cookie pour écouter les events mercure
-            \Services\JwtCookie::get()->setOrUpdateMercureJoinCookie($hashGame);
+            \Services\JwtCookie::get()->setCookies($hashGame, $playerPosition);
         } catch ( \Exceptions\BeloteException $e ) {
             throw new \Exceptions\BeloteException('Id partie inconnu');
         }
@@ -71,8 +76,7 @@ class Game extends AbstractController {
         \Services\Game::get()->create($oGame);
 
         // On positionne les cookies
-        \Services\JwtCookie::get()->setOrUpdateMercureJoinCookie($oGame->getHash(), 'N');
-        \Services\JwtCookie::get()->setOrUpdateBeloteGameCookie($oGame->getHash(), 'N');
+        \Services\JwtCookie::get()->setCookies($oGame->getHash(), 'N');
 
         // On redirige vers la salle d'attente
         header('Location: ' . \Conf::BASE_URL . '/join/' . $oGame->getHash());
@@ -121,8 +125,7 @@ class Game extends AbstractController {
         $oGame->$methodSet($playerName);
 
         // On positionne les cookies
-        \Services\JwtCookie::get()->setOrUpdateMercureJoinCookie($oGame->getHash(), $playerPosition);
-        \Services\JwtCookie::get()->setOrUpdateBeloteGameCookie($oGame->getHash(), $playerPosition);
+        \Services\JwtCookie::get()->setCookies($oGame->getHash(), $playerPosition);
 
         // On notifie via mercure les autres joueurs de l'arrivée du joueur
         \Services\Mercure::get()->notifyGamePlayerJoin($hashGame, $playerPosition, $playerName);
@@ -177,8 +180,8 @@ class Game extends AbstractController {
                     }
                 }
 
-                // On remet le cookie mercure au cas où il aurait disparu
-                \Services\JwtCookie::get()->setOrUpdateMercureJoinCookie($hashGame, $jwtBeloteCookie->getPlayerPosition());
+                // On remet le cookie au cas où il aurait disparu
+                \Services\JwtCookie::get()->setCookies($hashGame, $jwtBeloteCookie->getPlayerPosition());
 
                 // On affiche les points
                 $htmlPoints = '';
@@ -432,7 +435,7 @@ class Game extends AbstractController {
                 // On envoie les mains à chaque joueur via mercure
                 foreach ( array_keys(\PLAYERS) as $player ) {
                     $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oGame->getId_current_round(), $player);
-                    \Services\Mercure::get()->notifyChosenTrump($oGame->getHash(), $trumpColor, $playerPosition, $oGame->getCurrent_player(), $player, $oHand->getCards());
+                    \Services\Mercure::get()->notifyChosenTrump($oGame->getHash(), array_search($trumpColor, \CARDS_COLORS), $playerPosition, $oGame->getCurrent_player(), $player, $oHand->getCards());
                 }
             }
         } catch ( \Exceptions\BeloteException $e ) {
