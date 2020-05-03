@@ -337,7 +337,7 @@ class Game extends StaticAccessClass {
             if ($oTurn->getWinner() == 'n' || $oTurn->getWinner() == 's') {
                 $roundPointsNS += $turnPoints;
                 $cardsWonByNS = array_merge($turnCards, $cardsWonByNS);
-            } else {
+            } elseif ($oTurn->getWinner() == 'w' || $oTurn->getWinner() == 'e') {
                 $roundPointsWE += $turnPoints;
                 $cardsWonByWE = array_merge($turnCards, $cardsWonByWE);
             }
@@ -391,7 +391,7 @@ class Game extends StaticAccessClass {
         \Repositories\DbGame::get()->update($oGame);
 
         // On vérifie que la partie n'est pas terminée
-        return ($totalPointNS >= 500 || $totalPointWE >= 500);
+        return ($totalPointNS >= 1000 || $totalPointWE >= 1000);
     }
 }
 

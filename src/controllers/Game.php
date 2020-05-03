@@ -179,9 +179,15 @@ class Game extends AbstractController {
                             break;
                     }
                 }
+                
 
+               $playerPosition = $jwtBeloteCookie->getPlayerPosition();
+                    if( $playerPosition == "guest"){
+                        $playerPosition = 's';
+                    }
+                
                 // On remet le cookie au cas où il aurait disparu
-                \Services\JwtCookie::get()->setCookies($hashGame, $jwtBeloteCookie->getPlayerPosition());
+                \Services\JwtCookie::get()->setCookies($hashGame, $playerPosition);
 
                 // On affiche les points
                 $htmlPoints = '';
@@ -222,7 +228,9 @@ class Game extends AbstractController {
                         }
                         break;
                     case \Entities\Game::STEP_CHOOSE_TRUMP :
-                        $this->showHand($oGame->getId_current_round(), $jwtBeloteCookie->getPlayerPosition());
+
+                    
+                        $this->showHand($oGame->getId_current_round(), $playerPosition);
                         $this->tplVars['hideChooseTrump'] = '';
                         if ($jwtBeloteCookie->getPlayerPosition() == $oGame->getCurrent_player()) {
                             $this->tplVars['hideChooseTrumpBtn'] = '';
@@ -294,6 +302,7 @@ class Game extends AbstractController {
     }
 
     private function showHand(int $idRound, String $playerPosition) {
+
         $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($idRound, $playerPosition);
         $cards = $oHand->getCards();
         sort($cards);
@@ -351,7 +360,9 @@ class Game extends AbstractController {
             // On envoie les mains à chaque joueur via mercure
             foreach ( array_keys(\PLAYERS) as $player ) {
                 $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oGame->getId_current_round(), $player);
-                \Services\Mercure::get()->notifyRoundStart($oGame->getHash(), $oRound->getNum_round(), \Services\Utils::getNextPlayerFromOne($oRound->getDealer()), $player, $oHand->getCards(), $proposedTrumpCard);
+                $cards = $oHand->getCards();
+                sort($cards);
+                \Services\Mercure::get()->notifyRoundStart($oGame->getHash(), $oRound->getNum_round(), \Services\Utils::getNextPlayerFromOne($oRound->getDealer()), $player, $cards, $proposedTrumpCard);
             }
         } catch ( \Exceptions\CutOutOfRange $e ) {
             // On répond à la requete
@@ -435,7 +446,9 @@ class Game extends AbstractController {
                 // On envoie les mains à chaque joueur via mercure
                 foreach ( array_keys(\PLAYERS) as $player ) {
                     $oHand = \Repositories\DbHand::get()->findOneByRoundAndPlayer($oGame->getId_current_round(), $player);
-                    \Services\Mercure::get()->notifyChosenTrump($oGame->getHash(), array_search($trumpColor, \CARDS_COLORS), $playerPosition, $oGame->getCurrent_player(), $player, $oHand->getCards());
+                    $cards = $oHand->getCards();
+                    sort($cards);
+                    \Services\Mercure::get()->notifyChosenTrump($oGame->getHash(), array_search($trumpColor, \CARDS_COLORS), $playerPosition, $oGame->getCurrent_player(), $player, $cards);
                 }
             }
         } catch ( \Exceptions\BeloteException $e ) {
@@ -483,9 +496,9 @@ class Game extends AbstractController {
                     \Services\Mercure::get()->notifyChangeTurn($oGame->getHash(), $playerPosition, $cardPosition, $card, $winner, $oNewTurn->getNum_turn());
                 } catch ( \Exceptions\TurnNumberOutofBound $e ) {
 
-                    // Si la manche est terminée, on la clot
+                    // Si la manche est terminée, on la clot et on enregistre au préalable le tour en cours                    
+                    \Repositories\DbTurn::get()->update($oTurn);
                     $isGameFinished = \Services\Game::get()->closeRound($oGame, $oRound);
-
                     $points = array();
                     $points['numRound'] = $oRound->getNum_round();
                     $points['pointsNS'] = $oRound->getPoints_ns();

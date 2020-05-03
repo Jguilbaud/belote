@@ -236,6 +236,13 @@ function showProposedTrump(data){
 
     // On cache la coupe de deck
     $("#cutDeck").addClass("hidden");
+    
+            
+	// On désactive la zone de pli à tout le monde
+	// On vide et cache la zone de jeu
+	$("#turnCards").addClass("hidden");
+	$("#turnCards div.playerCard").html('');
+	$("#turnCards div.playerName").html('');
 	
 	// proposedTrumpCard
     // On affiche la carte
@@ -429,13 +436,9 @@ function changeRound(data){
         
 	// On met à jour le numéro de manche
 	$("#round_id").html(data.newRoundNum);
-        
-	// On désactive la zone de pli à tout le monde
-	// On vide et cache la zone de jeu
-	$("#turnCards").addClass("hidden");
-	$("#turnCards div.playerCard").html('');
-	$("#turnCards div.playerName").html('');
 
+     // Joueur actif : currentPlayerToPlay
+    $("#currentPlayerToPlay").html(getPlayerName(data.winner));
 	
 	setGameMessage(getPlayerName(data.cutter)+' doit couper le deck');
 	
