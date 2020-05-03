@@ -4,7 +4,8 @@ namespace Controllers;
 
 class Game extends AbstractController {
 
-    public function showJoinPage(String $hashGame, ?String $jwtCookie = null) {
+    public function showJoinPage(String $hashGame, ?String $jwtCookie = null) {    
+        ignore_user_abort( true );
         try {
             $jwtBeloteCookie = \Services\JwtCookie::get()->getBeloteGameCookie($hashGame);
             $oGame = \Repositories\DbGame::get()->findOneByHash($hashGame);
@@ -127,13 +128,13 @@ class Game extends AbstractController {
         // On positionne les cookies
         \Services\JwtCookie::get()->setCookies($oGame->getHash(), $playerPosition);
 
-        // On notifie via mercure les autres joueurs de l'arrivée du joueur
-        \Services\Mercure::get()->notifyGamePlayerJoin($hashGame, $playerPosition, $playerName);
-
         // si on a tous les joueurs, on démarre la partie
         if ($oGame->getName_north() != '' && $oGame->getName_south() != '' && $oGame->getName_west() != '' && $oGame->getName_east() != '') {
             \Services\Game::get()->startNewRound($oGame);
             \Services\Mercure::get()->notifyGameStart($hashGame);
+        }else{
+            // On notifie via mercure les autres joueurs de l'arrivée du joueur
+            \Services\Mercure::get()->notifyGamePlayerJoin($hashGame, $playerPosition, $playerName);
         }
         \Repositories\DbGame::get()->update($oGame);
         // On répond à la requete

@@ -252,9 +252,9 @@ class Game extends StaticAccessClass {
         $bestCardColor = $oTurn->$method()[0];
         $bestCardChar = substr($oTurn->$method(), 1);
         if ($bestCardColor == strtolower($oRound->getTrump_color())) {
-            $bestCardValue = \CARDS_TRUMP_VALUES[$bestCardChar];
+            $bestCardPointsValue = \CARDS_TRUMP_VALUES[$bestCardChar];
         } else {
-            $bestCardValue = \CARDS_VALUES[substr($oTurn->$method(), 1)];
+            $bestCardPointsValue = \CARDS_VALUES[substr($oTurn->$method(), 1)];
         }
 
         $bestPlayer = $currentPlayer;
@@ -266,19 +266,22 @@ class Game extends StaticAccessClass {
             // On regarde si c'est la couleur demandée n'est pas de l'atout que l'atout n'est pas la meilleure carte du pli
             $method = 'getCard_' . strtolower($currentPlayer);
             $currentColor = $oTurn->$method()[0];
-            $currentValue = substr($oTurn->$method(), 1);
+            $currentChar = substr($oTurn->$method(), 1);
             // Si c'est la couleur demandée et que ce n'est pas de l'atout
             if ($currentColor == $askedColor && $bestCardColor != strtolower($oRound->getTrump_color())) {
-                if (\CARDS_VALUES[$currentValue] > $bestCardValue) {
-                    $bestCardValue = \CARDS_VALUES[$currentValue];
+            // Si la valeur de la carte est supérieur, ou cas valeur = 0 (cartes 7,8 et 9)
+                if (\CARDS_VALUES[$currentChar] > $bestCardPointsValue || (\CARDS_VALUES[$currentChar] == $bestCardPointsValue &&  $currentChar > $bestCardChar) ) {
+                    $bestCardPointsValue = \CARDS_VALUES[$currentChar];
+                    $bestCardChar = $currentChar;
                     $bestPlayer = $currentPlayer;
                 }
             } elseif ($currentColor == strtolower($oRound->getTrump_color())) { // Sinon on joue de l'atout
                                                                                 // Si la meilleure carte pour le moment n'est pas de l'atout,c'est la premiere coupe du pli
                                                                                 // ou si de l'atout a déjà été joué, on regarde s'il est plus fort
-                if ($bestCardColor != strtolower($oRound->getTrump_color()) || \CARDS_TRUMP_VALUES[$currentValue] > $bestCardValue) {
-                    $bestCardValue = \CARDS_TRUMP_VALUES[$currentValue];
+                if ($bestCardColor != strtolower($oRound->getTrump_color()) || \CARDS_TRUMP_VALUES[$currentChar] > $bestCardPointsValue || (\CARDS_TRUMP_VALUES[$currentChar] == $bestCardPointsValue &&  $currentChar > $bestCardChar)) {
+                    $bestCardPointsValue = \CARDS_TRUMP_VALUES[$currentChar];
                     $bestPlayer = $currentPlayer;
+                    $bestCardChar = $currentChar;
                     $bestCardColor = $currentColor;
                 }
             }
@@ -316,7 +319,7 @@ class Game extends StaticAccessClass {
             for($i = 0; $i < 4; $i++) {
                 $method = 'getCard_' . strtolower($currentPlayer);
                 $card = $oTurn->$method();
-                $cardColor = $card[0];
+                $cardColor = substr($card,0, 1);
                 $cardChar = substr($card, 1);
 
                 // On reconstitue les cartes du pli
@@ -327,6 +330,7 @@ class Game extends StaticAccessClass {
                 if ($cardColor == $oRound->getTrump_color()) {
                     $turnPoints += \CARDS_TRUMP_VALUES[$cardChar];
                 } else {
+ 
                     $turnPoints += \CARDS_VALUES[$cardChar];
                 }
                 // On passe au joueur suivant en fin de boucle
@@ -340,6 +344,8 @@ class Game extends StaticAccessClass {
             } elseif ($oTurn->getWinner() == 'w' || $oTurn->getWinner() == 'e') {
                 $roundPointsWE += $turnPoints;
                 $cardsWonByWE = array_merge($turnCards, $cardsWonByWE);
+            }else{
+                echo "erreur";
             }
             $currentPlayer = $oTurn->getWinner();
         }
@@ -391,7 +397,7 @@ class Game extends StaticAccessClass {
         \Repositories\DbGame::get()->update($oGame);
 
         // On vérifie que la partie n'est pas terminée
-        return ($totalPointNS >= 1000 || $totalPointWE >= 1000);
+        return ($totalPointNS >= \WIN_POINTS || $totalPointWE >= \WIN_POINTS);
     }
 }
 

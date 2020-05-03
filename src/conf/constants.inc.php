@@ -1,6 +1,6 @@
 <?php
 // General
-define('VERSION', '0.1-alpha1');
+define('VERSION', '0.9-beta2');
 
 define('PATH', __DIR__ . '/..');
 // Path
@@ -15,6 +15,8 @@ define('BELOTE_GAME_COOKIE_BASENAME', 'belote');
 define('MERCURE_JWT_ALGORITHM', 'HS256');
 define('MERCURE_COOKIE_NAME', 'mercureAuthorization');
 
+
+define('WIN_POINTS',1000);
 
 define('DECK_CARDS_LIST', array(
     'sa',
