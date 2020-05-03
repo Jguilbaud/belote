@@ -360,17 +360,25 @@ class Game extends StaticAccessClass {
             $otherTeam = 'ns';
         }
         // SI l'équipe preneuse a fait moins de point que l'équipe adverse, le contrat n'est pas rempli
-        if (${'roundPoints' . strtoupper($team)} < ${'roundPoints' . strtoupper($otherTeam)}) {
+        if(${'roundPoints' . strtoupper($otherTeam)} == 0){
+            ${'roundPoints' . strtoupper($team)} = 0;
+            ${'roundPoints' . strtoupper($otherTeam)} = 252;
+        }else if(${'roundPoints' . strtoupper($team)} == 0){
+            ${'roundPoints' . strtoupper($otherTeam)} = 0;
+            ${'roundPoints' . strtoupper($team)} = 252;
+        }elseif (${'roundPoints' . strtoupper($team)} < ${'roundPoints' . strtoupper($otherTeam)}) {
             ${'roundPoints' . strtoupper($team)} = 0;
             ${'roundPoints' . strtoupper($otherTeam)} = 162;
         }
+        
+        
 
         $oRound->setPoints_NS($roundPointsNS);
-        $oRound->setPoints_we($roundPointsWE);
+        $oRound->setPoints_WE($roundPointsWE);
         \Repositories\DbRound::get()->update($oRound);
 
         $totalPointNS = $oGame->getTotal_Points_NS() + $roundPointsNS;
-        $totalPointWE = $oGame->getTotal_points_we() + $roundPointsWE;
+        $totalPointWE = $oGame->getTotal_points_WE() + $roundPointsWE;
         $oGame->setTotal_Points_NS($totalPointNS);
         $oGame->setTotal_Points_WE($totalPointWE);
         // On alterne quel paquet va sur l'autre
@@ -383,7 +391,7 @@ class Game extends StaticAccessClass {
         \Repositories\DbGame::get()->update($oGame);
 
         // On vérifie que la partie n'est pas terminée
-        return ($totalPointNS >= 1000 || $totalPointWE >= 1000);
+        return ($totalPointNS >= 500 || $totalPointWE >= 500);
     }
 }
 

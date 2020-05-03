@@ -59,6 +59,7 @@ body {
     background-color: rgba(50,100,50,0.3);
     width: 200px;
     margin-left: 10px;
+    min-width: 130px;
 
 }
 
@@ -71,4 +72,8 @@ body {
     height :18px;
 }
 
+
+.container{
+    max-width:90%;
+}
 

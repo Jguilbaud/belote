@@ -317,7 +317,7 @@ function startFirstTurn(data){
 	setCurrentPlayer(data.newPlayer);
 	
 	// On logs le choix de l'atout dans les messages l'evenement
-	logEvent('[Choix atout] '+getPlayerName(data.taker)+' prend à <img src="'+getColorImgSrc(data.trumpColor)+'" />');
+	logEvent('[Choix atout] '+getPlayerName(data.taker)+' prend à <img class="icon" src="'+getColorImgSrc(data.trumpColor)+'" />');
 	
 	
 	// On remet toutes les cartes (triées) dans la main
