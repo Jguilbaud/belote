@@ -1,11 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% trans %}title_create_game{% endtrans %}{% endblock %}
+{% block title %}{% trans %}create.title{% endtrans %}{% endblock %}
 
 {% block body %}
+	<h1>Belote</h1>
+    <h2>{% trans %}create.title{% endtrans %}</h2>
 
-    <h1>{% trans %}title_create_game{% endtrans %}</h1>
-
-    
-
+    {{ form(create_form) }}
 {% endblock %}

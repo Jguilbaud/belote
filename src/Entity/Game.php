@@ -1,16 +1,18 @@
 <?php
-
 namespace App\Entity;
 
 use App\Repository\GameRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ *
  * @ORM\Entity(repositoryClass=GameRepository::class)
  */
 class Game
 {
+
     /**
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -18,70 +20,136 @@ class Game
     private $id;
 
     /**
+     *
      * @ORM\Column(type="string", length=10)
      */
     private $hash;
 
     /**
+     *
      * @ORM\Column(type="integer")
      */
     private $date;
 
     /**
+     *
      * @ORM\Column(type="string", length=30)
      */
     private $name_north;
 
     /**
-     * @ORM\Column(type="string", length=30)
+     *
+     * @ORM\Column(type="string", length=30, nullable=true)
      */
     private $name_south;
 
     /**
-     * @ORM\Column(type="string", length=30)
+     *
+     * @ORM\Column(type="string", length=30, nullable=true)
      */
     private $name_west;
 
     /**
-     * @ORM\Column(type="string", length=30)
+     *
+     * @ORM\Column(type="string", length=30, nullable=true)
      */
     private $name_east;
 
     /**
+     *
      * @ORM\Column(type="integer")
      */
-    private $total_points_ns;
+    private $total_points_ns = 0;
 
     /**
+     *
      * @ORM\Column(type="integer")
      */
-    private $total_points_we;
+    private $total_points_we = 0;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     *
+     * @ORM\Column(type="simple_array", nullable=true)
      */
-    private $cards_deck;
+    private $cards_deck = array(
+        'sa',
+        's10',
+        'sk',
+        'sq',
+        'sj',
+        's9',
+        's8',
+        's7',
+        'ha',
+        'h10',
+        'hk',
+        'hq',
+        'hj',
+        'h9',
+        'h8',
+        'h7',
+        'ca',
+        'c10',
+        'ck',
+        'cq',
+        'cj',
+        'c9',
+        'c8',
+        'c7',
+        'da',
+        'd10',
+        'dk',
+        'dq',
+        'dj',
+        'd9',
+        'd8',
+        'd7'
+    );
 
     /**
-     * @ORM\Column(type="integer")
+     *
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $id_current_round;
 
     /**
+     *
      * @ORM\Column(type="string", length=30)
      */
-    private $step;
+    private $step = self::STEP_JOIN;
+
+    const STEP_JOIN = 'join';
+
+    const STEP_CUT_DECK = 'cutdeck';
 
     /**
-     * @ORM\Column(type="string", length=1)
+     * Etape de choix de l'atout de la carte proposée
+     * @var string
+     */
+    const STEP_CHOOSE_TRUMP = 'choosetrump';
+
+    /**
+     * Etape de choix libre de l'atout
+     * @var string
+     */
+    const STEP_CHOOSE_TRUMP_2 = 'choosetrump2';
+
+    const STEP_PLAY_CARD = 'playcard';
+
+    const STEP_FINISHED = 'finished';
+
+
+    /**
+     *
+     * @ORM\Column(type="string", length=1, nullable=true)
      */
     private $current_player;
 
-    
-    public function __construct(){
+    public function __construct()
+    {
         $this->date = time();
     }
-    
+
     public function getId(): ?int
     {
         return $this->id;
