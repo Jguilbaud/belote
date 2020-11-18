@@ -1,0 +1,80 @@
+@import '~bootstrap/scss/bootstrap';
+
+body {
+    background-color: #33AA33;
+    color : white;
+}
+
+#pannel_infos {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+#pannel_infos>div {
+    margin-top: 10px;
+}
+
+#cutDeckValue {
+    width: 300px;
+}
+
+#trumpColorSymbol img{    
+    height: 40px; 
+}
+#chooseTrump img.trump {
+    display: flex; 
+    height: 50px; 
+    cursor: pointer;
+}
+
+#chooseTrump img.trump.disabled {
+    opacity : 0.5;
+}
+
+#myCards .cards img, #chooseTrump img{
+    cursor: pointer; 
+    opacity : 0.8;
+}
+
+#chooseTrump img.selected,#myCards .cards img.selected {    
+    
+    opacity : 1;
+    border: 1px solid green;
+    background-color: #55DD55;
+}
+
+#currentPlayerToPlay {
+    margin: 0 5px;
+}
+
+#myCards  .cards img, #proposedTrumpCard img, #turnCards .playerCard img {
+    height: 175px;
+}
+
+.hidden {
+    display: none;
+}
+
+.subboard {
+    display: block;
+    height: 250px;
+    padding: 5px;
+    background-color: rgba(50,100,50,0.3);
+    width: 200px;
+    margin-left: 10px;
+    min-width: 130px;
+
+}
+
+#game_messages p, #game_messages_debug p {
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+#game_messages img.icon{
+    height :18px;
+}
+
+
+.container{
+    max-width:90%;
+}
