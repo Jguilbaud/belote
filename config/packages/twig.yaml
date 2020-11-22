@@ -1,2 +1,5 @@
 twig:
     default_path: '%kernel.project_dir%/templates'
+    globals:
+         mercure_base_url: '%env(MERCURE_PUBLISH_URL)%'
+         app_base_url: '%env(APP_BASE_URL)%'

@@ -10,6 +10,7 @@ use App\Service\GameCookie;
 use App\Entity\GameCookiePayload;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use App\Repository\GameRepository;
 
 class CreateGameController extends AbstractController
 
@@ -21,8 +22,9 @@ class CreateGameController extends AbstractController
      */
     public function create(Request $request)
     {
-        $form = $this->createForm(GameCreateType::class);
+        $cookieService = new GameCookie($request->cookies);
 
+        $form = $this->createForm(GameCreateType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $formValues = $form->getData();
@@ -40,11 +42,9 @@ class CreateGameController extends AbstractController
             $cookiePayload->setHashGame($oGame->getHash());
             $cookiePayload->setPlayerPosition('n');
 
-            $cookieService = new GameCookie($request->cookies);
             $cookieService->addGame($cookiePayload);
 
-            //TODO On créé le cookie mercure
-
+            // TODO On créé le cookie mercure
 
             // On redirige vers la salle d'attente
             $response = new RedirectResponse($this->generateUrl('join_game', [
@@ -54,7 +54,13 @@ class CreateGameController extends AbstractController
             $response->sendHeaders();
             return $response;
         } else {
+
+            //On récupère la liste des Jeux
+            $rGame = $this->getDoctrine()->getRepository(Game::class);
+            $hashAndPositionList = $cookieService->getGamesHashList();
+
             return $this->render('create_game/index.html.twig', [
+                'recentgames' => $rGame->findBy(['hash' => $hashAndPositionList]),
                 'create_form' => $form->createView()
             ]);
         }

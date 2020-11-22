@@ -4,6 +4,20 @@
 
 {% block body %}
 	<h1>Belote</h1>
+	
+	<h2>{% trans %}create.mygames.title{% endtrans %}</h2>
+	
+	{% if recentgames is empty %}
+		{% trans %}create.mygames.norecentgames{% endtrans %}
+		
+	{% else %}
+		<lu>	
+		{% for game in recentgames %}
+			<li> {{game.date|date("d/m/Y")}} : <a href="/join/game/{{game.hash}}">#{{game.hash}}</a> - {{('game.status.' ~ game.step)|trans}}</li>
+		{% endfor %}
+		</lu>
+	{% endif %}
+		
     <h2>{% trans %}create.title{% endtrans %}</h2>
 
     {{ form(create_form) }}

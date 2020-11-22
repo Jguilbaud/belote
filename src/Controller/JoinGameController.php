@@ -41,4 +41,11 @@ class JoinGameController extends AbstractController
 
         return $this->render('join_game/index.html.twig', $tplVars);
     }
+
+    /**
+     *
+     */
+    public function join(){
+
+    }
 }

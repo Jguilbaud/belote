@@ -32,8 +32,10 @@ class GameCookie
      */
     public function generateCookie()
     {
-        $oCookie = new Cookie(self::COOKIE_NAME, json_encode($this->cookiePayload));
-        $oCookie->setSecureDefault(true);
+        $oCookie = Cookie::create(self::COOKIE_NAME)->withValue(json_encode($this->cookiePayload))
+            ->withSecure(true)
+            ->withHttpOnly(true)
+            ->withSameSite('strict');
         return $oCookie;
     }
 
@@ -41,6 +43,11 @@ class GameCookie
     {
         // TODO exception, instanciation objet GameCookiePayload
         return $this->cookiePayload[$hashGame]->playerPosition;
+    }
+
+    public function getGamesHashList()
+    {
+        return array_keys($this->cookiePayload);
     }
 }
 

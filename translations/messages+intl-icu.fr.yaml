@@ -1,5 +1,13 @@
 create.title: 'Créer une nouvelle partie'
+create.mygames.title: 'Mes parties récentes'
+create.mygames.norecentgames: 'Vous n''avez aucune partie récente'
 create.form.input.name.label: 'Votre nom ou pseudo :'
-create.form.submit.label: 'Créer'
+create.form.submit.label: Créer
 join.error.unknowngame: 'La partie demandée (#{hash}) n''existe pas'
 error.title: 'Une erreur s''est produite'
+game.status.join: 'Non démarré'
+game.status.cutdeck: 'En cours'
+game.status.choosetrump: 'En cours'
+game.status.choosetrump2: 'En cours'
+game.status.playcard: 'En cours'
+game.status.finished: Terminé

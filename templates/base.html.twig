@@ -15,11 +15,16 @@
     <body>
         {% block body %}{% endblock %}
         {% block javascripts %}
+        <script type="text/javascript">
+            const BASE_URL = '{{app_base_url}}';
+            const MERCURE_BASE_URL = '{{mercure_base_url}}'; 
+        </script>
         {{ encore_entry_script_tags('app') }}
 
             <!-- Renders app.js & a webpack runtime.js file
                 <script src="/build/runtime.js"></script>
                 <script src="/build/app.js"></script> -->
+               
         {% endblock %}
     </body>
 </html>
