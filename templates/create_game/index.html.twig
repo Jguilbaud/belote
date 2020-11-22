@@ -13,7 +13,7 @@
 	{% else %}
 		<lu>	
 		{% for game in recentgames %}
-			<li> {{game.date|date("d/m/Y")}} : <a href="/join/game/{{game.hash}}">#{{game.hash}}</a> - {{('game.status.' ~ game.step)|trans}}</li>
+			<li> {{game.date|date(('date.format'|trans))}} : <a href="/join/game/{{game.hash}}">#{{game.hash}}</a> - {{('game.status.' ~ game.step)|trans}}</li>
 		{% endfor %}
 		</lu>
 	{% endif %}

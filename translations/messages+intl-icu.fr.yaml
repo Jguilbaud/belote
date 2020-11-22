@@ -11,3 +11,4 @@ game.status.choosetrump: 'En cours'
 game.status.choosetrump2: 'En cours'
 game.status.playcard: 'En cours'
 game.status.finished: Terminé
+date.format: d/m/Y
