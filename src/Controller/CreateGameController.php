@@ -1,16 +1,14 @@
 <?php
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
+use App\Entity\Game;
+use App\Entity\GameCookiePayload;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\GameCreateType;
-use App\Entity\Game;
 use App\Service\GameCookie;
-use App\Entity\GameCookiePayload;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use App\Repository\GameRepository;
+use Symfony\Component\HttpFoundation\Request;
 
 class CreateGameController extends AbstractController
 
@@ -55,12 +53,14 @@ class CreateGameController extends AbstractController
             return $response;
         } else {
 
-            //On récupère la liste des Jeux
+            // On récupère la liste des Jeux
             $rGame = $this->getDoctrine()->getRepository(Game::class);
             $hashAndPositionList = $cookieService->getGamesHashList();
 
             return $this->render('create_game/index.html.twig', [
-                'recentgames' => $rGame->findBy(['hash' => $hashAndPositionList]),
+                'recentgames' => $rGame->findBy([
+                    'hash' => $hashAndPositionList
+                ]),
                 'create_form' => $form->createView()
             ]);
         }

@@ -22,7 +22,7 @@ class GameCookie
      */
     public function addGame(GameCookiePayload $gamePayload)
     {
-        $this->cookiePayload[$gamePayload->getHashGame()] = $gamePayload;
+        $this->cookiePayload[$gamePayload->getHashGame()]['playerPosition'] = $gamePayload->getPlayerPosition();
     }
 
     /**
@@ -42,7 +42,7 @@ class GameCookie
     public function getPlayerPosition(String $hashGame)
     {
         // TODO exception, instanciation objet GameCookiePayload
-        return $this->cookiePayload[$hashGame]->playerPosition;
+        return $this->cookiePayload[$hashGame]['playerPosition']??null;
     }
 
     public function getGamesHashList()

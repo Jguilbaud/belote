@@ -3,6 +3,8 @@
 {% block title %}Rejoindre une partie - {{ parent() }}{% endblock %}
 
 {% block body %}
+<h1>Belote</h1>
+<h2>{{ 'join.title' | trans }}</h2>
 <label for="pseudo">Votre nom ou pseudo :</label>
 <input type="text" id="pseudo" name="pseudo" {{html_disabled_pseudo}} value="{{currentPlayerName}}" />
 <input type="hidden" id="hashGame" value="{{hashGame}}" />

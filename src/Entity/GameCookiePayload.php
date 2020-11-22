@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-class GameCookiePayload
+class GameCookiePayload implements \Serializable
 {
     /**
      */
@@ -36,4 +36,14 @@ class GameCookiePayload
 
         return $this;
     }
+    public function serialize()
+    {
+        return serialize($this);
+    }
+
+    public function unserialize($serialized)
+    {
+        return unserialize($serialized);
+    }
+
 }
