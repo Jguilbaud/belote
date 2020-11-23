@@ -2,7 +2,9 @@
 namespace App\Entity;
 
 use App\Repository\GameRepository;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping as ORM;
+use App\Validator\PlayerPosition;
 
 /**
  *
@@ -297,5 +299,10 @@ class Game
         $this->current_player = $current_player;
 
         return $this;
+    }
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('current_player', new PlayerPosition());
     }
 }

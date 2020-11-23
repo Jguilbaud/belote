@@ -137,7 +137,7 @@ function setJoinGameEvents(){
 		 
 		 }
 		 
-		 sendPostToBack('/join/'+$("#hashGame").val(),
+		 sendPostToBack('/ws/join/game/'+$("#hashGame").val(),
 				    {
 			 			pseudo: $("#pseudo").val(),
 			 			playerPosition: position
