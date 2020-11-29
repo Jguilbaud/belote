@@ -4,6 +4,8 @@ create.mygames.norecentgames: 'Vous n''avez aucune partie récente'
 create.form.input.name.label: 'Votre nom ou pseudo :'
 create.form.submit.label: Créer
 join.error.unknowngame: 'La partie demandée (#{hash}) n''existe pas'
+join.error.positionalreadyused: 'Cette position est déjà utilisée par {playerName}'
+join.error.notjoinstep: 'Vous ne pouvez pas rejoindre la partie à cette étape du jeu'
 error.title: 'Une erreur s''est produite'
 game.status.join: 'Non démarré'
 game.status.cutdeck: 'En cours'

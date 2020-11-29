@@ -23,7 +23,7 @@ class PlayerPositionValidator extends ConstraintValidator
             // throw new UnexpectedValueException($value, 'string|int');
         }
 
-        if (!in_array(strtolower($value), [
+        if (! in_array(strtolower($value), [
             'n',
             's',
             'e',
