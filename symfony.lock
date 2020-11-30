@@ -84,6 +84,9 @@
     "egulias/email-validator": {
         "version": "2.1.22"
     },
+    "firebase/php-jwt": {
+        "version": "v5.2.0"
+    },
     "laminas/laminas-code": {
         "version": "3.4.1"
     },
