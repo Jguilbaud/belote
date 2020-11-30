@@ -5,7 +5,7 @@ use App\Entity\Game;
 use App\Entity\GameCookiePayload;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\GameCreateType;
-use App\Service\GameCookie;
+use App\Service\Cookie;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +20,7 @@ class CreateGameController extends AbstractController
      */
     public function create(Request $request)
     {
-        $cookieService = new GameCookie($request->cookies);
+        $cookieService = new Cookie($request->cookies);
 
         $form = $this->createForm(GameCreateType::class);
         $form->handleRequest($request);
@@ -48,7 +48,7 @@ class CreateGameController extends AbstractController
             $response = new RedirectResponse($this->generateUrl('join_game', [
                 'hashGame' => $oGame->getHash()
             ]));
-            $response->headers->setCookie($cookieService->generateCookie());
+            $response->headers->setCookie($cookieService->generateGameCookie());
             $response->sendHeaders();
             return $response;
         } else {
