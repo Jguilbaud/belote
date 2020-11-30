@@ -5,6 +5,7 @@ use App\Entity\Game;
 use App\Entity\GameCookiePayload;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\GameCreateType;
+use App\Repository\GameRepository;
 use App\Service\Cookie;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -18,9 +19,9 @@ class CreateGameController extends AbstractController
      *
      * @Route("/", name="create_game")
      */
-    public function create(Request $request)
+    public function create(Request $request, GameRepository $repoGame)
     {
-        $cookieService = new Cookie($request->cookies);
+        $cookieService = new Cookie($request->cookies, $repoGame);
 
         $form = $this->createForm(GameCreateType::class);
         $form->handleRequest($request);
@@ -42,12 +43,11 @@ class CreateGameController extends AbstractController
 
             $cookieService->addGame($cookiePayload);
 
-            // TODO On créé le cookie mercure
-
-            // On redirige vers la salle d'attente
+             // On redirige vers la salle d'attente
             $response = new RedirectResponse($this->generateUrl('join_game', [
                 'hashGame' => $oGame->getHash()
             ]));
+            $response->headers->setCookie($cookieService->generateMercureCookie());
             $response->headers->setCookie($cookieService->generateGameCookie());
             $response->sendHeaders();
             return $response;
