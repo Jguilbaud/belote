@@ -6,7 +6,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Entity\Game;
 use App\Repository\GameRepository;
-use App\Service\GameCookie;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,6 +15,8 @@ use Symfony\Component\Validator\Constraints\NotNull as NotNullConstraint;
 use App\Entity\GameCookiePayload;
 use Symfony\Component\Mercure\Update;
 use App\Entity\GameEventMercurePayload;
+use App\Service\Cookie;
+use Symfony\Component\HttpFoundation\Response;
 
 class JoinGameController extends AbstractController
 {
@@ -24,10 +25,10 @@ class JoinGameController extends AbstractController
      *
      * @Route("/join/game/{hashGame}", name="join_game")
      */
-    public function index(Request $request, String $hashGame, GameRepository $repoGame, TranslatorInterface $translator)
+    public function index(Request $request, String $hashGame, GameRepository $repoGame, TranslatorInterface $translator): Response
     {
         // On récupère le cookie de l'utilisateur
-        $cookieService = new GameCookie($request->cookies);
+        $cookieService = new Cookie($request->cookies, $repoGame);
 
         // On récupère la partie
         $oGame = $repoGame->findOneBy([
@@ -62,14 +63,17 @@ class JoinGameController extends AbstractController
             $tplVars['html_disabled_e'] = 'disabled="disabled"';
         }
 
-        return $this->render('join_game/index.html.twig', $tplVars);
+        $response = $this->render('join_game/index.html.twig', $tplVars);
+        // On positionne le cookie Mercure pour être au courant des arrivées de joueurs
+        $response->headers->setCookie($cookieService->generateMercureCookie($this->getParameter('app.mercure.key')));
+        return $response;
     }
 
     /**
      *
      * @Route("/ws/join/game/{hashGame}", name="ws_join_game")
      */
-    public function join(Request $request, String $hashGame, ValidatorInterface $validator, GameRepository $repoGame, TranslatorInterface $translator, PublisherInterface $publisher)
+    public function join(Request $request, String $hashGame, ValidatorInterface $validator, GameRepository $repoGame, TranslatorInterface $translator, PublisherInterface $publisher): Response
     {
         $paramsErrors = array();
         $playerName = $request->request->get('pseudo');
@@ -153,17 +157,13 @@ class JoinGameController extends AbstractController
         // On enregistre le joueur à la place demandée
         $oGame->$methodNameSet($playerName);
 
-        // On positionne les cookies
-        // -- cookie de jeu
-        $cookieService = new GameCookie($request->cookies);
+        // On positionne les cookies de jeu et mercure
         $cookiePayload = new GameCookiePayload();
         $cookiePayload->setHashGame($oGame->getHash());
         $cookiePayload->setPlayerPosition($playerPosition);
 
+        $cookieService = new Cookie();
         $cookieService->addGame($cookiePayload);
-
-        // -- cookie mercure
-        // TODO cookie pour auth mercure
 
         // On envoie la notification mercure aux autres joueurs
         $mercureEventPayload = new GameEventMercurePayload();
@@ -172,19 +172,23 @@ class JoinGameController extends AbstractController
         $mercureEventPayload->addData('newPlayerPosition', $playerPosition);
         $mercureEventPayload->addData('newPlayerName', $playerName);
 
-        $update = new Update('game/'.$hashGame, json_encode($mercureEventPayload));
-
-        // The Publisher service is an invokable object
+        $update = new Update('game/' . $hashGame, json_encode($mercureEventPayload), true);
         $publisher($update);
-        // On enregistre dnas la bdd
+
+        // On enregistre dans la bdd
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($oGame);
         $entityManager->flush();
 
-        return $this->json([
+        // On prépare la réponse
+        $response = $this->json([
             'response' => 'ok',
             'playerName' => $playerName,
             'position' => $playerPosition
         ]);
+        // On ajoute les cookies à la réponse
+        $response->headers->setCookie($cookieService->generateGameCookie());
+        $response->headers->setCookie($cookieService->generateMercureCookie($this->getParameter('app.mercure.key')));
+        return $response;
     }
 }
