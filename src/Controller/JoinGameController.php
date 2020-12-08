@@ -12,9 +12,9 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Validator\PlayerPosition as PlayerPositionConstraint;
 use Symfony\Component\Validator\Constraints\Regex as RegexConstraint;
 use Symfony\Component\Validator\Constraints\NotNull as NotNullConstraint;
-use App\Entity\GameCookiePayload;
+use App\Model\GameCookiePayload;
 use Symfony\Component\Mercure\Update;
-use App\Entity\GameEventMercurePayload;
+use App\Model\GameEventMercurePayload;
 use App\Service\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -25,11 +25,8 @@ class JoinGameController extends AbstractController
      *
      * @Route("/join/game/{hashGame}", name="join_game")
      */
-    public function index(Request $request, String $hashGame, GameRepository $repoGame, TranslatorInterface $translator): Response
+    public function index(Request $request, String $hashGame, GameRepository $repoGame, TranslatorInterface $translator, Cookie $cookieService): Response
     {
-        // On récupère le cookie de l'utilisateur
-        $cookieService = new Cookie($request->cookies, $repoGame);
-
         // On récupère la partie
         $oGame = $repoGame->findOneBy([
             'hash' => $hashGame
@@ -73,7 +70,7 @@ class JoinGameController extends AbstractController
      *
      * @Route("/ws/join/game/{hashGame}", name="ws_join_game")
      */
-    public function join(Request $request, String $hashGame, ValidatorInterface $validator, GameRepository $repoGame, TranslatorInterface $translator, PublisherInterface $publisher): Response
+    public function join(Request $request, String $hashGame, ValidatorInterface $validator, GameRepository $repoGame, TranslatorInterface $translator, PublisherInterface $publisher, Cookie $cookieService): Response
     {
         $paramsErrors = array();
         $playerName = $request->request->get('pseudo');
@@ -162,7 +159,6 @@ class JoinGameController extends AbstractController
         $cookiePayload->setHashGame($oGame->getHash());
         $cookiePayload->setPlayerPosition($playerPosition);
 
-        $cookieService = new Cookie();
         $cookieService->addGame($cookiePayload);
 
         // On envoie la notification mercure aux autres joueurs
@@ -188,7 +184,7 @@ class JoinGameController extends AbstractController
         ]);
         // On ajoute les cookies à la réponse
         $response->headers->setCookie($cookieService->generateGameCookie());
-        $response->headers->setCookie($cookieService->generateMercureCookie($this->getParameter('app.mercure.key')));
+        $response->headers->setCookie($cookieService->generateMercureCookie());
         return $response;
     }
 }

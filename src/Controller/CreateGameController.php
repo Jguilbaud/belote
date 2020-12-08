@@ -2,7 +2,7 @@
 namespace App\Controller;
 
 use App\Entity\Game;
-use App\Entity\GameCookiePayload;
+use App\Model\GameCookiePayload;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\GameCreateType;
 use App\Repository\GameRepository;
@@ -19,10 +19,8 @@ class CreateGameController extends AbstractController
      *
      * @Route("/", name="create_game")
      */
-    public function create(Request $request, GameRepository $repoGame)
+    public function create(Request $request, GameRepository $repoGame, Cookie $cookieService)
     {
-        $cookieService = new Cookie($request->cookies, $repoGame);
-
         $form = $this->createForm(GameCreateType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

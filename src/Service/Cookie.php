@@ -2,10 +2,11 @@
 namespace App\Service;
 
 use Symfony\Component\HttpFoundation\Cookie as SymfonyCookie;
-use App\Entity\GameCookiePayload;
+use App\Model\GameCookiePayload;
 use App\Repository\GameRepository;
 use Firebase\JWT\JWT;
-use Symfony\Component\HttpFoundation\InputBag;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class Cookie
 {
@@ -14,13 +15,15 @@ class Cookie
 
     const GAME_COOKIE_NAME = 'belote';
 
+    private ContainerInterface $container;
+
     private array $gameCookiePayload = array();
 
-    public function __construct(InputBag $cookies, GameRepository $repoGame)
+    public function __construct(RequestStack $requestStack, GameRepository $repoGame, ContainerInterface $container)
     {
+        $this->container = $container;
         // On récupère les cookies de Jeu
-        $this->gameCookiePayload = json_decode($cookies->get(self::GAME_COOKIE_NAME), true) ?? array();
-
+        $this->gameCookiePayload = json_decode($requestStack->getCurrentRequest()->cookies->get(self::GAME_COOKIE_NAME), true) ?? array();
 
         $gameList = $repoGame->findBy([
             'hash' => $this->getGamesHashList()
@@ -29,8 +32,8 @@ class Cookie
         foreach ($gameList as $hash) {
             $cookiePayload = new GameCookiePayload();
             $cookiePayload->setHashGame($hash->getHash());
-            $cookiePayload->setPlayerPosition($this->getPlayerPosition($hash->getHash()));
-            $updatedGameList[] = $cookiePayload;
+            $cookiePayload->setPlayerPosition($this->gameCookiePayload[$hash->getHash()]['playerPosition']);
+            $updatedGameList[$hash->getHash()] = $cookiePayload;
         }
         $this->gameCookiePayload = $updatedGameList;
     }
@@ -40,7 +43,7 @@ class Cookie
      */
     public function addGame(GameCookiePayload $gamePayload): void
     {
-        $this->gameCookiePayload[$gamePayload->getHashGame()]['playerPosition'] = $gamePayload->getPlayerPosition();
+        $this->gameCookiePayload[$gamePayload->getHashGame()] = $gamePayload;
     }
 
     /**
@@ -73,20 +76,20 @@ class Cookie
      *
      * @return \Symfony\Component\HttpFoundation\Cookie
      */
-    public function generateMercureCookie(String $jwtKey): SymfonyCookie
+    public function generateMercureCookie(): SymfonyCookie
     {
         $subscribes = [];
         // On ajoute la souscription pour chaque partie
-        foreach ($this->gameCookiePayload as $hashGame => $game) {
-            $subscribes[] = 'game/' . $hashGame;
-            $subscribes[] = 'game/' . $hashGame . '/' . $game->getPlayerPosition();
+        foreach ($this->gameCookiePayload as $game) {
+            $subscribes[] = 'game/' . $game->getHashGame();
+            $subscribes[] = 'game/' . $game->getHashGame() . '/' . $game->getPlayerPosition();
         }
 
         $jwt = JWT::encode([
             'mercure' => [
                 'subscribe' => $subscribes
             ]
-        ], $jwtKey, 'HS256');
+        ], $this->container->getParameter('app.mercure.key'), 'HS256');
 
         $oCookie = SymfonyCookie::create(self::MERCURE_COOKIE_NAME)->withValue($jwt)
             ->withPath('/.well-known/mercure')
@@ -98,8 +101,10 @@ class Cookie
 
     public function getPlayerPosition(String $hashGame)
     {
-        // TODO exception, instanciation objet GameCookiePayload
-        return $this->gameCookiePayload[$hashGame]['playerPosition'] ?? null;
+        if (isset($this->gameCookiePayload[$hashGame])) {
+            return $this->gameCookiePayload[$hashGame]->getPlayerPosition();
+        }
+        return null;
     }
 
     public function getGamesHashList()

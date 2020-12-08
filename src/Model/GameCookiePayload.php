@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Model;
 
-class GameCookiePayload implements \Serializable
+class GameCookiePayload implements \JsonSerializable
 {
     /**
      */
@@ -36,14 +36,10 @@ class GameCookiePayload implements \Serializable
 
         return $this;
     }
-    public function serialize()
+    public function jsonSerialize()
     {
-        return serialize($this);
+        return get_object_vars($this);
     }
 
-    public function unserialize($serialized)
-    {
-        return unserialize($serialized);
-    }
 
 }
