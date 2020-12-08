@@ -3,3 +3,4 @@ twig:
     globals:
          mercure_base_url: '%env(MERCURE_PUBLISH_URL)%'
          app_base_url: '%env(APP_BASE_URL)%'
+    form_themes: ['bootstrap_4_layout.html.twig']
