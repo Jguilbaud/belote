@@ -15,7 +15,7 @@
 	},
 	"require" : {
 		"php" : ">=7.4",
-		"firebase/php-jwt" : "^5.2",
+		"firebase/php-jwt" : "^6.0",
 		"twig/twig" : "^3.0",
 		"symfony/mercure": "^0.3.0",
 		"ext-pdo_mysql": "^7.4",
